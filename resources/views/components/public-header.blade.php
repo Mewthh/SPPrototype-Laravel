@@ -4,21 +4,25 @@
             <span class="brand-mark" aria-hidden="true">SPP</span>
             <span class="brand-copy">
                 <strong>Samahang Pisika ng Pilipinas</strong>
-                <span>sample text</span>
+                <span>Physics Society of the Philippines</span>
             </span>
         </a>
 
         <div class="header-nav-group">
             <nav class="desktop-nav" aria-label="Primary navigation">
-                <a href="{{ route('news.index') }}" class="{{ request()->routeIs('news.index') ? 'active' : '' }}">News</a>
+                <a href="{{ route('news.index') }}"
+                    class="{{ request()->routeIs('news.index') ? 'active' : '' }}">News</a>
                 <a href="{{ route('home') }}#activities">Activities</a>
                 <div class="nav-dropdown">
-                    <a href="#resources" class="nav-dropdown-toggle">Resources <span class="dropdown-chevron">&#x25BE;</span></a>
+                    <a href="#resources" class="nav-dropdown-toggle">Resources <span
+                            class="dropdown-chevron">&#x25BE;</span></a>
                     <div class="nav-dropdown-panel" aria-label="Resources submenu">
                         <a href="#membership-faq">Membership FAQ</a>
-                        <a href="https://proceedings.spp-online.org/" target="_blank" rel="noopener noreferrer">Proceedings of the SPP</a>
+                        <a href="https://proceedings.spp-online.org/" target="_blank"
+                            rel="noopener noreferrer">Proceedings of the SPP</a>
                         <a href="#videos-webinars">Videos and Webinars</a>
-                        <a href="https://paperview.spp-online.org/" target="_blank" rel="noopener noreferrer">Pisika Journal</a>
+                        <a href="https://paperview.spp-online.org/" target="_blank" rel="noopener noreferrer">Pisika
+                            Journal</a>
                     </div>
                 </div>
                 <a href="#downloads">Downloads</a>
@@ -26,9 +30,12 @@
                 <details class="year-menu">
                     <summary aria-label="Open conference year choices">&#x22EF;</summary>
                     <div class="year-menu-panel" aria-label="Conference year choices">
-                        <a href="{{ route('spp.show', ['year' => '2024']) }}" id="year-btn-2024" class="year-menu-link">SPP2024</a>
-                        <a href="{{ route('spp.show', ['year' => '2025']) }}" id="year-btn-2025" class="year-menu-link">SPP2025</a>
-                        <a href="{{ route('spp.show', ['year' => '2026']) }}" id="year-btn-2026" class="year-menu-link">SPP2026</a>
+                        <a href="{{ route('spp.show', ['year' => '2024']) }}" id="year-btn-2024"
+                            class="year-menu-link">SPP2024</a>
+                        <a href="{{ route('spp.show', ['year' => '2025']) }}" id="year-btn-2025"
+                            class="year-menu-link">SPP2025</a>
+                        <a href="{{ route('spp.show', ['year' => '2026']) }}" id="year-btn-2026"
+                            class="year-menu-link">SPP2026</a>
                     </div>
                 </details>
             </nav>
@@ -61,17 +68,22 @@
                         <summary>Resources <span class="dropdown-chevron">&#x25BE;</span></summary>
                         <div class="mobile-sub-menu-panel">
                             <a href="#membership-faq">Membership FAQ</a>
-                            <a href="https://proceedings.spp-online.org/" target="_blank" rel="noopener noreferrer">Proceedings of the SPP</a>
+                            <a href="https://proceedings.spp-online.org/" target="_blank"
+                                rel="noopener noreferrer">Proceedings of the SPP</a>
                             <a href="#videos-webinars">Videos and Webinars</a>
-                            <a href="https://paperview.spp-online.org/" target="_blank" rel="noopener noreferrer">Pisika Journal</a>
+                            <a href="https://paperview.spp-online.org/" target="_blank" rel="noopener noreferrer">Pisika
+                                Journal</a>
                         </div>
                     </details>
                     <a href="#downloads">Downloads</a>
                     <a href="#about">About SPP</a>
                     <div class="mobile-nav-years" aria-label="Conference year choices">
-                        <a href="{{ route('spp.show', ['year' => '2024']) }}" id="mob-year-btn-2024" class="year-menu-link">SPP2024</a>
-                        <a href="{{ route('spp.show', ['year' => '2025']) }}" id="mob-year-btn-2025" class="year-menu-link">SPP2025</a>
-                        <a href="{{ route('spp.show', ['year' => '2026']) }}" id="mob-year-btn-2026" class="year-menu-link">SPP2026</a>
+                        <a href="{{ route('spp.show', ['year' => '2024']) }}" id="mob-year-btn-2024"
+                            class="year-menu-link">SPP2024</a>
+                        <a href="{{ route('spp.show', ['year' => '2025']) }}" id="mob-year-btn-2025"
+                            class="year-menu-link">SPP2025</a>
+                        <a href="{{ route('spp.show', ['year' => '2026']) }}" id="mob-year-btn-2026"
+                            class="year-menu-link">SPP2026</a>
                     </div>
                 </nav>
             </details>
