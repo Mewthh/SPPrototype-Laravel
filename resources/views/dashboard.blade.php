@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>SPP Admin Dashboard</title>
+	<link rel="stylesheet" href="{{ asset('admin/styles.css') }}" />
+	<script src="{{ asset('admin/app.js') }}" defer></script>
+</head>
+
+<body>
+	<a class="skip-link" href="#main-content">Skip to content</a>
+
+	<div class="dashboard-shell">
+		<header class="mobile-topbar" data-mobile-header>
+			<div class="topbar-inner">
+				<button class="menu-toggle" type="button" aria-label="Toggle menu" data-menu-toggle>
+					<span class="menu-toggle-icon" aria-hidden="true">&#x2630;</span>
+				</button>
+				<div class="mobile-brand">SPP Admin</div>
+			</div>
+		</header>
+
+		<aside class="dashboard-sidebar" data-sidebar>
+			<button class="menu-close" type="button" aria-label="Close menu" data-menu-close>&#x00D7;</button>
+			<div class="brand-block">
+				<div class="brand-mark" aria-hidden="true">SPP</div>
+				<div class="brand-copy">
+					<p class="eyebrow">Admin</p>
+					<h1>Samahang Pisika ng Pilipinas</h1>
+					<p class="brand-desc">sample text.</p>
+				</div>
+			</div>
+
+			<nav class="dashboard-nav" aria-label="Dashboard sections">
+				<a href="#news-section" data-nav-link>News</a>
+				<a href="#activities-section" data-nav-link>Activities</a>
+				<a href="#conferences" data-nav-link>Conferences</a>
+			</nav>
+
+			<div class="sidebar-footer">
+				<a class="ghost-button" href="{{ url('/') }}" aria-label="Go to user side">
+					<span aria-hidden="true">&#x2302;</span>
+					<span>Go to User Side</span>
+				</a>
+				<button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark mode">
+					<span class="theme-icon theme-icon-moon" aria-hidden="true">&#x263E;</span>
+					<span class="theme-icon theme-icon-sun" aria-hidden="true">&#x2600;</span>
+				</button>
+			</div>
+		</aside>
+
+		<main id="main-content" class="dashboard-main">
+			<section class="panel editor-panel" id="news-section">
+				<div class="panel-view" data-news-view="editor">
+					<div class="section-panel-head">
+						<div>
+							<p class="panel-kicker">News Management</p>
+							<h2>News Editor</h2>
+							<p>sample text.</p>
+						</div>
+						<div>
+							<button type="button" class="button button-secondary" data-show-news-posts>
+								View News Posts (<span data-news-count-badge>0</span>)
+							</button>
+						</div>
+					</div>
+
+					<form class="compose-form" data-news-form>
+						<div class="editor-status-banner" data-news-banner>
+							<span data-news-banner-text>Create New News Post</span>
+							<button type="button" class="item-action" data-news-cancel-edit style="display: none;">Cancel Edit</button>
+						</div>
+
+						<input type="hidden" name="editingId" value="" />
+
+						<label class="field-row">
+							<span>Status</span>
+							<select name="status">
+								<option value="draft">Draft</option>
+								<option value="published" selected>Published</option>
+								<option value="scheduled">Scheduled</option>
+								<option value="archived">Archived</option>
+							</select>
+						</label>
+
+						<label class="field-row">
+							<span>Title</span>
+							<input type="text" name="title" placeholder="sample text" required />
+						</label>
+
+						<label class="field-row">
+							<span>Summary</span>
+							<input type="text" name="summary" placeholder="sample text" />
+						</label>
+
+						<label class="field-row">
+							<span>Publish date</span>
+							<input type="date" name="publishDate" />
+						</label>
+
+						<label class="field-row field-row-wide">
+							<span>Article Body</span>
+							<textarea name="body" rows="6" placeholder="sample text."></textarea>
+						</label>
+
+						<div class="field-row field-row-wide">
+							<span class="field-label">Cover Image</span>
+							<div class="image-upload-zone" id="news-image-zone" data-upload-zone="news" tabindex="0" role="button" aria-label="Click or drag an image here to upload">
+								<div class="image-upload-placeholder" data-upload-placeholder="news">
+									<span class="upload-icon" aria-hidden="true">&#x1F5BC;</span>
+									<span>Click to upload or drag &amp; drop</span>
+									<small>PNG, JPG, GIF, WebP &mdash; max 5 MB</small>
+								</div>
+								<img class="image-upload-preview is-hidden" data-upload-preview="news" alt="Cover image preview" />
+								<input type="file" name="coverImage" accept="image/*" class="image-upload-input" data-upload-input="news" aria-label="Upload cover image" />
+							</div>
+							<div class="image-upload-actions is-hidden" data-upload-actions="news">
+								<span class="image-upload-filename" data-upload-filename="news"></span>
+								<button type="button" class="item-action danger" data-upload-clear="news">Remove image</button>
+							</div>
+						</div>
+
+						<div class="form-actions">
+							<button type="submit" class="button button-primary" data-news-submit-primary>Save & Publish</button>
+							<button type="submit" class="button button-secondary" data-status-override="draft" data-news-submit-secondary>Save as Draft</button>
+							<button type="reset" class="button button-quiet">Reset</button>
+						</div>
+					</form>
+				</div>
+
+				<div class="panel-view is-hidden" data-news-view="posts">
+					<div class="section-panel-head">
+						<div>
+							<p class="panel-kicker">News Management</p>
+							<h2>All News Posts</h2>
+							<p>sample text.</p>
+						</div>
+						<div>
+							<button type="button" class="button button-primary" data-show-news-editor>
+								&#x2190; Back to News Editor
+							</button>
+						</div>
+					</div>
+
+					<div class="posts-view-wrapper">
+						<div class="queue-toolbar">
+							<div class="queue-filters" aria-label="News filters">
+								<button type="button" class="filter-tab active" data-news-filter="all">All (<span data-news-filter-all-count>0</span>)</button>
+								<button type="button" class="filter-tab" data-news-filter="published">Published (<span data-news-filter-published-count>0</span>)</button>
+								<button type="button" class="filter-tab" data-news-filter="scheduled">Scheduled (<span data-news-filter-scheduled-count>0</span>)</button>
+								<button type="button" class="filter-tab" data-news-filter="draft">Drafts (<span data-news-filter-draft-count>0</span>)</button>
+								<button type="button" class="filter-tab" data-news-filter="archived">Archived (<span data-news-filter-archived-count>0</span>)</button>
+							</div>
+						</div>
+
+						<div class="queue-table-head" aria-hidden="true">
+							<span>Title & Summary</span>
+							<span>Status</span>
+							<span>Date</span>
+							<span>Actions</span>
+						</div>
+
+						<div class="queue-list" data-news-list></div>
+
+						<div class="queue-pagination" data-news-pagination style="display: none;">
+							<span class="pagination-info" data-news-pagination-info>Showing 3 of 8 posts</span>
+							<button type="button" class="button button-secondary" data-news-load-more>View More Posts</button>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="panel editor-panel" id="activities-section">
+				<div class="panel-view" data-activity-view="editor">
+					<div class="section-panel-head">
+						<div>
+							<p class="panel-kicker">Activities Management</p>
+							<h2>Activities Editor</h2>
+							<p>sample text.</p>
+						</div>
+						<div>
+							<button type="button" class="button button-secondary" data-show-activity-posts>
+								View Activities Posts (<span data-activity-count-badge>0</span>)
+							</button>
+						</div>
+					</div>
+
+					<form class="compose-form" data-activity-form>
+						<div class="editor-status-banner" data-activity-banner>
+							<span data-activity-banner-text>Create New Activity</span>
+							<button type="button" class="item-action" data-activity-cancel-edit style="display: none;">Cancel Edit</button>
+						</div>
+
+						<input type="hidden" name="editingId" value="" />
+
+						<label class="field-row">
+							<span>Status</span>
+							<select name="status">
+								<option value="scheduled" selected>Scheduled</option>
+								<option value="published">Published</option>
+								<option value="draft">Draft</option>
+								<option value="archived">Archived</option>
+							</select>
+						</label>
+
+						<label class="field-row">
+							<span>Activity Title</span>
+							<input type="text" name="title" placeholder="sample text" required />
+						</label>
+
+						<label class="field-row">
+							<span>Summary</span>
+							<input type="text" name="summary" placeholder="sample text" />
+						</label>
+
+						<label class="field-row">
+							<span>Event Date</span>
+							<input type="date" name="publishDate" />
+						</label>
+
+						<label class="field-row field-row-wide">
+							<span>Event Details</span>
+							<textarea name="body" rows="6" placeholder="sample text."></textarea>
+						</label>
+
+						<div class="field-row field-row-wide">
+							<span class="field-label">Cover Image</span>
+							<div class="image-upload-zone" id="activity-image-zone" data-upload-zone="activity" tabindex="0" role="button" aria-label="Click or drag an image here to upload">
+								<div class="image-upload-placeholder" data-upload-placeholder="activity">
+									<span class="upload-icon" aria-hidden="true">&#x1F5BC;</span>
+									<span>Click to upload or drag &amp; drop</span>
+									<small>PNG, JPG, GIF, WebP &mdash; max 5 MB</small>
+								</div>
+								<img class="image-upload-preview is-hidden" data-upload-preview="activity" alt="Cover image preview" />
+								<input type="file" name="coverImage" accept="image/*" class="image-upload-input" data-upload-input="activity" aria-label="Upload cover image" />
+							</div>
+							<div class="image-upload-actions is-hidden" data-upload-actions="activity">
+								<span class="image-upload-filename" data-upload-filename="activity"></span>
+								<button type="button" class="item-action danger" data-upload-clear="activity">Remove image</button>
+							</div>
+						</div>
+
+						<label class="field-row field-row-inline">
+							<span>Featured on homepage</span>
+							<input type="checkbox" name="featureOnHomepage" />
+						</label>
+
+						<div class="form-actions">
+							<button type="submit" class="button button-primary" data-activity-submit-primary>Save & Publish</button>
+							<button type="submit" class="button button-secondary" data-status-override="scheduled" data-activity-submit-secondary>Save as Scheduled</button>
+							<button type="reset" class="button button-quiet">Reset</button>
+						</div>
+					</form>
+				</div>
+
+				<div class="panel-view is-hidden" data-activity-view="posts">
+					<div class="section-panel-head">
+						<div>
+							<p class="panel-kicker">Activities Management</p>
+							<h2>All Activities</h2>
+							<p>sample text.</p>
+						</div>
+						<div>
+							<button type="button" class="button button-primary" data-show-activity-editor>
+								&#x2190; Back to Activities Editor
+							</button>
+						</div>
+					</div>
+
+					<div class="posts-view-wrapper">
+						<div class="queue-toolbar">
+							<div class="queue-filters" aria-label="Activity filters">
+								<button type="button" class="filter-tab active" data-activity-filter="all">All (<span data-activity-filter-all-count>0</span>)</button>
+								<button type="button" class="filter-tab" data-activity-filter="published">Published (<span data-activity-filter-published-count>0</span>)</button>
+								<button type="button" class="filter-tab" data-activity-filter="scheduled">Scheduled (<span data-activity-filter-scheduled-count>0</span>)</button>
+								<button type="button" class="filter-tab" data-activity-filter="draft">Drafts (<span data-activity-filter-draft-count>0</span>)</button>
+								<button type="button" class="filter-tab" data-activity-filter="archived">Archived (<span data-activity-filter-archived-count>0</span>)</button>
+							</div>
+						</div>
+
+						<div class="queue-table-head" aria-hidden="true">
+							<span>Title & Summary</span>
+							<span>Status</span>
+							<span>Date</span>
+							<span>Actions</span>
+						</div>
+
+						<div class="queue-list" data-activity-list></div>
+
+						<div class="queue-pagination" data-activity-pagination style="display: none;">
+							<span class="pagination-info" data-activity-pagination-info>Showing 3 of 8 posts</span>
+							<button type="button" class="button button-secondary" data-activity-load-more>View More Posts</button>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="panel conference-panel" id="conferences">
+				<div class="section-panel-head">
+					<div>
+						<p class="panel-kicker">SPP Conferences</p>
+						<h2>Conference Years Management</h2>
+						<p>sample text.</p>
+					</div>
+				</div>
+
+				<div class="conference-toolbar">
+					<div class="conference-years-group" aria-label="Conference choices">
+						<span class="conference-years-label">Conference Portals:</span>
+						<a href="spp.html?year=2024" class="conference-year-btn" target="_blank" aria-label="Open SPP 2024 page">SPP 2024 &#x2197;</a>
+						<a href="spp.html?year=2025" class="conference-year-btn" target="_blank" aria-label="Open SPP 2025 page">SPP 2025 &#x2197;</a>
+						<a href="spp.html?year=2026" class="conference-year-btn active" target="_blank" aria-label="Open SPP 2026 page">SPP 2026 &#x2197;</a>
+					</div>
+					<button type="button" class="button button-primary" aria-label="Add new conference year">+ Add New SPP Conference (e.g. SPP 2027)</button>
+				</div>
+
+				<div class="conference-grid">
+					<article class="conference-card">
+						<div class="conference-card-head">
+							<h3>42nd SPP Physics Conference (SPP 2024)</h3>
+							<span class="conference-badge">Archived</span>
+						</div>
+						<div class="conference-card-meta">
+							<span><strong>Location:</strong> sample text</span>
+							<span><strong>Date:</strong> sample text</span>
+						</div>
+						<p>sample text.</p>
+						<div class="conference-card-actions">
+							<a href="spp.html?year=2024" class="button button-secondary" target="_blank">View Portal</a>
+							<button type="button" class="button button-secondary">Edit Details</button>
+						</div>
+					</article>
+
+					<article class="conference-card">
+						<div class="conference-card-head">
+							<h3>43rd SPP Physics Conference (SPP 2025)</h3>
+							<span class="conference-badge active">Published</span>
+						</div>
+						<div class="conference-card-meta">
+							<span><strong>Location:</strong> sample text</span>
+							<span><strong>Date:</strong> sample text</span>
+						</div>
+						<p>sample text.</p>
+						<div class="conference-card-actions">
+							<a href="spp.html?year=2025" class="button button-secondary" target="_blank">View Portal</a>
+							<button type="button" class="button button-secondary">Edit Details</button>
+						</div>
+					</article>
+
+					<article class="conference-card">
+						<div class="conference-card-head">
+							<h3>44th SPP Physics Conference (SPP 2026)</h3>
+							<span class="conference-badge active">Active Portal</span>
+						</div>
+						<div class="conference-card-meta">
+							<span><strong>Location:</strong> sample text</span>
+							<span><strong>Date:</strong> sample text</span>
+						</div>
+						<p>sample text.</p>
+						<div class="conference-card-actions">
+							<a href="spp.html?year=2026" class="button button-secondary" target="_blank">View Portal</a>
+							<button type="button" class="button button-secondary">Edit Details</button>
+						</div>
+					</article>
+
+					<article class="conference-card">
+						<div class="conference-card-head">
+							<h3>45th SPP Physics Conference (SPP 2027)</h3>
+							<span class="conference-badge upcoming">Planned Draft</span>
+						</div>
+						<div class="conference-card-meta">
+							<span><strong>Location:</strong> sample text</span>
+							<span><strong>Date:</strong> sample text</span>
+						</div>
+						<p>sample text.</p>
+						<div class="conference-card-actions">
+							<button type="button" class="button button-primary">Configure Conference</button>
+							<button type="button" class="button button-secondary">Publish Portal</button>
+						</div>
+					</article>
+				</div>
+			</section>
+
+			<footer class="site-footer">
+			</footer>
+		</main>
+	</div>
+</body>
+
+</html>
