@@ -24,7 +24,7 @@ test('spp conference page can be rendered via /spp and spp.html', function (stri
 
     $response->assertOk()
         ->assertSee('SPP | Samahang Pisika ng Pilipinas')
-        ->assertSee('spp.js');
+        ->assertSee('Conference year choices');
 })->with(['/spp', '/spp.html']);
 
 test('admin dashboard can be rendered via /admin and AdminDashboard.html', function (string $url) {

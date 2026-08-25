@@ -1,18 +1,23 @@
 <?php
 
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NewsController;
+use App\Http\Controllers\SppController;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome')->name('home');
-Route::view('index.html', 'welcome');
+// ─── Public Routes ──────────────────────────────────────────────────────────
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('news', [NewsController::class, 'index'])->name('news.index');
+Route::get('spp', [SppController::class, 'show'])->name('spp.show');
 
-Route::view('news', 'news')->name('news');
-Route::view('news.html', 'news');
-
-Route::view('spp', 'spp')->name('spp.show');
-Route::view('spp.html', 'spp');
-
-Route::view('admin', 'dashboard')->name('admin');
+// ─── Legacy URLs (Backward Compatibility) ───────────────────────────────────
+Route::get('index.html', [HomeController::class, 'index']);
+Route::get('news.html', [NewsController::class, 'index']);
+Route::get('spp.html', [SppController::class, 'show']);
 Route::view('AdminDashboard.html', 'dashboard');
+
+// ─── Admin / Dashboard Routes ───────────────────────────────────────────────
+Route::view('admin', 'dashboard')->name('admin');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');

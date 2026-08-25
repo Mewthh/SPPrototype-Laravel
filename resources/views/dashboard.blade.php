@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="light">
 
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>SPP Admin Dashboard</title>
-	<link rel="stylesheet" href="{{ asset('admin/styles.css') }}" />
+	@vite(['resources/css/app.css', 'resources/js/app.js'])
 	<script src="{{ asset('admin/app.js') }}" defer></script>
 </head>
 
@@ -40,7 +40,7 @@
 			</nav>
 
 			<div class="sidebar-footer">
-				<a class="ghost-button" href="{{ url('/') }}" aria-label="Go to user side">
+				<a class="ghost-button" href="{{ route('home') }}" aria-label="Go to user side">
 					<span aria-hidden="true">&#x2302;</span>
 					<span>Go to User Side</span>
 				</a>
@@ -309,9 +309,9 @@
 				<div class="conference-toolbar">
 					<div class="conference-years-group" aria-label="Conference choices">
 						<span class="conference-years-label">Conference Portals:</span>
-						<a href="spp.html?year=2024" class="conference-year-btn" target="_blank" aria-label="Open SPP 2024 page">SPP 2024 &#x2197;</a>
-						<a href="spp.html?year=2025" class="conference-year-btn" target="_blank" aria-label="Open SPP 2025 page">SPP 2025 &#x2197;</a>
-						<a href="spp.html?year=2026" class="conference-year-btn active" target="_blank" aria-label="Open SPP 2026 page">SPP 2026 &#x2197;</a>
+						<a href="{{ route('spp.show', ['year' => '2024']) }}" class="conference-year-btn" target="_blank" aria-label="Open SPP 2024 page">SPP 2024 &#x2197;</a>
+						<a href="{{ route('spp.show', ['year' => '2025']) }}" class="conference-year-btn" target="_blank" aria-label="Open SPP 2025 page">SPP 2025 &#x2197;</a>
+						<a href="{{ route('spp.show', ['year' => '2026']) }}" class="conference-year-btn active" target="_blank" aria-label="Open SPP 2026 page">SPP 2026 &#x2197;</a>
 					</div>
 					<button type="button" class="button button-primary" aria-label="Add new conference year">+ Add New SPP Conference (e.g. SPP 2027)</button>
 				</div>
@@ -328,7 +328,7 @@
 						</div>
 						<p>sample text.</p>
 						<div class="conference-card-actions">
-							<a href="spp.html?year=2024" class="button button-secondary" target="_blank">View Portal</a>
+							<a href="{{ route('spp.show', ['year' => '2024']) }}" class="button button-secondary" target="_blank">View Portal</a>
 							<button type="button" class="button button-secondary">Edit Details</button>
 						</div>
 					</article>
@@ -344,7 +344,7 @@
 						</div>
 						<p>sample text.</p>
 						<div class="conference-card-actions">
-							<a href="spp.html?year=2025" class="button button-secondary" target="_blank">View Portal</a>
+							<a href="{{ route('spp.show', ['year' => '2025']) }}" class="button button-secondary" target="_blank">View Portal</a>
 							<button type="button" class="button button-secondary">Edit Details</button>
 						</div>
 					</article>
@@ -360,7 +360,7 @@
 						</div>
 						<p>sample text.</p>
 						<div class="conference-card-actions">
-							<a href="spp.html?year=2026" class="button button-secondary" target="_blank">View Portal</a>
+							<a href="{{ route('spp.show', ['year' => '2026']) }}" class="button button-secondary" target="_blank">View Portal</a>
 							<button type="button" class="button button-secondary">Edit Details</button>
 						</div>
 					</article>
