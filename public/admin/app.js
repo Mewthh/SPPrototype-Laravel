@@ -19,10 +19,12 @@ const activityList = document.querySelector('[data-activity-list]');
 const newsPagination = document.querySelector('[data-news-pagination]');
 const newsPaginationInfo = document.querySelector('[data-news-pagination-info]');
 const newsLoadMoreBtn = document.querySelector('[data-news-load-more]');
+const newsShowLessBtn = document.querySelector('[data-news-show-less]');
 
 const activityPagination = document.querySelector('[data-activity-pagination]');
 const activityPaginationInfo = document.querySelector('[data-activity-pagination-info]');
 const activityLoadMoreBtn = document.querySelector('[data-activity-load-more]');
+const activityShowLessBtn = document.querySelector('[data-activity-show-less]');
 
 const newsBanner = document.querySelector('[data-news-banner]');
 const newsBannerText = document.querySelector('[data-news-banner-text]');
@@ -232,14 +234,48 @@ function savePosts() {
   localStorage.setItem(localStorageKey, JSON.stringify(state.posts));
 }
 
+async function fetchNewsFromDatabase() {
+  try {
+    const res = await fetch('/admin/api/news');
+    if (!res.ok) throw new Error('Failed to load news');
+    const result = await res.json();
+    if (result && Array.isArray(result.data)) {
+      const dbNews = result.data.map((item) => ({
+        id: item.id,
+        type: 'announcement',
+        section: 'News',
+        title: item.title,
+        slug: item.slug,
+        summary: item.excerpt || '',
+        publishDate: item.published_at ? item.published_at.slice(0, 10) : (item.created_at ? item.created_at.slice(0, 10) : ''),
+        body: item.content || '',
+        status: item.status || 'draft',
+        coverImage: item.image || null,
+      }));
+
+      const otherPosts = state.posts.filter((p) => p.type !== 'announcement');
+      state.posts = [...dbNews, ...otherPosts];
+      renderAll();
+    }
+  } catch (err) {
+    console.error('Error fetching news from database:', err);
+  }
+}
+
 function setTheme(theme) {
   const nextTheme = theme === 'dark' ? 'dark' : 'light';
   document.documentElement.setAttribute('data-theme', nextTheme);
-
-  if (themeToggle) {
-    themeToggle.setAttribute('aria-label', nextTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
-    themeToggle.title = nextTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+  if (nextTheme === 'dark') {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
   }
+
+  const toggles = document.querySelectorAll('[data-theme-toggle]');
+  toggles.forEach((t) => {
+    t.setAttribute('aria-label', nextTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+    t.title = nextTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+  });
 
   localStorage.setItem(themeKey, nextTheme);
 }
@@ -388,7 +424,15 @@ function renderNewsQueue() {
           newsLoadMoreBtn.style.display = 'none';
         } else {
           newsLoadMoreBtn.style.display = 'inline-flex';
-          newsLoadMoreBtn.textContent = `View More (${filtered.length - state.newsVisibleCount} remaining)`;
+          newsLoadMoreBtn.textContent = 'Show More';
+        }
+      }
+      if (newsShowLessBtn) {
+        if (state.newsVisibleCount > PAGE_SIZE) {
+          newsShowLessBtn.style.display = 'inline-flex';
+          newsShowLessBtn.textContent = 'Show Less';
+        } else {
+          newsShowLessBtn.style.display = 'none';
         }
       }
     } else {
@@ -457,7 +501,15 @@ function renderActivityQueue() {
           activityLoadMoreBtn.style.display = 'none';
         } else {
           activityLoadMoreBtn.style.display = 'inline-flex';
-          activityLoadMoreBtn.textContent = `View More (${filtered.length - state.activityVisibleCount} remaining)`;
+          activityLoadMoreBtn.textContent = 'Show More';
+        }
+      }
+      if (activityShowLessBtn) {
+        if (state.activityVisibleCount > PAGE_SIZE) {
+          activityShowLessBtn.style.display = 'inline-flex';
+          activityShowLessBtn.textContent = 'Show Less';
+        } else {
+          activityShowLessBtn.style.display = 'none';
         }
       }
     } else {
@@ -598,7 +650,7 @@ function setupImageUpload(key) {
 }
 
 function startEditingNews(postId) {
-  const post = state.posts.find((p) => p.id === postId);
+  const post = state.posts.find((p) => String(p.id) === String(postId));
   if (!post || !newsForm) return;
 
   state.editingNewsId = post.id;
@@ -631,7 +683,7 @@ function cancelEditingNews() {
   renderNewsQueue();
 }
 
-function handleNewsSubmit(event) {
+async function handleNewsSubmit(event) {
   event.preventDefault();
   if (!newsForm) return;
 
@@ -641,40 +693,49 @@ function handleNewsSubmit(event) {
   if (!title) return;
 
   const chosenStatus = overrideStatus || String(data.get('status') || 'published');
+  data.set('status', chosenStatus);
 
-  const postData = {
-    type: 'announcement',
-    section: 'News',
-    title,
-    summary: String(data.get('summary') || '').trim(),
-    publishDate: String(data.get('publishDate') || ''),
-    status: chosenStatus,
-    body: String(data.get('body') || '').trim(),
-    coverImage: imageState.news || null,
-  };
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-  if (state.editingNewsId) {
-    const idx = state.posts.findIndex((p) => p.id === state.editingNewsId);
-    if (idx >= 0) {
-      state.posts[idx] = { ...state.posts[idx], ...postData };
-    }
-    state.editingNewsId = null;
-  } else {
-    const newPost = {
-      id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `post-${Date.now()}`,
-      ...postData,
-    };
-    state.posts = [newPost, ...state.posts];
+  // If image preview has a data URL or image string that wasn't uploaded via input file
+  if (imageState.news && !data.get('coverImage')?.name) {
+    data.set('coverImage', imageState.news);
   }
 
-  savePosts();
-  newsForm.reset();
-  document.querySelector('[data-upload-zone="news"]')?._clearImage?.();
-  renderAll();
-  setNewsView('posts');
+  try {
+    let url = '/admin/api/news';
+    if (state.editingNewsId) {
+      url = `/admin/api/news/${state.editingNewsId}`;
+      data.append('_method', 'PUT');
+    }
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'X-CSRF-TOKEN': csrfToken || '',
+        'Accept': 'application/json',
+      },
+      body: data,
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      alert(err.message || 'Failed to save news post.');
+      return;
+    }
+
+    state.editingNewsId = null;
+    newsForm.reset();
+    document.querySelector('[data-upload-zone="news"]')?._clearImage?.();
+    await fetchNewsFromDatabase();
+    setNewsView('posts');
+  } catch (err) {
+    console.error('Error saving news:', err);
+    alert('An error occurred while saving the news post.');
+  }
 }
 
-function handleNewsAction(event) {
+async function handleNewsAction(event) {
   const target = event.target.closest('[data-news-action]');
   if (!target) return;
 
@@ -689,22 +750,55 @@ function handleNewsAction(event) {
     return;
   }
 
-  const idx = state.posts.findIndex((p) => p.id === postId);
-  if (idx < 0) return;
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
   if (action === 'delete') {
-    if (state.editingNewsId === postId) state.editingNewsId = null;
-    state.posts.splice(idx, 1);
-  } else if (action === 'publish') {
-    state.posts[idx].status = 'published';
-  } else if (action === 'archive') {
-    state.posts[idx].status = 'archived';
-  } else if (action === 'draft') {
-    state.posts[idx].status = 'draft';
+    if (!confirm('Are you sure you want to delete this news post?')) return;
+    try {
+      const res = await fetch(`/admin/api/news/${postId}`, {
+        method: 'DELETE',
+        headers: {
+          'X-CSRF-TOKEN': csrfToken || '',
+          'Accept': 'application/json',
+        },
+      });
+
+      if (res.ok) {
+        if (state.editingNewsId == postId) state.editingNewsId = null;
+        await fetchNewsFromDatabase();
+      } else {
+        alert('Failed to delete news post.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error deleting news post.');
+    }
+    return;
   }
 
-  savePosts();
-  renderAll();
+  if (action === 'publish' || action === 'archive' || action === 'draft') {
+    const nextStatus = action === 'publish' ? 'published' : (action === 'archive' ? 'archived' : 'draft');
+    try {
+      const res = await fetch(`/admin/api/news/${postId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'X-CSRF-TOKEN': csrfToken || '',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ status: nextStatus }),
+      });
+
+      if (res.ok) {
+        await fetchNewsFromDatabase();
+      } else {
+        alert('Failed to update news status.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error updating status.');
+    }
+  }
 }
 
 function startEditingActivity(postId) {
@@ -835,8 +929,18 @@ function bindEvents() {
     renderNewsQueue();
   });
 
+  newsShowLessBtn?.addEventListener('click', () => {
+    state.newsVisibleCount = PAGE_SIZE;
+    renderNewsQueue();
+  });
+
   activityLoadMoreBtn?.addEventListener('click', () => {
     state.activityVisibleCount += PAGE_SIZE;
+    renderActivityQueue();
+  });
+
+  activityShowLessBtn?.addEventListener('click', () => {
+    state.activityVisibleCount = PAGE_SIZE;
     renderActivityQueue();
   });
 
@@ -879,10 +983,17 @@ const savedTheme = localStorage.getItem(themeKey);
 const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 setTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
 
-themeToggle?.addEventListener('click', () => {
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  setTheme(isDark ? 'light' : 'dark');
-});
+if (!window.__sppThemeListenerAttached) {
+  window.__sppThemeListenerAttached = true;
+  document.addEventListener('click', (e) => {
+    const toggleBtn = e.target.closest('[data-theme-toggle]');
+    if (toggleBtn) {
+      e.preventDefault();
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark' || document.documentElement.classList.contains('dark');
+      setTheme(isDark ? 'light' : 'dark');
+    }
+  });
+}
 
 const menuToggle = document.querySelector('[data-menu-toggle]');
 const menuClose = document.querySelector('[data-menu-close]');
@@ -917,6 +1028,7 @@ window.addEventListener('load', updateActiveNavLink);
 renderAll();
 bindEvents();
 updateActiveNavLink();
+fetchNewsFromDatabase();
 
 setupImageUpload('news');
 setupImageUpload('activity');

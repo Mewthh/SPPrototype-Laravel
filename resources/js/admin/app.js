@@ -19,10 +19,12 @@ const activityList = document.querySelector('[data-activity-list]');
 const newsPagination = document.querySelector('[data-news-pagination]');
 const newsPaginationInfo = document.querySelector('[data-news-pagination-info]');
 const newsLoadMoreBtn = document.querySelector('[data-news-load-more]');
+const newsShowLessBtn = document.querySelector('[data-news-show-less]');
 
 const activityPagination = document.querySelector('[data-activity-pagination]');
 const activityPaginationInfo = document.querySelector('[data-activity-pagination-info]');
 const activityLoadMoreBtn = document.querySelector('[data-activity-load-more]');
+const activityShowLessBtn = document.querySelector('[data-activity-show-less]');
 
 const newsBanner = document.querySelector('[data-news-banner]');
 const newsBannerText = document.querySelector('[data-news-banner-text]');
@@ -388,7 +390,15 @@ function renderNewsQueue() {
           newsLoadMoreBtn.style.display = 'none';
         } else {
           newsLoadMoreBtn.style.display = 'inline-flex';
-          newsLoadMoreBtn.textContent = `View More (${filtered.length - state.newsVisibleCount} remaining)`;
+          newsLoadMoreBtn.textContent = 'Show More';
+        }
+      }
+      if (newsShowLessBtn) {
+        if (state.newsVisibleCount > PAGE_SIZE) {
+          newsShowLessBtn.style.display = 'inline-flex';
+          newsShowLessBtn.textContent = 'Show Less';
+        } else {
+          newsShowLessBtn.style.display = 'none';
         }
       }
     } else {
@@ -457,7 +467,15 @@ function renderActivityQueue() {
           activityLoadMoreBtn.style.display = 'none';
         } else {
           activityLoadMoreBtn.style.display = 'inline-flex';
-          activityLoadMoreBtn.textContent = `View More (${filtered.length - state.activityVisibleCount} remaining)`;
+          activityLoadMoreBtn.textContent = 'Show More';
+        }
+      }
+      if (activityShowLessBtn) {
+        if (state.activityVisibleCount > PAGE_SIZE) {
+          activityShowLessBtn.style.display = 'inline-flex';
+          activityShowLessBtn.textContent = 'Show Less';
+        } else {
+          activityShowLessBtn.style.display = 'none';
         }
       }
     } else {
@@ -835,8 +853,18 @@ function bindEvents() {
     renderNewsQueue();
   });
 
+  newsShowLessBtn?.addEventListener('click', () => {
+    state.newsVisibleCount = PAGE_SIZE;
+    renderNewsQueue();
+  });
+
   activityLoadMoreBtn?.addEventListener('click', () => {
     state.activityVisibleCount += PAGE_SIZE;
+    renderActivityQueue();
+  });
+
+  activityShowLessBtn?.addEventListener('click', () => {
+    state.activityVisibleCount = PAGE_SIZE;
     renderActivityQueue();
   });
 

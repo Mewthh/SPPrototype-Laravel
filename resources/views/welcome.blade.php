@@ -32,17 +32,35 @@
     <section class="section shell" id="news">
         <div class="section-header">
             <div>
-                <p class="eyebrow">News and Announcements</p>
-                <h2>title</h2>
-                <p>sample text.</p>
+                <h2>News and Announcements</h2>
             </div>
         </div>
 
         <div id="news-listing-wrapper">
-            <div id="news-grid" class="card-grid news-grid">
-                <div class="news-loading">Loading news...</div>
-            </div>
-            <nav id="news-pagination" class="pagination-bar" aria-label="News pagination" style="display: none;"></nav>
+            @if(isset($news) && $news->count() > 0)
+                <div id="news-grid" class="card-grid news-grid" data-server-rendered="true">
+                    @foreach($news as $index => $item)
+                        <x-news-card :news="$item" :hidden="$index >= 4" />
+                    @endforeach
+                </div>
+
+                @if($news->count() > 4)
+                    <div class="news-more-wrap" style="display: flex; justify-content: center; gap: 12px; margin-top: 36px;">
+                        <button type="button" class="button button-secondary" id="news-show-more-btn">
+                            Show More
+                        </button>
+                        <button type="button" class="button button-secondary" id="news-show-less-btn" style="display: none;">
+                            Show Less
+                        </button>
+                    </div>
+                @endif
+            @else
+                <div id="news-grid" class="card-grid news-grid" data-server-rendered="true">
+                    <div class="news-empty-state">
+                        <p>No published news or announcements at this time.</p>
+                    </div>
+                </div>
+            @endif
         </div>
     </section>
 

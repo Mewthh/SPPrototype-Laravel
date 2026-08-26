@@ -9,6 +9,11 @@ function initTheme() {
   const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   const nextTheme = savedTheme || (prefersDark ? 'dark' : 'light');
   document.documentElement.setAttribute('data-theme', nextTheme);
+  if (nextTheme === 'dark') {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
 
   const themeToggle = document.querySelector('[data-theme-toggle]');
   if (themeToggle) {
@@ -18,9 +23,14 @@ function initTheme() {
 }
 
 function toggleTheme() {
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark' || document.documentElement.classList.contains('dark');
   const nextTheme = isDark ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', nextTheme);
+  if (nextTheme === 'dark') {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
   localStorage.setItem('spp-theme', nextTheme);
 
   const themeToggle = document.querySelector('[data-theme-toggle]');
@@ -182,6 +192,10 @@ function renderPublicNews(page = 1) {
   const paginationEl = document.getElementById('news-pagination');
   if (!newsGrid) return;
 
+  if (newsGrid.dataset.serverRendered === 'true') {
+    return;
+  }
+
   const visibleNews = getVisiblePostsByType('announcement', 'News');
 
   if (!visibleNews.length) {
@@ -275,6 +289,10 @@ function handlePaginationClick(event) {
 function renderArticle() {
   const root = document.getElementById('article-root');
   if (!root) return;
+
+  if (root.dataset.serverRendered === 'true') {
+    return;
+  }
 
   const urlParams = new URLSearchParams(window.location.search);
   const slug = urlParams.get('slug');
@@ -375,17 +393,66 @@ function initSppConference() {
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
 
-  document.addEventListener('click', (e) => {
-    const toggleBtn = e.target.closest('[data-theme-toggle]');
-    if (toggleBtn) {
-      e.preventDefault();
-      toggleTheme();
-    }
-  });
+  if (!window.__sppThemeListenerAttached) {
+    window.__sppThemeListenerAttached = true;
+    document.addEventListener('click', (e) => {
+      const toggleBtn = e.target.closest('[data-theme-toggle]');
+      if (toggleBtn) {
+        e.preventDefault();
+        toggleTheme();
+      }
+    });
+  }
 
-  if (document.getElementById('news-grid')) {
-    renderPublicNews(1);
-    document.getElementById('news-pagination')?.addEventListener('click', handlePaginationClick);
+  const newsGrid = document.getElementById('news-grid');
+  if (newsGrid) {
+    if (newsGrid.dataset.serverRendered !== 'true') {
+      renderPublicNews(1);
+      document.getElementById('news-pagination')?.addEventListener('click', handlePaginationClick);
+    } else {
+      const showMoreBtn = document.getElementById('news-show-more-btn');
+      const showLessBtn = document.getElementById('news-show-less-btn');
+      const allCards = () => Array.from(newsGrid.querySelectorAll('.content-card.news-card-item'));
+
+      function syncButtons() {
+        const hidden = allCards().filter((c) => c.style.display === 'none');
+        const hasHidden = hidden.length > 0;
+        const hasExtras = allCards().filter((c) => c.style.display !== 'none').length > 4;
+
+        if (showMoreBtn) { showMoreBtn.style.display = hasHidden ? '' : 'none'; }
+        if (showLessBtn) { showLessBtn.style.display = hasExtras ? '' : 'none'; }
+      }
+
+      if (showMoreBtn) {
+        showMoreBtn.addEventListener('click', () => {
+          let revealed = 0;
+          allCards().forEach((card) => {
+            if (card.style.display === 'none' && revealed < 4) {
+              card.style.display = '';
+              card.classList.remove('news-item-hidden');
+              revealed++;
+            }
+          });
+          syncButtons();
+        });
+      }
+
+      if (showLessBtn) {
+        showLessBtn.addEventListener('click', () => {
+          allCards().forEach((card, index) => {
+            if (index >= 4) {
+              card.style.display = 'none';
+              card.classList.add('news-item-hidden');
+            }
+          });
+          syncButtons();
+          // Scroll up to the news section header
+          document.getElementById('news')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
+
+      syncButtons();
+    }
   }
 
   if (document.getElementById('article-root')) {

@@ -133,6 +133,10 @@ function renderPublicNews(page = 1) {
   const paginationEl = document.getElementById('news-pagination');
   if (!newsGrid) return;
 
+  if (newsGrid.dataset.serverRendered === 'true') {
+    return;
+  }
+
   if (typeof getVisiblePostsByType !== 'function') {
     newsGrid.innerHTML = '<div class="news-empty-state">Unable to load news module.</div>';
     return;

@@ -25,6 +25,10 @@ function renderArticle() {
   const root = document.getElementById('article-root');
   if (!root) return;
 
+  if (root.dataset.serverRendered === 'true') {
+    return;
+  }
+
   const slug = getSlugFromUrl();
 
   if (!slug) {

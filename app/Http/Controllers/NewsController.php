@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\News;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -9,11 +10,37 @@ use Illuminate\Http\Request;
 class NewsController extends Controller
 {
     /**
-     * Display the news page.
+     * Display the news article detail page by query parameter or route.
      */
     public function index(Request $request): View
     {
-        return view('news');
+        $slug = $request->query('slug');
+        $id = $request->query('id');
+
+        $news = null;
+        if ($slug) {
+            $news = $this->findNewsBySlugOrId($slug);
+        } elseif ($id) {
+            $news = $this->findNewsBySlugOrId($id);
+        }
+
+        return view('news', [
+            'news' => $news,
+            'slug' => $slug ?? $id,
+        ]);
+    }
+
+    /**
+     * Display the specified news article by route slug.
+     */
+    public function show(Request $request, string $slug): View
+    {
+        $news = $this->findNewsBySlugOrId($slug);
+
+        return view('news', [
+            'news' => $news,
+            'slug' => $slug,
+        ]);
     }
 
     /**
@@ -26,5 +53,39 @@ class NewsController extends Controller
         }
 
         return redirect()->route('news.index');
+    }
+
+    /**
+     * Look up visible news item by slug or numeric ID.
+     */
+    protected function findNewsBySlugOrId(string|int $identifier): ?News
+    {
+        $query = News::query();
+
+        if (is_numeric($identifier)) {
+            $query->where(function ($q) use ($identifier) {
+                $q->where('id', $identifier)
+                    ->orWhere('slug', (string) $identifier);
+            });
+        } else {
+            $query->where('slug', $identifier);
+        }
+
+        /** @var News|null $news */
+        $news = $query->first();
+
+        if (! $news) {
+            return null;
+        }
+
+        if ($news->status === 'published') {
+            return $news;
+        }
+
+        if ($news->status === 'scheduled' && $news->published_at && $news->published_at->isPast()) {
+            return $news;
+        }
+
+        return null;
     }
 }

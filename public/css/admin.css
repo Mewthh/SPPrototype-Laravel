@@ -144,11 +144,13 @@ a {
 .topbar-inner {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
   width: 100%;
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 16px 64px;
+  max-width: 100%;
+  margin: 0;
+  padding: 10px 16px;
+  box-sizing: border-box;
+  justify-content: flex-start;
 }
 
 .menu-toggle {

@@ -4,7 +4,23 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="csrf-token" content="{{ csrf_token() }}" />
 	<title>SPP Admin Dashboard</title>
+
+	<script>
+		(function() {
+			const saved = localStorage.getItem('spp-theme');
+			const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+			const theme = saved || (prefersDark ? 'dark' : 'light');
+			document.documentElement.setAttribute('data-theme', theme);
+			if (theme === 'dark') {
+				document.documentElement.classList.add('dark');
+			} else {
+				document.documentElement.classList.remove('dark');
+			}
+		})();
+	</script>
+
 	@vite(['resources/css/app.css', 'resources/js/app.js'])
 	<script src="{{ asset('admin/app.js') }}" defer></script>
 </head>
@@ -44,9 +60,11 @@
 					<span aria-hidden="true">&#x2302;</span>
 					<span>Go to User Side</span>
 				</a>
-				<button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark mode">
+				<button class="ghost-button theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme mode">
 					<span class="theme-icon theme-icon-moon" aria-hidden="true">&#x263E;</span>
 					<span class="theme-icon theme-icon-sun" aria-hidden="true">&#x2600;</span>
+					<span class="theme-toggle-text theme-label-dark">Dark Mode</span>
+					<span class="theme-toggle-text theme-label-light">Light Mode</span>
 				</button>
 			</div>
 		</aside>
@@ -166,7 +184,10 @@
 
 						<div class="queue-pagination" data-news-pagination style="display: none;">
 							<span class="pagination-info" data-news-pagination-info>Showing 3 of 8 posts</span>
-							<button type="button" class="button button-secondary" data-news-load-more>View More Posts</button>
+							<div class="queue-pagination-actions" style="display: flex; gap: 10px; align-items: center;">
+								<button type="button" class="button button-secondary" data-news-load-more>Show More</button>
+								<button type="button" class="button button-secondary" data-news-show-less style="display: none;">Show Less</button>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -291,7 +312,10 @@
 
 						<div class="queue-pagination" data-activity-pagination style="display: none;">
 							<span class="pagination-info" data-activity-pagination-info>Showing 3 of 8 posts</span>
-							<button type="button" class="button button-secondary" data-activity-load-more>View More Posts</button>
+							<div class="queue-pagination-actions" style="display: flex; gap: 10px; align-items: center;">
+								<button type="button" class="button button-secondary" data-activity-load-more>Show More</button>
+								<button type="button" class="button button-secondary" data-activity-show-less style="display: none;">Show Less</button>
+							</div>
 						</div>
 					</div>
 				</div>
