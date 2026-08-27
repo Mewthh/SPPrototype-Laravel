@@ -15,11 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('slug')->unique();
+            $table->text('summary')->nullable();
             $table->text('description');
             $table->string('image', 500)->nullable();
             $table->date('event_date')->nullable();
             $table->string('location')->nullable();
-            $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
+            $table->string('status', 30)->default('draft');
+            $table->boolean('is_featured')->default(false);
             $table->timestamps();
         });
     }

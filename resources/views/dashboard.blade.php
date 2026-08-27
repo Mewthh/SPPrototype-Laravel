@@ -320,11 +320,6 @@
 							</div>
 						</div>
 
-						<label class="field-row field-row-inline">
-							<span>Featured on homepage</span>
-							<input type="checkbox" name="featureOnHomepage" />
-						</label>
-
 						<div class="form-actions">
 							<button type="submit" class="button button-primary" data-activity-submit-primary>Save & Publish</button>
 							<button type="submit" class="button button-secondary" data-status-override="scheduled" data-activity-submit-secondary>Save as Scheduled</button>

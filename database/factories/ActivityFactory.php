@@ -23,11 +23,13 @@ class ActivityFactory extends Factory
         return [
             'title' => $title,
             'slug' => Str::slug($title).'-'.fake()->unique()->randomNumber(4),
+            'summary' => fake()->sentence(10),
             'description' => fake()->paragraphs(2, true),
-            'image' => fake()->imageUrl(),
+            'image' => null,
             'event_date' => fake()->date(),
             'location' => fake()->city(),
             'status' => 'published',
+            'is_featured' => false,
         ];
     }
 }

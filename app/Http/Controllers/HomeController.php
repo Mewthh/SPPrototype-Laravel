@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Activity;
 use App\Models\News;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
@@ -25,8 +26,15 @@ class HomeController extends Controller
             ->orderByRaw('COALESCE(published_at, created_at) DESC')
             ->get();
 
+        $activities = Activity::query()
+            ->whereIn('status', ['published', 'scheduled'])
+            ->orderBy('event_date', 'asc')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return view('welcome', [
             'news' => $news,
+            'activities' => $activities,
         ]);
     }
 }

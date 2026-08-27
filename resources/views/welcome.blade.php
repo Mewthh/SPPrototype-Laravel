@@ -67,17 +67,39 @@
     <section class="section shell" id="activities">
         <div class="section-header">
             <div>
-                <p class="eyebrow">Activities</p>
-                <h2>title</h2>
-                <p>sample text.</p>
+                <h2>Activities</h2>
             </div>
         </div>
 
-        <div class="card-grid activity-grid">
-            <x-activity-card />
-            <x-activity-card />
-            <x-activity-card />
-            <x-activity-card />
+        <div id="activity-listing-wrapper">
+            @if(isset($activities) && $activities->count() > 0)
+                <div id="activity-grid" class="card-grid activity-grid" data-server-rendered="true">
+                    @foreach($activities as $index => $activity)
+                        <x-activity-card
+                            :activity="$activity"
+                            chip="Activities"
+                            :hidden="$index >= 4"
+                        />
+                    @endforeach
+                </div>
+
+                @if($activities->count() > 4)
+                    <div class="news-more-wrap" style="display: flex; justify-content: center; gap: 12px; margin-top: 36px;">
+                        <button type="button" class="button button-secondary" id="activity-show-more-btn">
+                            Show More
+                        </button>
+                        <button type="button" class="button button-secondary" id="activity-show-less-btn" style="display: none;">
+                            Show Less
+                        </button>
+                    </div>
+                @endif
+            @else
+                <div id="activity-grid" class="card-grid activity-grid">
+                    <div class="news-empty-state">
+                        <p>No activities or events at this time.</p>
+                    </div>
+                </div>
+            @endif
         </div>
     </section>
 </x-layouts.public>

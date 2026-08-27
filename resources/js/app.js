@@ -455,6 +455,51 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  const activityGrid = document.getElementById('activity-grid');
+  if (activityGrid) {
+    const showMoreBtn = document.getElementById('activity-show-more-btn');
+    const showLessBtn = document.getElementById('activity-show-less-btn');
+    const allCards = () => Array.from(activityGrid.querySelectorAll('.content-card.activity-card-item'));
+
+    function syncActivityButtons() {
+      const hidden = allCards().filter((c) => c.style.display === 'none');
+      const hasHidden = hidden.length > 0;
+      const hasExtras = allCards().filter((c) => c.style.display !== 'none').length > 4;
+
+      if (showMoreBtn) { showMoreBtn.style.display = hasHidden ? '' : 'none'; }
+      if (showLessBtn) { showLessBtn.style.display = hasExtras ? '' : 'none'; }
+    }
+
+    if (showMoreBtn) {
+      showMoreBtn.addEventListener('click', () => {
+        let revealed = 0;
+        allCards().forEach((card) => {
+          if (card.style.display === 'none' && revealed < 4) {
+            card.style.display = '';
+            card.classList.remove('activity-item-hidden');
+            revealed++;
+          }
+        });
+        syncActivityButtons();
+      });
+    }
+
+    if (showLessBtn) {
+      showLessBtn.addEventListener('click', () => {
+        allCards().forEach((card, index) => {
+          if (index >= 4) {
+            card.style.display = 'none';
+            card.classList.add('activity-item-hidden');
+          }
+        });
+        syncActivityButtons();
+        document.getElementById('activities')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+
+    syncActivityButtons();
+  }
+
   if (document.getElementById('article-root')) {
     renderArticle();
   }

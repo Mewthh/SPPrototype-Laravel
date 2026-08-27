@@ -262,6 +262,38 @@ async function fetchNewsFromDatabase() {
   }
 }
 
+async function fetchActivitiesFromDatabase() {
+  try {
+    const res = await fetch('/admin/api/activities');
+    if (!res.ok) throw new Error('Failed to load activities');
+    const result = await res.json();
+    if (result && Array.isArray(result.data)) {
+      const dbActivities = result.data.map((item) => ({
+        id: item.id,
+        type: 'event',
+        section: 'Activities',
+        title: item.title,
+        slug: item.slug,
+        summary: item.summary || '',
+        publishDate: item.event_date ? item.event_date.slice(0, 10) : (item.created_at ? item.created_at.slice(0, 10) : ''),
+        body: item.description || '',
+        location: item.location || '',
+        status: item.status || 'draft',
+        coverImage: item.image || null,
+        featured: item.is_featured || false,
+      }));
+
+      state.posts = [
+        ...state.posts.filter((p) => p.type !== 'event'),
+        ...dbActivities,
+      ];
+      renderAll();
+    }
+  } catch (err) {
+    console.error('Error fetching activities from database:', err);
+  }
+}
+
 function setTheme(theme) {
   const nextTheme = theme === 'dark' ? 'dark' : 'light';
   document.documentElement.setAttribute('data-theme', nextTheme);
@@ -1165,7 +1197,7 @@ async function handleNewsAction(event) {
 }
 
 function startEditingActivity(postId) {
-  const post = state.posts.find((p) => p.id === postId);
+  const post = state.posts.find((p) => String(p.id) === String(postId));
   if (!post || !activityForm) return;
 
   state.editingActivityId = post.id;
@@ -1198,7 +1230,7 @@ function cancelEditingActivity() {
   renderActivityQueue();
 }
 
-function handleActivitySubmit(event) {
+async function handleActivitySubmit(event) {
   event.preventDefault();
   if (!activityForm) return;
 
@@ -1208,40 +1240,48 @@ function handleActivitySubmit(event) {
   if (!title) return;
 
   const chosenStatus = overrideStatus || String(data.get('status') || 'scheduled');
+  data.set('status', chosenStatus);
 
-  const postData = {
-    type: 'event',
-    section: 'Activities',
-    title,
-    summary: String(data.get('summary') || '').trim(),
-    publishDate: String(data.get('publishDate') || ''),
-    status: chosenStatus,
-    body: String(data.get('body') || '').trim(),
-    coverImage: imageState.activity || null,
-  };
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-  if (state.editingActivityId) {
-    const idx = state.posts.findIndex((p) => p.id === state.editingActivityId);
-    if (idx >= 0) {
-      state.posts[idx] = { ...state.posts[idx], ...postData };
-    }
-    state.editingActivityId = null;
-  } else {
-    const newPost = {
-      id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `post-${Date.now()}`,
-      ...postData,
-    };
-    state.posts = [newPost, ...state.posts];
+  if (imageState.activity && !data.get('coverImage')?.name) {
+    data.set('coverImage', imageState.activity);
   }
 
-  savePosts();
-  activityForm.reset();
-  document.querySelector('[data-upload-zone="activity"]')?._clearImage?.();
-  renderAll();
-  setActivityView('posts');
+  try {
+    let url = '/admin/api/activities';
+    if (state.editingActivityId) {
+      url = `/admin/api/activities/${state.editingActivityId}`;
+      data.append('_method', 'PUT');
+    }
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'X-CSRF-TOKEN': csrfToken || '',
+        'Accept': 'application/json',
+      },
+      body: data,
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      alert(err.message || 'Failed to save activity.');
+      return;
+    }
+
+    state.editingActivityId = null;
+    activityForm.reset();
+    document.querySelector('[data-upload-zone="activity"]')?._clearImage?.();
+    await fetchActivitiesFromDatabase();
+    setActivityView('posts');
+  } catch (err) {
+    console.error('Error saving activity:', err);
+    alert('An error occurred while saving the activity.');
+  }
 }
 
-function handleActivityAction(event) {
+async function handleActivityAction(event) {
   const target = event.target.closest('[data-activity-action]');
   if (!target) return;
 
@@ -1256,22 +1296,55 @@ function handleActivityAction(event) {
     return;
   }
 
-  const idx = state.posts.findIndex((p) => p.id === postId);
-  if (idx < 0) return;
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
   if (action === 'delete') {
-    if (state.editingActivityId === postId) state.editingActivityId = null;
-    state.posts.splice(idx, 1);
-  } else if (action === 'publish') {
-    state.posts[idx].status = 'published';
-  } else if (action === 'archive') {
-    state.posts[idx].status = 'archived';
-  } else if (action === 'draft') {
-    state.posts[idx].status = 'draft';
+    if (!confirm('Are you sure you want to delete this activity?')) return;
+    try {
+      const res = await fetch(`/admin/api/activities/${postId}`, {
+        method: 'DELETE',
+        headers: {
+          'X-CSRF-TOKEN': csrfToken || '',
+          'Accept': 'application/json',
+        },
+      });
+
+      if (res.ok) {
+        if (state.editingActivityId == postId) state.editingActivityId = null;
+        await fetchActivitiesFromDatabase();
+      } else {
+        alert('Failed to delete activity.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error deleting activity.');
+    }
+    return;
   }
 
-  savePosts();
-  renderAll();
+  if (action === 'publish' || action === 'archive' || action === 'draft') {
+    const nextStatus = action === 'publish' ? 'published' : (action === 'archive' ? 'archived' : 'draft');
+    try {
+      const res = await fetch(`/admin/api/activities/${postId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'X-CSRF-TOKEN': csrfToken || '',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ status: nextStatus }),
+      });
+
+      if (res.ok) {
+        await fetchActivitiesFromDatabase();
+      } else {
+        alert('Failed to update activity status.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error updating status.');
+    }
+  }
 }
 
 function bindEvents() {
@@ -1404,6 +1477,7 @@ bindEvents();
 setupRichEditorToolbars();
 updateActiveNavLink();
 fetchNewsFromDatabase();
+fetchActivitiesFromDatabase();
 checkNewsDraft(null);
 
 setupImageUpload('news');
