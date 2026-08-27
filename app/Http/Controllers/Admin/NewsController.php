@@ -67,7 +67,7 @@ class NewsController extends Controller
         if ($rawDate) {
             $publishedAt = Carbon::parse($rawDate);
         } elseif ($status === 'published') {
-            $publishedAt = now();
+            $publishedAt = Carbon::now();
         }
 
         $imagePath = $this->handleImageUpload($request);
@@ -138,7 +138,7 @@ class NewsController extends Controller
         if ($rawDate) {
             $news->published_at = Carbon::parse($rawDate);
         } elseif ($news->status === 'published' && ! $news->published_at) {
-            $news->published_at = now();
+            $news->published_at = Carbon::now();
         }
 
         if (! empty($validated['removeImage'])) {
@@ -181,7 +181,7 @@ class NewsController extends Controller
 
         $news->status = $validated['status'];
         if ($news->status === 'published' && ! $news->published_at) {
-            $news->published_at = now();
+            $news->published_at = Carbon::now();
         }
         $news->save();
 
@@ -239,7 +239,7 @@ class NewsController extends Controller
                 $data = substr($imageString, strpos($imageString, ',') + 1);
                 $type = strtolower($type[1]);
                 if (in_array($type, ['jpg', 'jpeg', 'gif', 'png', 'webp'])) {
-                    $data = base64_decode($data);
+                    $data = base64_decode($data, true);
                     if ($data !== false) {
                         $fileName = 'news/'.Str::random(40).'.'.$type;
                         Storage::disk('public')->put($fileName, $data);

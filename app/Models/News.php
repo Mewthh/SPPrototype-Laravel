@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\CarbonInterface;
 use Database\Factories\NewsFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -16,9 +16,9 @@ use Illuminate\Support\Carbon;
  * @property string|null $excerpt
  * @property string|null $image
  * @property string $status
- * @property Carbon|null $published_at
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property CarbonInterface|null $published_at
+ * @property CarbonInterface|null $created_at
+ * @property CarbonInterface|null $updated_at
  */
 #[Fillable(['title', 'slug', 'content', 'excerpt', 'image', 'status', 'published_at'])]
 class News extends Model
