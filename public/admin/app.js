@@ -41,13 +41,29 @@ const activitySubmitSecondary = document.querySelector('[data-activity-submit-se
 const newsCountBadges = document.querySelectorAll('[data-news-count-badge]');
 const activityCountBadges = document.querySelectorAll('[data-activity-count-badge]');
 
+const conferenceForm = document.querySelector('[data-conference-form]');
+const conferenceViews = {
+  editor: document.querySelector('[data-conference-view="editor"]'),
+  list: document.querySelector('[data-conference-view="list"]'),
+};
+const conferenceList = document.querySelector('[data-conference-list]');
+const conferencePortalPills = document.querySelector('[data-conference-portal-pills]');
+const conferenceBanner = document.querySelector('[data-conference-banner]');
+const conferenceBannerText = document.querySelector('[data-conference-banner-text]');
+const conferenceCancelEdit = document.querySelector('[data-conference-cancel-edit]');
+const conferenceSubmitPrimary = document.querySelector('[data-conference-submit-primary]');
+const conferenceSubmitSecondary = document.querySelector('[data-conference-submit-secondary]');
+const conferenceCountBadges = document.querySelectorAll('[data-conference-count-badge]');
+
 const localStorageKey = 'spp-admin-posts-v3';
+const conferenceStorageKey = 'spp-admin-conferences-v1';
 const themeKey = 'spp-theme';
 const PAGE_SIZE = 3;
 
 const imageState = {
   news: null,
   activity: null,
+  conference: null,
 };
 
 const defaultPosts = [
@@ -207,14 +223,68 @@ const defaultPosts = [
   },
 ];
 
+const defaultConferences = [
+  {
+    id: 'conf-2024',
+    year: '2024',
+    title: '42nd SPP Physics Conference (SPP 2024)',
+    theme: 'Physics without Borders: Igniting Innovation and Transforming Communities',
+    location: 'Bohol Tropics Resort, Tagbilaran City, Bohol',
+    dates: 'October 18–21, 2024',
+    status: 'archived',
+    summary: 'The 42nd National Physics Conference featured research breakthroughs in condensed matter, photonics, and physics education.',
+    body: '## 42nd SPP Physics Conference Overview\n\nThe 42nd SPP Physics Conference was held in Bohol, bringing together physicists, researchers, and students from across the Philippines and international institutions.',
+    coverImage: null,
+  },
+  {
+    id: 'conf-2025',
+    year: '2025',
+    title: '43rd SPP Physics Conference (SPP 2025)',
+    theme: 'Advancing Frontiers in Physics for Sustainable Development',
+    location: 'Baguio Convention Center, Baguio City, Benguet',
+    dates: 'October 16–19, 2025',
+    status: 'published',
+    summary: 'The 43rd National Physics Conference showcased cutting-edge quantum optics, materials science, and computational physics.',
+    body: '## 43rd SPP Physics Conference Overview\n\nThe 43rd SPP Physics Conference convened in the summer capital, featuring plenary sessions, poster presentations, and specialized workshops.',
+    coverImage: null,
+  },
+  {
+    id: 'conf-2026',
+    year: '2026',
+    title: '44th SPP Physics Conference (SPP 2026)',
+    theme: 'Frontiers in Physics, Quantum Information, and AI-Driven Sciences',
+    location: 'Ateneo de Manila University, Quezon City, Metro Manila',
+    dates: 'October 15–18, 2026',
+    status: 'published',
+    summary: 'The 44th SPP National Physics Conference is our flagship annual gathering of leading physicists, researchers, educators, and innovators.',
+    body: '## Welcome to SPP 2026\n\nJoin the Samahang Pisika ng Pilipinas for the 44th SPP Physics Conference. Featuring international keynote speakers, parallel scientific sessions, and interactive panel discussions.',
+    coverImage: null,
+  },
+  {
+    id: 'conf-2027',
+    year: '2027',
+    title: '45th SPP Physics Conference (SPP 2027)',
+    theme: 'Next-Generation Physics: Empowering Emerging Technologies',
+    location: 'Cebu City, Philippines',
+    dates: 'October 2027',
+    status: 'draft',
+    summary: 'Planning and preparations for the 45th National Physics Conference.',
+    body: '## 45th SPP Physics Conference Planning\n\nCall for papers, workshop proposals, and registration timelines will be announced soon.',
+    coverImage: null,
+  },
+];
+
 const state = {
   posts: loadPosts(),
+  conferences: loadConferences(),
   newsFilter: 'all',
   activityFilter: 'all',
+  conferenceFilter: 'all',
   newsVisibleCount: PAGE_SIZE,
   activityVisibleCount: PAGE_SIZE,
   editingNewsId: null,
   editingActivityId: null,
+  editingConferenceId: null,
 };
 
 function loadPosts() {
@@ -232,6 +302,21 @@ function loadPosts() {
 
 function savePosts() {
   localStorage.setItem(localStorageKey, JSON.stringify(state.posts));
+}
+
+function loadConferences() {
+  try {
+    const stored = localStorage.getItem(conferenceStorageKey);
+    if (!stored) return defaultConferences.slice();
+    const parsed = JSON.parse(stored);
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : defaultConferences.slice();
+  } catch (error) {
+    return defaultConferences.slice();
+  }
+}
+
+function saveConferences() {
+  localStorage.setItem(conferenceStorageKey, JSON.stringify(state.conferences));
 }
 
 async function fetchNewsFromDatabase() {
@@ -592,8 +677,10 @@ function renderAll() {
   renderMetrics();
   renderNewsQueue();
   renderActivityQueue();
+  renderConferences();
   updateNewsEditorUI();
   updateActivityEditorUI();
+  updateConferenceEditorUI();
 }
 
 function setupImageUpload(key) {
@@ -1347,6 +1434,228 @@ async function handleActivityAction(event) {
   }
 }
 
+function setConferenceView(view) {
+  if (conferenceViews.editor && conferenceViews.list) {
+    conferenceViews.editor.classList.toggle('is-hidden', view !== 'editor');
+    conferenceViews.list.classList.toggle('is-hidden', view !== 'list');
+  }
+}
+
+function updateConferenceEditorUI() {
+  if (!conferenceBanner || !conferenceBannerText) return;
+  if (state.editingConferenceId) {
+    const conf = state.conferences.find((c) => String(c.id) === String(state.editingConferenceId));
+    conferenceBanner.classList.add('is-editing');
+    conferenceBannerText.textContent = conf ? `Editing: "${conf.title}"` : 'Editing Conference';
+    if (conferenceCancelEdit) conferenceCancelEdit.style.display = 'inline-flex';
+    if (conferenceSubmitPrimary) conferenceSubmitPrimary.textContent = 'Update Conference';
+    if (conferenceSubmitSecondary) conferenceSubmitSecondary.textContent = 'Save as Draft';
+  } else {
+    conferenceBanner.classList.remove('is-editing');
+    conferenceBannerText.textContent = 'Create New Conference';
+    if (conferenceCancelEdit) conferenceCancelEdit.style.display = 'none';
+    if (conferenceSubmitPrimary) conferenceSubmitPrimary.textContent = 'Save & Publish';
+    if (conferenceSubmitSecondary) conferenceSubmitSecondary.textContent = 'Save as Draft';
+  }
+}
+
+function renderConferences() {
+  if (!conferenceList) return;
+
+  const allConfs = state.conferences || [];
+  const confCount = allConfs.length;
+  conferenceCountBadges.forEach((b) => (b.textContent = String(confCount)));
+
+  const pubCount = allConfs.filter((c) => c.status === 'published').length;
+  const draftCount = allConfs.filter((c) => c.status === 'draft').length;
+  const archCount = allConfs.filter((c) => c.status === 'archived').length;
+
+  const elAll = document.querySelector('[data-conference-filter-all-count]');
+  const elPub = document.querySelector('[data-conference-filter-published-count]');
+  const elDraft = document.querySelector('[data-conference-filter-draft-count]');
+  const elArch = document.querySelector('[data-conference-filter-archived-count]');
+
+  if (elAll) elAll.textContent = String(confCount);
+  if (elPub) elPub.textContent = String(pubCount);
+  if (elDraft) elDraft.textContent = String(draftCount);
+  if (elArch) elArch.textContent = String(archCount);
+
+  // Render Portal Pills
+  if (conferencePortalPills) {
+    const sorted = allConfs
+      .filter((c) => c.year)
+      .slice()
+      .sort((a, b) => parseInt(a.year, 10) - parseInt(b.year, 10));
+
+    conferencePortalPills.innerHTML = sorted
+      .map((c) => {
+        const isCurrent = c.year === '2026' || c.status === 'published';
+        return `<a href="/spp?year=${encodeURIComponent(c.year)}" class="conference-year-btn ${isCurrent ? 'active' : ''}" target="_blank">SPP ${escapeHtml(c.year)} &#x2197;</a>`;
+      })
+      .join('');
+  }
+
+  // Filter conferences
+  const filtered = state.conferenceFilter === 'all'
+    ? allConfs
+    : allConfs.filter((c) => c.status === state.conferenceFilter);
+
+  if (!filtered.length) {
+    conferenceList.innerHTML = '<div class="conference-empty-state"><p>No conferences found matching this filter.</p></div>';
+    return;
+  }
+
+  conferenceList.innerHTML = filtered
+    .map((conf) => {
+      const statusClass = conf.status === 'published' ? 'published' : (conf.status === 'draft' ? 'draft' : 'archived');
+      const statusText = conf.status === 'published' ? 'Published' : (conf.status === 'draft' ? 'Draft' : 'Archived');
+      let quickAction = '';
+      if (conf.status === 'published') {
+        quickAction = '<button type="button" class="item-action" data-conference-action="archive">Archive</button>';
+      } else if (conf.status === 'archived') {
+        quickAction = '<button type="button" class="item-action" data-conference-action="publish">Restore</button>';
+      } else {
+        quickAction = '<button type="button" class="item-action primary" data-conference-action="publish">Publish</button>';
+      }
+
+      return `
+        <article class="conference-card" data-conference-id="${escapeHtml(conf.id)}">
+          <div class="conference-card-head">
+            <h3>${escapeHtml(conf.title || `SPP ${conf.year}`)}</h3>
+            <span class="conference-badge ${statusClass}">${statusText}</span>
+          </div>
+          ${conf.theme ? `<div class="conference-theme-line">&ldquo;${escapeHtml(conf.theme)}&rdquo;</div>` : ''}
+          <div class="conference-card-meta">
+            ${conf.location ? `<span><strong>Location:</strong> ${escapeHtml(conf.location)}</span>` : ''}
+            ${conf.dates ? `<span><strong>Dates:</strong> ${escapeHtml(conf.dates)}</span>` : ''}
+            ${conf.year ? `<span><strong>Year:</strong> ${escapeHtml(conf.year)}</span>` : ''}
+          </div>
+          ${conf.summary ? `<p class="conference-card-summary">${escapeHtml(conf.summary)}</p>` : ''}
+          <div class="conference-card-actions">
+            ${conf.year ? `<a href="/spp?year=${encodeURIComponent(conf.year)}" class="button button-secondary" target="_blank">View Portal &#x2197;</a>` : ''}
+            <button type="button" class="item-action primary" data-conference-action="edit">Edit Details</button>
+            ${quickAction}
+            <button type="button" class="item-action danger" data-conference-action="delete">Delete</button>
+          </div>
+        </article>
+      `;
+    })
+    .join('');
+}
+
+function startEditingConference(confId) {
+  const conf = state.conferences.find((c) => String(c.id) === String(confId));
+  if (!conf || !conferenceForm) return;
+
+  state.editingConferenceId = conf.id;
+  if (conferenceForm.elements.status) conferenceForm.elements.status.value = conf.status || 'published';
+  if (conferenceForm.elements.year) conferenceForm.elements.year.value = conf.year || '';
+  if (conferenceForm.elements.title) conferenceForm.elements.title.value = conf.title || '';
+  if (conferenceForm.elements.theme) conferenceForm.elements.theme.value = conf.theme || '';
+  if (conferenceForm.elements.location) conferenceForm.elements.location.value = conf.location || '';
+  if (conferenceForm.elements.dates) conferenceForm.elements.dates.value = conf.dates || '';
+  if (conferenceForm.elements.summary) conferenceForm.elements.summary.value = conf.summary || '';
+  if (conferenceForm.elements.body) conferenceForm.elements.body.value = conf.body || '';
+
+  const confZone = document.querySelector('[data-upload-zone="conference"]');
+  if (conf.coverImage && confZone?._applyImage) {
+    confZone._applyImage(conf.coverImage, 'Current banner image');
+  } else {
+    confZone?._clearImage?.();
+  }
+
+  setConferenceView('editor');
+  updateConferenceEditorUI();
+  document.querySelector('#conferences-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function cancelEditingConference() {
+  state.editingConferenceId = null;
+  conferenceForm?.reset();
+  document.querySelector('[data-upload-zone="conference"]')?._clearImage?.();
+  updateConferenceEditorUI();
+  setConferenceView('list');
+}
+
+function handleConferenceSubmit(event) {
+  event.preventDefault();
+  if (!conferenceForm) return;
+
+  const overrideStatus = event.submitter?.dataset.statusOverride;
+  const data = new FormData(conferenceForm);
+  const title = String(data.get('title') || '').trim();
+  const year = String(data.get('year') || '').trim();
+  if (!title) return;
+
+  const chosenStatus = overrideStatus || String(data.get('status') || 'published');
+
+  const confData = {
+    year: year,
+    title: title,
+    theme: String(data.get('theme') || '').trim(),
+    location: String(data.get('location') || '').trim(),
+    dates: String(data.get('dates') || '').trim(),
+    summary: String(data.get('summary') || '').trim(),
+    body: String(data.get('body') || '').trim(),
+    status: chosenStatus,
+    coverImage: imageState.conference || null,
+  };
+
+  if (state.editingConferenceId) {
+    const idx = state.conferences.findIndex((c) => String(c.id) === String(state.editingConferenceId));
+    if (idx >= 0) {
+      state.conferences[idx] = { ...state.conferences[idx], ...confData };
+    }
+    state.editingConferenceId = null;
+  } else {
+    const newConf = {
+      id: `conf-${Date.now()}`,
+      ...confData,
+    };
+    state.conferences = [newConf, ...state.conferences];
+  }
+
+  saveConferences();
+  conferenceForm.reset();
+  document.querySelector('[data-upload-zone="conference"]')?._clearImage?.();
+  renderConferences();
+  setConferenceView('list');
+}
+
+function handleConferenceAction(event) {
+  const target = event.target.closest('[data-conference-action]');
+  if (!target) return;
+
+  const card = target.closest('[data-conference-id]');
+  if (!card) return;
+
+  const confId = card.dataset.conferenceId;
+  const action = target.dataset.conferenceAction;
+
+  if (action === 'edit') {
+    startEditingConference(confId);
+    return;
+  }
+
+  const idx = state.conferences.findIndex((c) => String(c.id) === String(confId));
+  if (idx < 0) return;
+
+  if (action === 'delete') {
+    if (!confirm('Are you sure you want to delete this conference entry?')) return;
+    if (String(state.editingConferenceId) === String(confId)) state.editingConferenceId = null;
+    state.conferences.splice(idx, 1);
+  } else if (action === 'publish') {
+    state.conferences[idx].status = 'published';
+  } else if (action === 'archive') {
+    state.conferences[idx].status = 'archived';
+  } else if (action === 'draft') {
+    state.conferences[idx].status = 'draft';
+  }
+
+  saveConferences();
+  renderConferences();
+}
+
 function bindEvents() {
   document.querySelector('[data-show-news-posts]')?.addEventListener('click', () => setNewsView('posts'));
   document.querySelector('[data-show-news-editor]')?.addEventListener('click', () => {
@@ -1358,6 +1667,12 @@ function bindEvents() {
   document.querySelector('[data-show-activity-editor]')?.addEventListener('click', () => {
     cancelEditingActivity();
     setActivityView('editor');
+  });
+
+  document.querySelector('[data-show-conference-list]')?.addEventListener('click', () => setConferenceView('list'));
+  document.querySelector('[data-show-conference-editor]')?.addEventListener('click', () => {
+    cancelEditingConference();
+    setConferenceView('editor');
   });
 
   newsLoadMoreBtn?.addEventListener('click', () => {
@@ -1407,6 +1722,14 @@ function bindEvents() {
   activityCancelEdit?.addEventListener('click', cancelEditingActivity);
   activityList?.addEventListener('click', handleActivityAction);
 
+  conferenceForm?.addEventListener('submit', handleConferenceSubmit);
+  conferenceForm?.addEventListener('reset', () => {
+    state.editingConferenceId = null;
+    window.setTimeout(updateConferenceEditorUI, 0);
+  });
+  conferenceCancelEdit?.addEventListener('click', cancelEditingConference);
+  conferenceList?.addEventListener('click', handleConferenceAction);
+
   document.querySelectorAll('[data-news-filter]').forEach((btn) => {
     btn.addEventListener('click', () => {
       state.newsFilter = btn.dataset.newsFilter;
@@ -1422,6 +1745,14 @@ function bindEvents() {
       state.activityVisibleCount = PAGE_SIZE;
       document.querySelectorAll('[data-activity-filter]').forEach((b) => b.classList.toggle('active', b === btn));
       renderActivityQueue();
+    });
+  });
+
+  document.querySelectorAll('[data-conference-filter]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.conferenceFilter = btn.dataset.conferenceFilter;
+      document.querySelectorAll('[data-conference-filter]').forEach((b) => b.classList.toggle('active', b === btn));
+      renderConferences();
     });
   });
 }
@@ -1482,6 +1813,7 @@ checkNewsDraft(null);
 
 setupImageUpload('news');
 setupImageUpload('activity');
+setupImageUpload('conference');
 
 newsForm?.addEventListener('reset', () => {
   window.setTimeout(() => {
@@ -1491,5 +1823,10 @@ newsForm?.addEventListener('reset', () => {
 activityForm?.addEventListener('reset', () => {
   window.setTimeout(() => {
     document.querySelector('[data-upload-zone="activity"]')?._clearImage?.();
+  }, 0);
+});
+conferenceForm?.addEventListener('reset', () => {
+  window.setTimeout(() => {
+    document.querySelector('[data-upload-zone="conference"]')?._clearImage?.();
   }, 0);
 });

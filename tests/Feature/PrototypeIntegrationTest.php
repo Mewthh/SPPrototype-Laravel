@@ -11,12 +11,10 @@ test('home page can be rendered via / and index.html', function (string $url) {
         ->assertSee('Activities');
 })->with(['/', '/index.html']);
 
-test('news page can be rendered via /news and news.html', function (string $url) {
+test('news page redirects to home #news when no slug is given', function (string $url) {
     $response = $this->get($url);
 
-    $response->assertOk()
-        ->assertSee('News | Samahang Pisika ng Pilipinas')
-        ->assertSee('article-root');
+    $response->assertRedirect(route('home').'#news');
 })->with(['/news', '/news.html']);
 
 test('spp conference page can be rendered via /spp and spp.html', function (string $url) {
