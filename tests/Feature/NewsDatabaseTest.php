@@ -175,3 +175,83 @@ test('public news page displays article not found for drafts or missing articles
     $responseMissing->assertOk()
         ->assertSee('Article Not Found');
 });
+
+test('accessing news index without slug redirects to home news section', function () {
+    $response = $this->get(route('news.index'));
+
+    $response->assertRedirect(route('home').'#news');
+});
+
+test('public news page correctly renders all rich markdown markups', function () {
+    $markdownContent = <<<'MD'
+# Main Headline
+## Section Subtitle
+
+Here is a paragraph with **bold text**, *italic text*, <u>underlined tag text</u>, ++underlined plus text++, ==highlighted text==, H~2~O subscript, and E=mc^2^ superscript, plus `inline code`.
+
+> This is a blockquote callout.
+
+- Unordered item 1
+- Unordered item 2
+
+1. Ordered item 1
+2. Ordered item 2
+
+---
+
+[SPP Website](https://spp-online.org)
+![Sample Diagram](https://example.com/diagram.png)
+
+| Header 1 | Header 2 |
+| --- | --- |
+| Cell 1 | Cell 2 |
+
+Here is a reference to a footnote[^1].
+
+```
+function testPhysics() {
+    return 'quantum';
+}
+```
+
+[^1]: This is the footnote explanation.
+MD;
+
+    $news = News::factory()->create([
+        'title' => 'Rich Markdown **Showcase** <u>Underlined</u> ==Special==',
+        'slug' => 'rich-markdown-showcase',
+        'content' => $markdownContent,
+        'status' => 'published',
+        'published_at' => now()->subDay(),
+    ]);
+
+    $response = $this->get(route('news.show', ['slug' => $news->slug]));
+
+    $response->assertOk()
+        // Title inline markdown
+        ->assertSee('<strong>Showcase</strong>', false)
+        ->assertSee('<u>Underlined</u>', false)
+        ->assertSee('<mark>Special</mark>', false)
+        // Body markdown elements
+        ->assertSee('<h1>Main Headline</h1>', false)
+        ->assertSee('<h2>Section Subtitle</h2>', false)
+        ->assertSee('<strong>bold text</strong>', false)
+        ->assertSee('<em>italic text</em>', false)
+        ->assertSee('<u>underlined tag text</u>', false)
+        ->assertSee('<u>underlined plus text</u>', false)
+        ->assertSee('<mark>highlighted text</mark>', false)
+        ->assertSee('<sub>2</sub>', false)
+        ->assertSee('<sup>2</sup>', false)
+        ->assertSee('<code>inline code</code>', false)
+        ->assertSee('<blockquote>', false)
+        ->assertSee('<li>Unordered item 1</li>', false)
+        ->assertSee('<li>Ordered item 1</li>', false)
+        ->assertSee('<hr', false)
+        ->assertSee('<a href="https://spp-online.org"', false)
+        ->assertSee('<img src="https://example.com/diagram.png"', false)
+        ->assertSee('<table>', false)
+        ->assertSee('<th>Header 1</th>', false)
+        ->assertSee('<td>Cell 1</td>', false)
+        ->assertSee('<pre><code>', false)
+        ->assertSee('footnote', false);
+});

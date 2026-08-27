@@ -12,17 +12,16 @@ class NewsController extends Controller
     /**
      * Display the news article detail page by query parameter or route.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         $slug = $request->query('slug');
         $id = $request->query('id');
 
-        $news = null;
-        if ($slug) {
-            $news = $this->findNewsBySlugOrId($slug);
-        } elseif ($id) {
-            $news = $this->findNewsBySlugOrId($id);
+        if (! $slug && ! $id) {
+            return redirect()->to(route('home').'#news');
         }
+
+        $news = $this->findNewsBySlugOrId($slug ?? $id);
 
         return view('news', [
             'news' => $news,

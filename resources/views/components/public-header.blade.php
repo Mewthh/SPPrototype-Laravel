@@ -10,8 +10,7 @@
 
         <div class="header-nav-group">
             <nav class="desktop-nav" aria-label="Primary navigation">
-                <a href="{{ route('news.index') }}"
-                    class="{{ request()->routeIs('news.index') ? 'active' : '' }}">News</a>
+                <a href="{{ route('home') }}#news">News</a>
                 <a href="{{ route('home') }}#activities">Activities</a>
                 <div class="nav-dropdown">
                     <a href="#resources" class="nav-dropdown-toggle">Resources <span
@@ -62,7 +61,7 @@
                     <span class="mobile-nav-label">Menu</span>
                 </summary>
                 <nav class="mobile-nav-panel" aria-label="Mobile navigation">
-                    <a href="{{ route('news.index') }}">News</a>
+                    <a href="{{ route('home') }}#news">News</a>
                     <a href="{{ route('home') }}#activities">Activities</a>
                     <details class="mobile-sub-menu">
                         <summary>Resources <span class="dropdown-chevron">&#x25BE;</span></summary>

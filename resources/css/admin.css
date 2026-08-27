@@ -1247,3 +1247,147 @@ html[data-theme="dark"] .image-upload-zone:focus-visible,
 html[data-theme="dark"] .image-upload-zone.is-drag-over {
   background: var(--accent-soft);
 }
+
+/* ─── Rich Text Editor & Markdown Toolbar ──────────────────────────────── */
+.rich-editor-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  min-width: 30px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  user-select: none;
+}
+
+.toolbar-btn:hover,
+.toolbar-btn:focus-visible {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--accent-strong);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.toolbar-btn:active {
+  background: var(--accent-soft);
+}
+
+.toolbar-btn svg {
+  width: 15px;
+  height: 15px;
+  display: block;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+/* ─── Local Draft Recovery Banner ───────────────────────────────────────── */
+.draft-recovery-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background: rgba(194, 125, 0, 0.1);
+  border: 1px solid rgba(194, 125, 0, 0.3);
+  color: var(--text);
+  margin-bottom: 8px;
+  transition: var(--transition);
+}
+
+.draft-recovery-banner.is-hidden {
+  display: none !important;
+}
+
+.draft-recovery-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.draft-icon {
+  font-size: 1.2rem;
+  color: var(--warn);
+  line-height: 1;
+}
+
+.draft-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.88rem;
+}
+
+.draft-timestamp {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.draft-recovery-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.draft-btn-restore {
+  min-height: 34px;
+  padding: 0 14px;
+  font-size: 0.84rem;
+  background: var(--surface);
+  border-color: rgba(194, 125, 0, 0.4);
+  color: var(--text);
+}
+
+.draft-btn-restore:hover {
+  background: var(--surface-strong);
+  border-color: var(--warn);
+}
+
+.draft-btn-discard {
+  min-height: 34px;
+  padding: 0 10px;
+  font-size: 0.84rem;
+  color: var(--danger);
+}
+
+@media (max-width: 600px) {
+  .draft-recovery-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .draft-recovery-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .toolbar-btn {
+    padding: 0 6px;
+    font-size: 0.75rem;
+  }
+}

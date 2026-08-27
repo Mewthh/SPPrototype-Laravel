@@ -649,6 +649,365 @@ function setupImageUpload(key) {
   zone._applyImage = applyImage;
 }
 
+/* ─── Markdown Toolbar Engine ───────────────────────────────────────────── */
+function applyMarkdownFormat(inputOrTextarea, format) {
+  if (!inputOrTextarea) return;
+  const el = inputOrTextarea;
+  el.focus();
+
+  const start = (el.selectionStart !== null && el.selectionStart !== undefined) ? el.selectionStart : el.value.length;
+  const end = (el.selectionEnd !== null && el.selectionEnd !== undefined) ? el.selectionEnd : el.value.length;
+  const val = el.value || '';
+  const selected = val.substring(start, end);
+
+  // ── Inline wrap helpers ─────────────────────────────────────────────────
+  function wrapInline(open, close, placeholder) {
+    const cls = close || open;
+    if (selected.startsWith(open) && selected.endsWith(cls) && selected.length > open.length + cls.length) {
+      const inner = selected.slice(open.length, -cls.length);
+      el.value = val.substring(0, start) + inner + val.substring(end);
+      el.setSelectionRange(start, start + inner.length);
+    } else {
+      const text = selected || placeholder;
+      const wrapped = open + text + cls;
+      el.value = val.substring(0, start) + wrapped + val.substring(end);
+      el.setSelectionRange(start + open.length, start + open.length + text.length);
+    }
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  // ── Line-level prefix helpers ────────────────────────────────────────────
+  function prefixLines(prefix, isActive, removeFn) {
+    const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+    let lineEnd = val.indexOf('\n', end);
+    if (lineEnd === -1) lineEnd = val.length;
+    const lines = val.substring(lineStart, lineEnd).split('\n');
+    const allActive = lines.every((l) => isActive(l));
+    const newLines = allActive ? lines.map(removeFn) : lines.map(prefix);
+    const joined = newLines.join('\n');
+    el.value = val.substring(0, lineStart) + joined + val.substring(lineEnd);
+    el.setSelectionRange(lineStart, lineStart + joined.length);
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  // ── Insert at cursor ─────────────────────────────────────────────────────
+  function insertAtCursor(text, selOffset, selLen) {
+    el.value = val.substring(0, start) + text + val.substring(end);
+    const s = start + (selOffset !== undefined ? selOffset : 0);
+    el.setSelectionRange(s, s + (selLen !== undefined ? selLen : 0));
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  if (format === 'bold') {
+    wrapInline('**', '**', 'bold text');
+  } else if (format === 'italic') {
+    wrapInline('*', '*', 'italic text');
+  } else if (format === 'underline') {
+    if (selected.startsWith('<u>') && selected.endsWith('</u>') && selected.length >= 7) {
+      const inner = selected.slice(3, -4);
+      el.value = val.substring(0, start) + inner + val.substring(end);
+      el.setSelectionRange(start, start + inner.length);
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    } else if (selected.startsWith('++') && selected.endsWith('++') && selected.length >= 4) {
+      const inner = selected.slice(2, -2);
+      el.value = val.substring(0, start) + inner + val.substring(end);
+      el.setSelectionRange(start, start + inner.length);
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    } else {
+      wrapInline('<u>', '</u>', 'underlined text');
+    }
+  } else if (format === 'highlight') {
+    wrapInline('==', '==', 'highlighted text');
+  } else if (format === 'sub') {
+    wrapInline('~', '~', 'subscript');
+  } else if (format === 'sup') {
+    wrapInline('^', '^', 'superscript');
+  } else if (format === 'code') {
+    // Check if multi-line → fenced code block, else inline backtick
+    if (selected.includes('\n')) {
+      const fence = '\n```\n';
+      const text = selected || 'code here';
+      const wrapped = fence + text + fence;
+      el.value = val.substring(0, start) + wrapped + val.substring(end);
+      el.setSelectionRange(start + 5, start + 5 + text.length);
+    } else {
+      wrapInline('`', '`', 'code');
+    }
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  } else if (format === 'h1' || format === 'h2') {
+    const prefix = format === 'h1' ? '# ' : '## ';
+    const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+    let lineEnd = val.indexOf('\n', end);
+    if (lineEnd === -1) lineEnd = val.length;
+    const lineText = val.substring(lineStart, lineEnd);
+    const cleanLine = lineText.replace(/^#{1,6}\s+/, '');
+    const newLine = lineText.startsWith(prefix) ? cleanLine : `${prefix}${cleanLine}`;
+    el.value = val.substring(0, lineStart) + newLine + val.substring(lineEnd);
+    el.setSelectionRange(lineStart, lineStart + newLine.length);
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  } else if (format === 'ul') {
+    prefixLines(
+      (l) => `- ${l}`,
+      (l) => l.trimStart().startsWith('- '),
+      (l) => l.replace(/^(\s*)- /, '$1')
+    );
+  } else if (format === 'ol') {
+    const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+    let lineEnd = val.indexOf('\n', end);
+    if (lineEnd === -1) lineEnd = val.length;
+    const lines = val.substring(lineStart, lineEnd).split('\n');
+    const isAllOl = lines.every((l) => /^\s*\d+\.\s+/.test(l));
+    const newLines = isAllOl
+      ? lines.map((l) => l.replace(/^(\s*)\d+\.\s+/, '$1'))
+      : lines.map((l, i) => `${i + 1}. ${l.replace(/^(\s*)\d+\.\s+/, '$1')}`);
+    const joined = newLines.join('\n');
+    el.value = val.substring(0, lineStart) + joined + val.substring(lineEnd);
+    el.setSelectionRange(lineStart, lineStart + joined.length);
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  } else if (format === 'blockquote' || format === 'card') {
+    prefixLines(
+      (l) => `> ${l || 'Blockquote text'}`,
+      (l) => l.trimStart().startsWith('> '),
+      (l) => l.replace(/^(\s*)>\s?/, '$1')
+    );
+  } else if (format === 'hr') {
+    const newline = start > 0 && val[start - 1] !== '\n' ? '\n' : '';
+    insertAtCursor(`${newline}\n---\n\n`, newline.length + 1, 3);
+  } else if (format === 'link') {
+    const text = selected || 'link text';
+    const snippet = `[${text}](https://example.com)`;
+    el.value = val.substring(0, start) + snippet + val.substring(end);
+    const urlStart = start + text.length + 3;
+    el.setSelectionRange(urlStart, urlStart + 19);
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  } else if (format === 'image') {
+    const alt = selected || 'image alt text';
+    const snippet = `![${alt}](https://example.com/image.png)`;
+    el.value = val.substring(0, start) + snippet + val.substring(end);
+    const urlStart = start + alt.length + 4;
+    el.setSelectionRange(urlStart, urlStart + 30);
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  } else if (format === 'table') {
+    const tableSnippet = `\n| Header 1 | Header 2 | Header 3 |\n| --- | --- | --- |\n| Cell 1 | Cell 2 | Cell 3 |\n| Cell 4 | Cell 5 | Cell 6 |\n`;
+    el.value = val.substring(0, start) + tableSnippet + val.substring(end);
+    el.setSelectionRange(start + 3, start + 11);
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  } else if (format === 'footnote') {
+    const fnMatches = val.match(/\[\^(\d+)\]/g) || [];
+    const nextFn = fnMatches.length + 1;
+    const refSnippet = `[^${nextFn}]`;
+    const defSnippet = `\n\n[^${nextFn}]: Footnote text here`;
+    el.value = val.substring(0, start) + refSnippet + val.substring(end) + defSnippet;
+    el.setSelectionRange(start, start + refSnippet.length);
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+}
+
+function setupRichEditorToolbars() {
+  document.querySelectorAll('[data-rich-editor]').forEach((wrap) => {
+    const inputOrTextarea = wrap.querySelector('input, textarea');
+    const toolbar = wrap.querySelector('.editor-toolbar');
+    if (!inputOrTextarea || !toolbar || wrap._richEditorAttached) return;
+    wrap._richEditorAttached = true;
+
+    toolbar.querySelectorAll('[data-format]').forEach((btn) => {
+      btn.addEventListener('mousedown', (e) => {
+        e.preventDefault(); // Prevents input from losing focus / selection
+      });
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        applyMarkdownFormat(inputOrTextarea, btn.dataset.format);
+      });
+    });
+
+    inputOrTextarea.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'b' || e.key === 'B')) {
+        e.preventDefault();
+        applyMarkdownFormat(inputOrTextarea, 'bold');
+      } else if ((e.ctrlKey || e.metaKey) && (e.key === 'i' || e.key === 'I')) {
+        e.preventDefault();
+        applyMarkdownFormat(inputOrTextarea, 'italic');
+      } else if ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'U')) {
+        e.preventDefault();
+        applyMarkdownFormat(inputOrTextarea, 'underline');
+      }
+    });
+  });
+}
+
+// Global delegated fallback for toolbar interactions
+if (!window.__sppRichToolbarDelegated) {
+  window.__sppRichToolbarDelegated = true;
+  document.addEventListener('mousedown', (e) => {
+    const btn = e.target.closest('.editor-toolbar [data-format]');
+    if (btn) {
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.editor-toolbar [data-format]');
+    if (!btn) return;
+    const wrap = btn.closest('[data-rich-editor]');
+    if (!wrap) return;
+    const inputOrTextarea = wrap.querySelector('input, textarea');
+    if (!inputOrTextarea) return;
+    e.preventDefault();
+    applyMarkdownFormat(inputOrTextarea, btn.dataset.format);
+  });
+}
+
+/* ─── Local Autosave & Draft Recovery ───────────────────────────────────── */
+let newsAutosaveTimer = null;
+let activeNewsDraft = null;
+
+function getNewsDraftKey(postId) {
+  return postId ? `spp-draft-news-${postId}` : 'spp-draft-news-new';
+}
+
+function saveNewsDraft() {
+  if (!newsForm) return;
+  const postId = state.editingNewsId || null;
+  const title = (newsForm.elements.title?.value || '').trim();
+  const summary = (newsForm.elements.summary?.value || '').trim();
+  const body = (newsForm.elements.body?.value || '').trim();
+
+  // Don't save empty drafts for new posts
+  if (!postId && !title && !summary && !body) {
+    localStorage.removeItem(getNewsDraftKey(null));
+    return;
+  }
+
+  // If editing an existing post and values match server state, clean up
+  if (postId) {
+    const originalPost = state.posts.find((p) => String(p.id) === String(postId));
+    if (originalPost) {
+      const origTitle = (originalPost.title || '').trim();
+      const origSummary = (originalPost.summary || originalPost.excerpt || '').trim();
+      const origBody = (originalPost.body || originalPost.content || '').trim();
+      if (title === origTitle && summary === origSummary && body === origBody) {
+        localStorage.removeItem(getNewsDraftKey(postId));
+        return;
+      }
+    }
+  }
+
+  const draft = {
+    id: postId,
+    title: newsForm.elements.title?.value || '',
+    summary: newsForm.elements.summary?.value || '',
+    body: newsForm.elements.body?.value || '',
+    updatedAt: Date.now(),
+  };
+
+  try {
+    localStorage.setItem(getNewsDraftKey(postId), JSON.stringify(draft));
+  } catch (err) {
+    console.warn('Could not save draft to localStorage:', err);
+  }
+}
+
+function scheduleNewsAutosave() {
+  if (newsAutosaveTimer) clearTimeout(newsAutosaveTimer);
+  newsAutosaveTimer = setTimeout(() => {
+    saveNewsDraft();
+  }, 1500);
+}
+
+function formatDraftTime(timestamp) {
+  if (!timestamp) return '';
+  const now = Date.now();
+  const diffSec = Math.round((now - timestamp) / 1000);
+  if (diffSec < 60) return 'just now';
+  const diffMin = Math.round(diffSec / 60);
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffHr = Math.round(diffMin / 60);
+  if (diffHr < 24) return `${diffHr}h ago`;
+  const date = new Date(timestamp);
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function checkNewsDraft(postId) {
+  const banner = document.querySelector('[data-draft-banner="news"]');
+  const timeSpan = document.querySelector('[data-draft-time="news"]');
+  if (!banner || !newsForm) return;
+
+  const key = getNewsDraftKey(postId);
+  const raw = localStorage.getItem(key);
+  if (!raw) {
+    activeNewsDraft = null;
+    banner.classList.add('is-hidden');
+    return;
+  }
+
+  try {
+    const draft = JSON.parse(raw);
+    if (!draft || typeof draft !== 'object') {
+      banner.classList.add('is-hidden');
+      return;
+    }
+
+    const currentTitle = (newsForm.elements.title?.value || '').trim();
+    const currentSummary = (newsForm.elements.summary?.value || '').trim();
+    const currentBody = (newsForm.elements.body?.value || '').trim();
+
+    const draftTitle = (draft.title || '').trim();
+    const draftSummary = (draft.summary || '').trim();
+    const draftBody = (draft.body || '').trim();
+
+    const hasChanges = draftTitle !== currentTitle || draftSummary !== currentSummary || draftBody !== currentBody;
+
+    if (hasChanges && (draftTitle || draftSummary || draftBody)) {
+      activeNewsDraft = draft;
+      if (timeSpan) {
+        timeSpan.textContent = `(Saved ${formatDraftTime(draft.updatedAt)})`;
+      }
+      banner.classList.remove('is-hidden');
+    } else {
+      activeNewsDraft = null;
+      banner.classList.add('is-hidden');
+    }
+  } catch (e) {
+    banner.classList.add('is-hidden');
+  }
+}
+
+function restoreNewsDraft() {
+  const banner = document.querySelector('[data-draft-banner="news"]');
+  if (!activeNewsDraft || !newsForm) return;
+
+  if (newsForm.elements.title && activeNewsDraft.title !== undefined) {
+    newsForm.elements.title.value = activeNewsDraft.title;
+  }
+  if (newsForm.elements.summary && activeNewsDraft.summary !== undefined) {
+    newsForm.elements.summary.value = activeNewsDraft.summary;
+  }
+  if (newsForm.elements.body && activeNewsDraft.body !== undefined) {
+    newsForm.elements.body.value = activeNewsDraft.body;
+  }
+
+  banner?.classList.add('is-hidden');
+}
+
+function discardNewsDraft() {
+  const banner = document.querySelector('[data-draft-banner="news"]');
+  const key = getNewsDraftKey(state.editingNewsId);
+  localStorage.removeItem(key);
+  activeNewsDraft = null;
+  banner?.classList.add('is-hidden');
+}
+
+function clearNewsDraft(postId) {
+  const key = getNewsDraftKey(postId);
+  localStorage.removeItem(key);
+  if (postId) {
+    localStorage.removeItem(getNewsDraftKey(null));
+  }
+  activeNewsDraft = null;
+  const banner = document.querySelector('[data-draft-banner="news"]');
+  banner?.classList.add('is-hidden');
+}
+
 function startEditingNews(postId) {
   const post = state.posts.find((p) => String(p.id) === String(postId));
   if (!post || !newsForm) return;
@@ -672,6 +1031,7 @@ function startEditingNews(postId) {
   setNewsView('editor');
   updateNewsEditorUI();
   renderNewsQueue();
+  checkNewsDraft(post.id);
   document.querySelector('#news-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -681,6 +1041,7 @@ function cancelEditingNews() {
   document.querySelector('[data-upload-zone="news"]')?._clearImage?.();
   updateNewsEditorUI();
   renderNewsQueue();
+  checkNewsDraft(null);
 }
 
 async function handleNewsSubmit(event) {
@@ -724,9 +1085,11 @@ async function handleNewsSubmit(event) {
       return;
     }
 
+    const savedId = state.editingNewsId;
     state.editingNewsId = null;
     newsForm.reset();
     document.querySelector('[data-upload-zone="news"]')?._clearImage?.();
+    clearNewsDraft(savedId);
     await fetchNewsFromDatabase();
     setNewsView('posts');
   } catch (err) {
@@ -945,12 +1308,23 @@ function bindEvents() {
   });
 
   newsForm?.addEventListener('submit', handleNewsSubmit);
+  newsForm?.addEventListener('input', (e) => {
+    if (['title', 'summary', 'body'].includes(e.target.name)) {
+      scheduleNewsAutosave();
+    }
+  });
   newsForm?.addEventListener('reset', () => {
     state.editingNewsId = null;
-    window.setTimeout(updateNewsEditorUI, 0);
+    window.setTimeout(() => {
+      updateNewsEditorUI();
+      checkNewsDraft(null);
+    }, 0);
   });
   newsCancelEdit?.addEventListener('click', cancelEditingNews);
   newsList?.addEventListener('click', handleNewsAction);
+
+  document.querySelector('[data-draft-restore="news"]')?.addEventListener('click', restoreNewsDraft);
+  document.querySelector('[data-draft-discard="news"]')?.addEventListener('click', discardNewsDraft);
 
   activityForm?.addEventListener('submit', handleActivitySubmit);
   activityForm?.addEventListener('reset', () => {
@@ -1027,8 +1401,10 @@ window.addEventListener('load', updateActiveNavLink);
 
 renderAll();
 bindEvents();
+setupRichEditorToolbars();
 updateActiveNavLink();
 fetchNewsFromDatabase();
+checkNewsDraft(null);
 
 setupImageUpload('news');
 setupImageUpload('activity');

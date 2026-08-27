@@ -11,7 +11,6 @@
                 $safeTitle = urlencode(mb_substr($news->title, 0, 20));
                 $defaultSvg = "data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 520'><rect width='800' height='520' rx='24' fill='%23e5e7eb'/><rect x='32' y='32' width='736' height='456' rx='18' fill='%23f8fafc' stroke='%23cbd5e1'/><text x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle' fill='%236b7280' font-family='Segoe UI,Arial,sans-serif' font-size='32'>{$safeTitle}</text></svg>";
                 $imageSrc = $news->image ?: $defaultSvg;
-                $paragraphs = array_filter(array_map('trim', preg_split('/\n\s*\n/', $news->content)));
             @endphp
 
             <article class="article-container">
@@ -26,19 +25,15 @@
                             Published on {{ $dateFormatted }}
                         </time>
                     </div>
-                    <h1 class="article-title">{{ $news->title }}</h1>
+                    <h1 class="article-title">{!! \App\Support\Markdown::renderInline($news->title) !!}</h1>
                 </header>
 
                 <div class="article-hero-media">
-                    <img src="{{ $imageSrc }}" alt="{{ $news->title }}" />
+                    <img src="{{ $imageSrc }}" alt="{{ strip_tags(\App\Support\Markdown::renderInline($news->title)) }}" />
                 </div>
 
                 <div class="article-body">
-                    @forelse($paragraphs as $p)
-                        <p>{{ $p }}</p>
-                    @empty
-                        <p>{{ $news->content }}</p>
-                    @endforelse
+                    {!! \App\Support\Markdown::render($news->content) !!}
                 </div>
 
                 <footer class="article-footer">

@@ -21,6 +21,113 @@ function getSlugFromUrl() {
   return '';
 }
 
+function renderInlineMarkdown(text) {
+  if (!text) return '';
+  let html = escapeHtml(text);
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  html = html.replace(/\+\+(.+?)\+\+/g, '<u>$1</u>');
+  html = html.replace(/&lt;u&gt;([\s\S]*?)&lt;\/u&gt;/gi, '<u>$1</u>');
+  html = html.replace(/==(.+?)==/g, '<mark>$1</mark>');
+  html = html.replace(/(?<!~)(?<!\\)~([^~\n]+)~(?!~)/g, '<sub>$1</sub>');
+  html = html.replace(/(?<!\^)(?<!\\)\^([^\^\n]+)\^(?!\^)/g, '<sup>$1</sup>');
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  html = html.replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" />');
+  html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+  html = html.replace(/^#{1,6}\s+/, '');
+  return html;
+}
+
+function renderMarkdown(text) {
+  if (!text) return '';
+  let html = escapeHtml(text);
+
+  // Inline formatting
+  html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  html = html.replace(/\+\+(.+?)\+\+/g, '<u>$1</u>');
+  html = html.replace(/&lt;u&gt;([\s\S]*?)&lt;\/u&gt;/gi, '<u>$1</u>');
+  html = html.replace(/==(.+?)==/g, '<mark>$1</mark>');
+  html = html.replace(/(?<!~)(?<!\\)~([^~\n]+)~(?!~)/g, '<sub>$1</sub>');
+  html = html.replace(/(?<!\^)(?<!\\)\^([^\^\n]+)\^(?!\^)/g, '<sup>$1</sup>');
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  html = html.replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" />');
+  html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+
+  // Footnote references [^1]
+  html = html.replace(/\[\^(\d+)\]/g, '<sup><a href="#fn-$1" id="fnref-$1">[$1]</a></sup>');
+
+  const blocks = html.split(/\n\s*\n/).map((b) => b.trim()).filter(Boolean);
+  if (!blocks.length) return `<p>${html}</p>`;
+
+  const footnotes = [];
+
+  const renderedBlocks = blocks.map((block) => {
+    // If it's a preformatted code block
+    if (block.startsWith('<pre>') && block.endsWith('</pre>')) {
+      return block;
+    }
+
+    // Horizontal rule
+    if (/^(\-{3,}|\*{3,}|_{3,})$/.test(block.trim())) {
+      return '<hr>';
+    }
+
+    // Footnote definition [^1]: content
+    const fnDefMatch = block.match(/^\[\^(\d+)\]:\s*(.*)$/);
+    if (fnDefMatch) {
+      footnotes.push({ num: fnDefMatch[1], content: fnDefMatch[2] });
+      return '';
+    }
+
+    const lines = block.split('\n').map((l) => l.trim()).filter(Boolean);
+    if (!lines.length) return '';
+
+    if (lines.length === 1 && lines[0].startsWith('# ')) {
+      return `<h2>${lines[0].slice(2)}</h2>`;
+    }
+    if (lines.length === 1 && lines[0].startsWith('## ')) {
+      return `<h3>${lines[0].slice(3)}</h3>`;
+    }
+    if (lines.every((l) => l.startsWith('- '))) {
+      return `<ul>${lines.map((l) => `<li>${l.slice(2)}</li>`).join('')}</ul>`;
+    }
+    if (lines.every((l) => /^\d+\.\s+/.test(l))) {
+      return `<ol>${lines.map((l) => `<li>${l.replace(/^\d+\.\s+/, '')}</li>`).join('')}</ol>`;
+    }
+    if (lines.every((l) => l.startsWith('&gt; ') || l.startsWith('> '))) {
+      const inner = lines.map((l) => l.replace(/^(&gt;|>)\s?/, '')).join('<br>');
+      return `<blockquote><p>${inner}</p></blockquote>`;
+    }
+
+    // Table parsing: lines starting/containing |
+    if (lines.length >= 2 && lines.every((l) => l.startsWith('|') && l.endsWith('|'))) {
+      const headerRow = lines[0].slice(1, -1).split('|').map((c) => `<th>${c.trim()}</th>`).join('');
+      const bodyRows = lines.slice(2).map((row) => {
+        const cells = row.slice(1, -1).split('|').map((c) => `<td>${c.trim()}</td>`).join('');
+        return `<tr>${cells}</tr>`;
+      }).join('');
+      return `<table><thead><tr>${headerRow}</tr></thead><tbody>${bodyRows}</tbody></table>`;
+    }
+
+    return `<p>${lines.join('<br>')}</p>`;
+  }).filter(Boolean);
+
+  if (footnotes.length > 0) {
+    const fnHtml = `
+      <section class="footnotes">
+        <ol>
+          ${footnotes.map((fn) => `<li id="fn-${fn.num}">${fn.content} <a href="#fnref-${fn.num}">↩</a></li>`).join('')}
+        </ol>
+      </section>
+    `;
+    renderedBlocks.push(fnHtml);
+  }
+
+  return renderedBlocks.join('');
+}
+
 function renderArticle() {
   const root = document.getElementById('article-root');
   if (!root) return;
@@ -66,13 +173,6 @@ function renderArticle() {
   const imageSrc = post.coverImage || post.image || getDefaultImageSvg(post.title);
   const fullContent = post.content || post.body || '';
 
-  const paragraphs = fullContent
-    .split(/\n\s*\n/)
-    .map((p) => p.trim())
-    .filter(Boolean)
-    .map((p) => `<p>${escapeHtml(p)}</p>`)
-    .join('');
-
   root.innerHTML = `
     <article class="article-container">
       <div class="article-top-nav">
@@ -86,7 +186,7 @@ function renderArticle() {
             Published on ${dateFormatted}
           </time>
         </div>
-        <h1 class="article-title">${escapeHtml(post.title)}</h1>
+        <h1 class="article-title">${renderInlineMarkdown(post.title)}</h1>
       </header>
 
       <div class="article-hero-media">
@@ -94,7 +194,7 @@ function renderArticle() {
       </div>
 
       <div class="article-body">
-        ${paragraphs || `<p>${escapeHtml(fullContent)}</p>`}
+        ${renderMarkdown(fullContent)}
       </div>
 
       <footer class="article-footer">

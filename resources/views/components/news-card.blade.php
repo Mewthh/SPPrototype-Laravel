@@ -18,8 +18,8 @@
     <div class="card-body">
         <span class="card-chip">News</span>
         <p class="card-meta-line">{{ $dateFormatted }}</p>
-        <h3><a href="{{ $detailUrl }}" class="card-title-link">{{ $title }}</a></h3>
-        <p>{{ $excerpt }}</p>
+        <h3><a href="{{ $detailUrl }}" class="card-title-link">{!! \App\Support\Markdown::renderInline($title) !!}</a></h3>
+        <p>{!! \App\Support\Markdown::renderInline($excerpt) !!}</p>
         <a class="text-button" href="{{ $detailUrl }}">Read More &rarr;</a>
     </div>
 </article>

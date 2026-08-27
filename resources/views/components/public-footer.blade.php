@@ -11,7 +11,7 @@
             <a href="{{ route('home') }}#about">About</a>
             <a href="{{ route('home') }}#activities">Activities</a>
             <a href="{{ route('home') }}#events">Events</a>
-            <a href="{{ route('news.index') }}">News</a>
+            <a href="{{ route('home') }}#news">News</a>
         </div>
 
         <div>

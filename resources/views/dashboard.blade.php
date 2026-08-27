@@ -22,7 +22,7 @@
 	</script>
 
 	@vite(['resources/css/app.css', 'resources/js/app.js'])
-	<script src="{{ asset('admin/app.js') }}" defer></script>
+	<script src="{{ asset('admin/app.js') }}?v={{ file_exists(public_path('admin/app.js')) ? filemtime(public_path('admin/app.js')) : time() }}" defer></script>
 </head>
 
 <body>
@@ -91,6 +91,21 @@
 							<button type="button" class="item-action" data-news-cancel-edit style="display: none;">Cancel Edit</button>
 						</div>
 
+						<!-- Draft Recovery Banner -->
+						<div class="draft-recovery-banner is-hidden" data-draft-banner="news" role="alert">
+							<div class="draft-recovery-info">
+								<span class="draft-icon" aria-hidden="true">&#x26A0;</span>
+								<div class="draft-copy">
+									<strong>Unsaved draft found</strong>
+									<span class="draft-timestamp" data-draft-time="news"></span>
+								</div>
+							</div>
+							<div class="draft-recovery-actions">
+								<button type="button" class="button button-secondary draft-btn-restore" data-draft-restore="news">Restore Draft</button>
+								<button type="button" class="button button-quiet draft-btn-discard" data-draft-discard="news">Discard</button>
+							</div>
+						</div>
+
 						<input type="hidden" name="editingId" value="" />
 
 						<label class="field-row">
@@ -110,7 +125,7 @@
 
 						<label class="field-row">
 							<span>Summary</span>
-							<input type="text" name="summary" placeholder="sample text" />
+							<textarea name="summary" rows="2" placeholder="sample text"></textarea>
 						</label>
 
 						<label class="field-row">
@@ -118,10 +133,31 @@
 							<input type="date" name="publishDate" />
 						</label>
 
-						<label class="field-row field-row-wide">
-							<span>Article Body</span>
-							<textarea name="body" rows="6" placeholder="sample text."></textarea>
-						</label>
+						<div class="field-row field-row-wide">
+							<span class="field-label">Article Body</span>
+							<div class="rich-editor-wrap" data-rich-editor="body">
+								<div class="editor-toolbar" role="toolbar" aria-label="Article body formatting toolbar">
+									<button type="button" class="toolbar-btn" data-format="bold" title="Bold (**text**)" aria-label="Bold"><strong>B</strong></button>
+									<button type="button" class="toolbar-btn" data-format="italic" title="Italic (*text*)" aria-label="Italic"><em>I</em></button>
+									<button type="button" class="toolbar-btn" data-format="underline" title="Underline (<u>text</u>)" aria-label="Underline"><u>U</u></button>
+									<button type="button" class="toolbar-btn" data-format="h1" title="Heading 1 (# Title)" aria-label="Heading 1">H1</button>
+									<button type="button" class="toolbar-btn" data-format="h2" title="Heading 2 (## Subtitle)" aria-label="Heading 2">H2</button>
+									<button type="button" class="toolbar-btn" data-format="ul" title="Bullet List (- item)" aria-label="Bullet List"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><circle cx="3.5" cy="6" r="1.5" fill="currentColor"></circle><circle cx="3.5" cy="12" r="1.5" fill="currentColor"></circle><circle cx="3.5" cy="18" r="1.5" fill="currentColor"></circle></svg></button>
+									<button type="button" class="toolbar-btn" data-format="ol" title="Numbered List (1. item)" aria-label="Numbered List"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" y1="6" x2="21" y2="6"></line><line x1="10" y1="12" x2="21" y2="12"></line><line x1="10" y1="18" x2="21" y2="18"></line><path d="M4 6h1v4M4 10h2" stroke-width="1.6"></path><path d="M4 14h2a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H4v1h3" stroke-width="1.6"></path></svg></button>
+									<button type="button" class="toolbar-btn" data-format="blockquote" title="Blockquote (> text)" aria-label="Blockquote"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.75-2-2-2H4c-1.25 0-2 .75-2 2v6c0 1.25.75 2 2 2 0 4-1 6-1 8z" fill="currentColor" stroke="none"></path><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.75-2-2-2h-4c-1.25 0-2 .75-2 2v6c0 1.25.75 2 2 2 0 4-1 6-1 8z" fill="currentColor" stroke="none"></path></svg></button>
+									<button type="button" class="toolbar-btn" data-format="code" title="Inline code (`code`)" aria-label="Code">&lt;/&gt;</button>
+									<button type="button" class="toolbar-btn" data-format="hr" title="Horizontal rule (---)" aria-label="Horizontal Rule">&#x2014;</button>
+									<button type="button" class="toolbar-btn" data-format="link" title="Link ([text](url))" aria-label="Link">&#x1F517;</button>
+									<button type="button" class="toolbar-btn" data-format="image" title="Image (![alt](url))" aria-label="Image">&#x1F5BC;</button>
+									<button type="button" class="toolbar-btn" data-format="table" title="Insert table" aria-label="Table"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg></button>
+									<button type="button" class="toolbar-btn" data-format="footnote" title="Footnote ([^1])" aria-label="Footnote">fn</button>
+									<button type="button" class="toolbar-btn" data-format="highlight" title="Highlight (==text==)" aria-label="Highlight"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 11-6 6v3h3l6-6"></path><path d="m22 7-4.5-4.5a2.12 2.12 0 0 0-3 0L10 7l7 7 4.5-4.5a2.12 2.12 0 0 0 0-3z"></path><line x1="14" y1="20" x2="22" y2="20" stroke-width="2.5" stroke="#f59e0b"></line></svg></button>
+									<button type="button" class="toolbar-btn" data-format="sub" title="Subscript (~text~)" aria-label="Subscript">X<sub>2</sub></button>
+									<button type="button" class="toolbar-btn" data-format="sup" title="Superscript (^text^)" aria-label="Superscript">X<sup>2</sup></button>
+								</div>
+								<textarea name="body" rows="8" placeholder="sample text."></textarea>
+							</div>
+						</div>
 
 						<div class="field-row field-row-wide">
 							<span class="field-label">Cover Image</span>
@@ -233,7 +269,7 @@
 
 						<label class="field-row">
 							<span>Summary</span>
-							<input type="text" name="summary" placeholder="sample text" />
+							<textarea name="summary" rows="2" placeholder="sample text"></textarea>
 						</label>
 
 						<label class="field-row">
@@ -241,10 +277,31 @@
 							<input type="date" name="publishDate" />
 						</label>
 
-						<label class="field-row field-row-wide">
-							<span>Event Details</span>
-							<textarea name="body" rows="6" placeholder="sample text."></textarea>
-						</label>
+						<div class="field-row field-row-wide">
+							<span class="field-label">Event Details</span>
+							<div class="rich-editor-wrap" data-rich-editor="activity-body">
+								<div class="editor-toolbar" role="toolbar" aria-label="Event details formatting toolbar">
+									<button type="button" class="toolbar-btn" data-format="bold" title="Bold (**text**)" aria-label="Bold"><strong>B</strong></button>
+									<button type="button" class="toolbar-btn" data-format="italic" title="Italic (*text*)" aria-label="Italic"><em>I</em></button>
+									<button type="button" class="toolbar-btn" data-format="underline" title="Underline (<u>text</u>)" aria-label="Underline"><u>U</u></button>
+									<button type="button" class="toolbar-btn" data-format="h1" title="Heading 1 (# Title)" aria-label="Heading 1">H1</button>
+									<button type="button" class="toolbar-btn" data-format="h2" title="Heading 2 (## Subtitle)" aria-label="Heading 2">H2</button>
+									<button type="button" class="toolbar-btn" data-format="ul" title="Bullet List (- item)" aria-label="Bullet List"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><circle cx="3.5" cy="6" r="1.5" fill="currentColor"></circle><circle cx="3.5" cy="12" r="1.5" fill="currentColor"></circle><circle cx="3.5" cy="18" r="1.5" fill="currentColor"></circle></svg></button>
+									<button type="button" class="toolbar-btn" data-format="ol" title="Numbered List (1. item)" aria-label="Numbered List"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" y1="6" x2="21" y2="6"></line><line x1="10" y1="12" x2="21" y2="12"></line><line x1="10" y1="18" x2="21" y2="18"></line><path d="M4 6h1v4M4 10h2" stroke-width="1.6"></path><path d="M4 14h2a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H4v1h3" stroke-width="1.6"></path></svg></button>
+									<button type="button" class="toolbar-btn" data-format="blockquote" title="Blockquote (> text)" aria-label="Blockquote"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.75-2-2-2H4c-1.25 0-2 .75-2 2v6c0 1.25.75 2 2 2 0 4-1 6-1 8z" fill="currentColor" stroke="none"></path><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.75-2-2-2h-4c-1.25 0-2 .75-2 2v6c0 1.25.75 2 2 2 0 4-1 6-1 8z" fill="currentColor" stroke="none"></path></svg></button>
+									<button type="button" class="toolbar-btn" data-format="code" title="Inline code (`code`)" aria-label="Code">&lt;/&gt;</button>
+									<button type="button" class="toolbar-btn" data-format="hr" title="Horizontal rule (---)" aria-label="Horizontal Rule">&#x2014;</button>
+									<button type="button" class="toolbar-btn" data-format="link" title="Link ([text](url))" aria-label="Link">&#x1F517;</button>
+									<button type="button" class="toolbar-btn" data-format="image" title="Image (![alt](url))" aria-label="Image">&#x1F5BC;</button>
+									<button type="button" class="toolbar-btn" data-format="table" title="Insert table" aria-label="Table"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg></button>
+									<button type="button" class="toolbar-btn" data-format="footnote" title="Footnote ([^1])" aria-label="Footnote">fn</button>
+									<button type="button" class="toolbar-btn" data-format="highlight" title="Highlight (==text==)" aria-label="Highlight"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 11-6 6v3h3l6-6"></path><path d="m22 7-4.5-4.5a2.12 2.12 0 0 0-3 0L10 7l7 7 4.5-4.5a2.12 2.12 0 0 0 0-3z"></path><line x1="14" y1="20" x2="22" y2="20" stroke-width="2.5" stroke="#f59e0b"></line></svg></button>
+									<button type="button" class="toolbar-btn" data-format="sub" title="Subscript (~text~)" aria-label="Subscript">X<sub>2</sub></button>
+									<button type="button" class="toolbar-btn" data-format="sup" title="Superscript (^text^)" aria-label="Superscript">X<sup>2</sup></button>
+								</div>
+								<textarea name="body" rows="6" placeholder="sample text."></textarea>
+							</div>
+						</div>
 
 						<div class="field-row field-row-wide">
 							<span class="field-label">Cover Image</span>
