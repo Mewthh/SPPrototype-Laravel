@@ -952,32 +952,254 @@ function applyMarkdownFormat(inputOrTextarea, format) {
 
 function setupRichEditorToolbars() {
   document.querySelectorAll('[data-rich-editor]').forEach((wrap) => {
-    const inputOrTextarea = wrap.querySelector('input, textarea');
+    const textarea = wrap.querySelector('textarea');
     const toolbar = wrap.querySelector('.editor-toolbar');
-    if (!inputOrTextarea || !toolbar || wrap._richEditorAttached) return;
+    if (!textarea || !toolbar || wrap._richEditorAttached) return;
     wrap._richEditorAttached = true;
 
+    // Create visual contenteditable element
+    const visualEditor = document.createElement('div');
+    visualEditor.className = 'rich-editor-visual';
+    visualEditor.contentEditable = 'true';
+    visualEditor.setAttribute('role', 'textbox');
+    visualEditor.setAttribute('aria-multiline', 'true');
+    visualEditor.setAttribute('placeholder', textarea.placeholder || 'Type here...');
+
+    // Function to convert raw markdown/HTML into visual editor HTML
+    const syncToVisual = () => {
+      let raw = textarea.value || '';
+      let html = raw
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/_([^_]+)_/g, '<em>$1</em>')
+        .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+        .replace(/<u>([^<]+)<\/u>/g, '<u>$1</u>')
+        .replace(/==([^=]+)==/g, '<mark>$1</mark>')
+        .replace(/~([^~]+)~/g, '<sub>$1</sub>')
+        .replace(/\^([^^]+)\^/g, '<sup>$1</sup>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+        .replace(/^## (.*$)/gim, '<h2>$2</h2>')
+        .replace(/\n/g, '<br>');
+      visualEditor.innerHTML = html;
+    };
+
+    // Function to sync visual content back to textarea value
+    const syncToTextarea = () => {
+      let html = visualEditor.innerHTML;
+      let raw = html
+        .replace(/<div><br><\/div>/gi, '\n')
+        .replace(/<div>/gi, '\n').replace(/<\/div>/gi, '')
+        .replace(/<br\s*[\/]?>/gi, '\n')
+        .replace(/<strong>(.*?)<\/strong>/gi, '**$1**')
+        .replace(/<b>(.*?)<\/b>/gi, '**$1**')
+        .replace(/<em>(.*?)<\/em>/gi, '*$1*')
+        .replace(/<i>(.*?)<\/i>/gi, '*$1*')
+        .replace(/<u>(.*?)<\/u>/gi, '<u>$1</u>')
+        .replace(/<mark>(.*?)<\/mark>/gi, '==$1==')
+        .replace(/<sub>(.*?)<\/sub>/gi, '~$1~')
+        .replace(/<sup>(.*?)<\/sup>/gi, '^$1^')
+        .replace(/<code>(.*?)<\/code>/gi, '`$1`')
+        .replace(/&nbsp;/gi, ' ')
+        .replace(/&amp;/gi, '&')
+        .replace(/&lt;/gi, '<')
+        .replace(/&gt;/gi, '>');
+      textarea.value = raw;
+      textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    };
+
+    // Helper to check selection hierarchy
+    const getSelectionNode = () => {
+      const sel = window.getSelection();
+      if (!sel || !sel.rangeCount) return null;
+      let node = sel.anchorNode;
+      return node ? (node.nodeType === 3 ? node.parentNode : node) : null;
+    };
+
+    let isHighlightPending = false;
+
+    const getHighlightParentNode = () => {
+      let node = getSelectionNode();
+      while (node && node !== visualEditor) {
+        const name = node.nodeName.toLowerCase();
+        if (name === 'mark') return node;
+        if (name === 'span' && node.style && node.style.backgroundColor) {
+          const bg = node.style.backgroundColor.toLowerCase();
+          if (bg !== 'transparent' && bg !== 'rgba(0, 0, 0, 0)' && (bg.includes('254') || bg.includes('240') || bg.includes('138') || bg.includes('yellow') || bg.includes('fef08a'))) {
+            return node;
+          }
+        }
+        node = node.parentNode;
+      }
+      return null;
+    };
+
+    const isInsideTag = (tagName) => {
+      if (tagName === 'highlight' || tagName === 'mark') {
+        return Boolean(getHighlightParentNode()) || isHighlightPending;
+      }
+      let node = getSelectionNode();
+      while (node && node !== visualEditor) {
+        const name = node.nodeName.toLowerCase();
+        if (name === tagName.toLowerCase()) return true;
+        node = node.parentNode;
+      }
+      return false;
+    };
+
+    // Update active indicators on format buttons based on selection state
+    const updateFormatIndicators = () => {
+      const markNode = getHighlightParentNode();
+      if (!markNode && isHighlightPending && !document.queryCommandState('hiliteColor')) {
+        // If selection moved out of pending highlight position, clear pending
+      }
+
+      toolbar.querySelectorAll('[data-format]').forEach((btn) => {
+        const fmt = btn.dataset.format;
+        let isActive = false;
+
+        try {
+          if (fmt === 'bold') isActive = document.queryCommandState('bold') || isInsideTag('strong') || isInsideTag('b');
+          else if (fmt === 'italic') isActive = document.queryCommandState('italic') || isInsideTag('em') || isInsideTag('i');
+          else if (fmt === 'underline') isActive = document.queryCommandState('underline') || isInsideTag('u');
+          else if (fmt === 'ul') isActive = document.queryCommandState('insertUnorderedList') || isInsideTag('ul');
+          else if (fmt === 'ol') isActive = document.queryCommandState('insertOrderedList') || isInsideTag('ol');
+          else if (fmt === 'sub') isActive = document.queryCommandState('subscript') || isInsideTag('sub');
+          else if (fmt === 'sup') isActive = document.queryCommandState('superscript') || isInsideTag('sup');
+          else if (fmt === 'h1') isActive = isInsideTag('h1');
+          else if (fmt === 'h2') isActive = isInsideTag('h2');
+          else if (fmt === 'blockquote') isActive = isInsideTag('blockquote');
+          else if (fmt === 'code') isActive = isInsideTag('code') || isInsideTag('pre');
+          else if (fmt === 'highlight') isActive = Boolean(markNode) || isHighlightPending;
+        } catch (e) {
+          isActive = false;
+        }
+
+        btn.classList.toggle('active', Boolean(isActive));
+      });
+    };
+
+    // Initial sync & hide raw textarea
+    syncToVisual();
+    textarea.style.display = 'none';
+    wrap.appendChild(visualEditor);
+
+    // Listen for input and selection changes
+    visualEditor.addEventListener('input', () => {
+      syncToTextarea();
+      updateFormatIndicators();
+    });
+
+    ['keyup', 'mouseup', 'focus', 'click'].forEach((evt) => {
+      visualEditor.addEventListener(evt, updateFormatIndicators);
+    });
+
+    textarea.addEventListener('change', syncToVisual);
+
+    // Toolbar formatting actions
     toolbar.querySelectorAll('[data-format]').forEach((btn) => {
       btn.addEventListener('mousedown', (e) => {
-        e.preventDefault(); // Prevents input from losing focus / selection
+        e.preventDefault();
       });
+
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        applyMarkdownFormat(inputOrTextarea, btn.dataset.format);
+
+        const format = btn.dataset.format;
+        visualEditor.focus();
+
+        switch (format) {
+          case 'bold':
+            document.execCommand('bold', false, null);
+            break;
+          case 'italic':
+            document.execCommand('italic', false, null);
+            break;
+          case 'underline':
+            document.execCommand('underline', false, null);
+            break;
+          case 'h1':
+            document.execCommand('formatBlock', false, isInsideTag('h1') ? '<p>' : '<h1>');
+            break;
+          case 'h2':
+            document.execCommand('formatBlock', false, isInsideTag('h2') ? '<p>' : '<h2>');
+            break;
+          case 'ul':
+            document.execCommand('insertUnorderedList', false, null);
+            break;
+          case 'ol':
+            document.execCommand('insertOrderedList', false, null);
+            break;
+          case 'blockquote':
+            document.execCommand('formatBlock', false, isInsideTag('blockquote') ? '<p>' : '<blockquote>');
+            break;
+          case 'code':
+            document.execCommand('formatBlock', false, isInsideTag('pre') || isInsideTag('code') ? '<p>' : '<pre>');
+            break;
+          case 'sub':
+            document.execCommand('subscript', false, null);
+            break;
+          case 'sup':
+            document.execCommand('superscript', false, null);
+            break;
+          case 'hr':
+            document.execCommand('insertHorizontalRule', false, null);
+            break;
+          case 'highlight':
+            const markNode = getHighlightParentNode();
+            if (markNode || isHighlightPending) {
+              if (markNode) {
+                const parent = markNode.parentNode;
+                while (markNode.firstChild) {
+                  parent.insertBefore(markNode.firstChild, markNode);
+                }
+                parent.removeChild(markNode);
+              }
+              isHighlightPending = false;
+              document.execCommand('hiliteColor', false, 'transparent');
+              document.execCommand('backColor', false, 'transparent');
+            } else {
+              isHighlightPending = true;
+              const sel = window.getSelection();
+              if (sel && sel.rangeCount && !sel.isCollapsed) {
+                const range = sel.getRangeAt(0);
+                const mark = document.createElement('mark');
+                mark.style.backgroundColor = '#fef08a';
+                mark.style.color = '#1e293b';
+                mark.style.padding = '2px 4px';
+                mark.style.borderRadius = '2px';
+                try {
+                  range.surroundContents(mark);
+                } catch (err) {
+                  document.execCommand('hiliteColor', false, '#fef08a');
+                }
+              } else {
+                document.execCommand('hiliteColor', false, '#fef08a');
+              }
+            }
+            break;
+          default:
+            applyMarkdownFormat(textarea, format);
+            syncToVisual();
+            break;
+        }
+        syncToTextarea();
+        updateFormatIndicators();
       });
     });
 
-    inputOrTextarea.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && (e.key === 'b' || e.key === 'B')) {
-        e.preventDefault();
-        applyMarkdownFormat(inputOrTextarea, 'bold');
-      } else if ((e.ctrlKey || e.metaKey) && (e.key === 'i' || e.key === 'I')) {
-        e.preventDefault();
-        applyMarkdownFormat(inputOrTextarea, 'italic');
-      } else if ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'U')) {
-        e.preventDefault();
-        applyMarkdownFormat(inputOrTextarea, 'underline');
+    // Keyboard shortcuts
+    visualEditor.addEventListener('keydown', (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        const k = e.key.toLowerCase();
+        if (k === 'b' || k === 'i' || k === 'u') {
+          e.preventDefault();
+          const cmd = k === 'b' ? 'bold' : k === 'i' ? 'italic' : 'underline';
+          document.execCommand(cmd, false, null);
+          syncToTextarea();
+          updateFormatIndicators();
+        }
       }
     });
   });
