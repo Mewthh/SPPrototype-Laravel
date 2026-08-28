@@ -24,6 +24,10 @@ export default defineConfig({
     ],
     server: {
         cors: true,
+        host: 'spprototype-laravel.test',
+        hmr: {
+            host: 'spprototype-laravel.test',
+        },
         watch: {
             ignored: [
                 '**/.agents/**',

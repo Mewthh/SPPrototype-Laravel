@@ -1,3 +1,13 @@
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 const themeToggle = document.querySelector('[data-theme-toggle]');
 
 const newsForm = document.querySelector('[data-news-form]');
@@ -1161,6 +1171,58 @@ function cancelEditingNews() {
   updateNewsEditorUI();
   renderNewsQueue();
   checkNewsDraft(null);
+}
+
+async function fetchNewsFromDatabase() {
+  try {
+    const res = await fetch('/admin/api/news', {
+      headers: { 'Accept': 'application/json' },
+    });
+    if (!res.ok) return;
+    const result = await res.json();
+    const items = (result.data || []).map((item) => ({
+      id: item.id,
+      type: 'announcement',
+      section: 'News',
+      title: item.title,
+      summary: item.excerpt || item.summary || '',
+      publishDate: item.published_at ? String(item.published_at).substring(0, 10) : (item.created_at ? String(item.created_at).substring(0, 10) : ''),
+      status: item.status || 'published',
+      body: item.content || item.body || '',
+      coverImage: item.image || item.coverImage || null,
+      featured: Boolean(item.featured),
+    }));
+    state.posts = state.posts.filter((p) => p.section !== 'News').concat(items);
+    renderAll();
+  } catch (err) {
+    console.error('Failed to fetch news from database:', err);
+  }
+}
+
+async function fetchActivitiesFromDatabase() {
+  try {
+    const res = await fetch('/admin/api/activities', {
+      headers: { 'Accept': 'application/json' },
+    });
+    if (!res.ok) return;
+    const result = await res.json();
+    const items = (result.data || []).map((item) => ({
+      id: item.id,
+      type: 'activity',
+      section: 'Activity',
+      title: item.title,
+      summary: item.excerpt || item.summary || '',
+      publishDate: item.published_at ? String(item.published_at).substring(0, 10) : (item.created_at ? String(item.created_at).substring(0, 10) : ''),
+      status: item.status || 'scheduled',
+      body: item.content || item.body || '',
+      coverImage: item.image || item.coverImage || null,
+      featured: Boolean(item.featured),
+    }));
+    state.posts = state.posts.filter((p) => p.section !== 'Activity').concat(items);
+    renderAll();
+  } catch (err) {
+    console.error('Failed to fetch activities from database:', err);
+  }
 }
 
 async function handleNewsSubmit(event) {
