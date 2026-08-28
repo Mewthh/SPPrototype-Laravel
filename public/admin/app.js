@@ -449,7 +449,8 @@ function setActivityView(view) {
 
 function renderMetrics() {
   const newsCount = state.posts.filter((p) => p.type === 'announcement').length;
-  const activityCount = state.posts.filter((p) => p.type === 'event').length;
+  const isAct = (p) => p.type === 'event' || p.type === 'activity' || p.section === 'Activity';
+  const activityCount = state.posts.filter(isAct).length;
 
   newsCountBadges.forEach((b) => (b.textContent = String(newsCount)));
   activityCountBadges.forEach((b) => (b.textContent = String(activityCount)));
@@ -473,10 +474,10 @@ function renderMetrics() {
   if (elNewsArch) elNewsArch.textContent = String(newsArchived);
 
   const actAll = activityCount;
-  const actPublished = state.posts.filter((p) => p.type === 'event' && p.status === 'published').length;
-  const actScheduled = state.posts.filter((p) => p.type === 'event' && p.status === 'scheduled').length;
-  const actDraft = state.posts.filter((p) => p.type === 'event' && p.status === 'draft').length;
-  const actArchived = state.posts.filter((p) => p.type === 'event' && p.status === 'archived').length;
+  const actPublished = state.posts.filter((p) => isAct(p) && p.status === 'published').length;
+  const actScheduled = state.posts.filter((p) => isAct(p) && p.status === 'scheduled').length;
+  const actDraft = state.posts.filter((p) => isAct(p) && p.status === 'draft').length;
+  const actArchived = state.posts.filter((p) => isAct(p) && p.status === 'archived').length;
 
   const elActAll = document.querySelector('[data-activity-filter-all-count]');
   const elActPub = document.querySelector('[data-activity-filter-published-count]');
@@ -571,7 +572,7 @@ function renderNewsQueue() {
 function renderActivityQueue() {
   if (!activityList) return;
 
-  const actItems = state.posts.filter((p) => p.type === 'event');
+  const actItems = state.posts.filter((p) => p.type === 'event' || p.type === 'activity' || p.section === 'Activity');
   const filtered =
     state.activityFilter === 'all'
       ? actItems
@@ -1208,7 +1209,7 @@ async function fetchActivitiesFromDatabase() {
     const result = await res.json();
     const items = (result.data || []).map((item) => ({
       id: item.id,
-      type: 'activity',
+      type: 'event',
       section: 'Activity',
       title: item.title,
       summary: item.excerpt || item.summary || '',
@@ -1218,7 +1219,7 @@ async function fetchActivitiesFromDatabase() {
       coverImage: item.image || item.coverImage || null,
       featured: Boolean(item.featured),
     }));
-    state.posts = state.posts.filter((p) => p.section !== 'Activity').concat(items);
+    state.posts = state.posts.filter((p) => p.section !== 'Activity' && p.type !== 'event' && p.type !== 'activity').concat(items);
     renderAll();
   } catch (err) {
     console.error('Failed to fetch activities from database:', err);
