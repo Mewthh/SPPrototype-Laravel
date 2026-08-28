@@ -374,165 +374,34 @@
 			</section>
 
 			<section class="panel editor-panel" id="conferences-section">
-				<!-- View 1: Conference Editor -->
-				<div class="panel-view is-hidden" data-conference-view="editor">
-					<div class="section-panel-head">
-						<div>
-							<p class="panel-kicker">SPP Conferences</p>
-							<h2>Conference Editor</h2>
-							<p>Configure annual SPP physics conferences, themes, dates, venues, and portal details.</p>
-						</div>
-						<div>
-							<button type="button" class="button button-secondary" data-show-conference-list>
-								View Conferences (<span data-conference-count-badge>0</span>)
-							</button>
-						</div>
-					</div>
-
-					<form class="compose-form" data-conference-form>
-						<div class="editor-status-banner" data-conference-banner>
-							<span data-conference-banner-text>Create New Conference</span>
-							<button type="button" class="item-action" data-conference-cancel-edit style="display: none;">Cancel Edit</button>
-						</div>
-
-						<input type="hidden" name="editingId" value="" />
-
-						<div class="field-row-split" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
-							<label class="field-row">
-								<span>Status</span>
-								<select name="status">
-									<option value="published" selected>Published (Active Portal)</option>
-									<option value="draft">Draft (Upcoming)</option>
-									<option value="archived">Archived (Past)</option>
-								</select>
-							</label>
-
-							<label class="field-row">
-								<span>Conference Year</span>
-								<input type="number" name="year" min="1980" max="2099" placeholder="e.g. 2026" required />
-							</label>
-						</div>
-
-						<label class="field-row">
-							<span>Conference Title / Edition</span>
-							<input type="text" name="title" placeholder="e.g. 44th SPP Physics Conference (SPP 2026)" required />
-						</label>
-
-						<label class="field-row">
-							<span>Conference Theme / Subtitle</span>
-							<input type="text" name="theme" placeholder="e.g. Frontiers in Physics, Optics, and Quantum Technologies" />
-						</label>
-
-						<div class="field-row-split" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
-							<label class="field-row">
-								<span>Location / Venue</span>
-								<input type="text" name="location" placeholder="e.g. Ateneo de Manila University, Quezon City" />
-							</label>
-
-							<label class="field-row">
-								<span>Conference Dates</span>
-								<input type="text" name="dates" placeholder="e.g. October 15–18, 2026" />
-							</label>
-						</div>
-
-						<label class="field-row">
-							<span>Summary / Highlights</span>
-							<textarea name="summary" rows="2" placeholder="Brief summary or highlights of the conference"></textarea>
-						</label>
-
-						<div class="field-row field-row-wide">
-							<span class="field-label">Conference Details &amp; Overview</span>
-							<div class="rich-editor-wrap" data-rich-editor="conference-body">
-								<div class="editor-toolbar" role="toolbar" aria-label="Conference formatting toolbar">
-									<button type="button" class="toolbar-btn" data-format="bold" title="Bold (**text**)" aria-label="Bold"><strong>B</strong></button>
-									<button type="button" class="toolbar-btn" data-format="italic" title="Italic (*text*)" aria-label="Italic"><em>I</em></button>
-									<button type="button" class="toolbar-btn" data-format="underline" title="Underline (<u>text</u>)" aria-label="Underline"><u>U</u></button>
-									<button type="button" class="toolbar-btn" data-format="h1" title="Heading 1 (# Title)" aria-label="Heading 1">H1</button>
-									<button type="button" class="toolbar-btn" data-format="h2" title="Heading 2 (## Subtitle)" aria-label="Heading 2">H2</button>
-									<button type="button" class="toolbar-btn" data-format="ul" title="Bullet List (- item)" aria-label="Bullet List"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><circle cx="3.5" cy="6" r="1.5" fill="currentColor"></circle><circle cx="3.5" cy="12" r="1.5" fill="currentColor"></circle><circle cx="3.5" cy="18" r="1.5" fill="currentColor"></circle></svg></button>
-									<button type="button" class="toolbar-btn" data-format="ol" title="Numbered List (1. item)" aria-label="Numbered List"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" y1="6" x2="21" y2="6"></line><line x1="10" y1="12" x2="21" y2="12"></line><line x1="10" y1="18" x2="21" y2="18"></line><path d="M4 6h1v4M4 10h2" stroke-width="1.6"></path><path d="M4 14h2a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H4v1h3" stroke-width="1.6"></path></svg></button>
-									<button type="button" class="toolbar-btn" data-format="blockquote" title="Blockquote (> text)" aria-label="Blockquote"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.75-2-2-2H4c-1.25 0-2 .75-2 2v6c0 1.25.75 2 2 2 0 4-1 6-1 8z" fill="currentColor" stroke="none"></path><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.75-2-2-2h-4c-1.25 0-2 .75-2 2v6c0 1.25.75 2 2 2 0 4-1 6-1 8z" fill="currentColor" stroke="none"></path></svg></button>
-									<button type="button" class="toolbar-btn" data-format="code" title="Inline code (`code`)" aria-label="Code">&lt;/&gt;</button>
-									<button type="button" class="toolbar-btn" data-format="hr" title="Horizontal rule (---)" aria-label="Horizontal Rule">&#x2014;</button>
-									<button type="button" class="toolbar-btn" data-format="link" title="Link ([text](url))" aria-label="Link">&#x1F517;</button>
-									<button type="button" class="toolbar-btn" data-format="image" title="Image (![alt](url))" aria-label="Image">&#x1F5BC;</button>
-									<button type="button" class="toolbar-btn" data-format="table" title="Insert table" aria-label="Table"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg></button>
-									<button type="button" class="toolbar-btn" data-format="footnote" title="Footnote ([^1])" aria-label="Footnote">fn</button>
-									<button type="button" class="toolbar-btn" data-format="highlight" title="Highlight (==text==)" aria-label="Highlight"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 11-6 6v3h3l6-6"></path><path d="m22 7-4.5-4.5a2.12 2.12 0 0 0 0-3 0L10 7l7 7 4.5-4.5a2.12 2.12 0 0 0 0-3z"></path><line x1="14" y1="20" x2="22" y2="20" stroke-width="2.5" stroke="#f59e0b"></line></svg></button>
-									<button type="button" class="toolbar-btn" data-format="sub" title="Subscript (~text~)" aria-label="Subscript">X<sub>2</sub></button>
-									<button type="button" class="toolbar-btn" data-format="sup" title="Superscript (^text^)" aria-label="Superscript">X<sup>2</sup></button>
-								</div>
-								<textarea name="body" rows="6" placeholder="Full details, call for papers, registration info, invited speakers..."></textarea>
-							</div>
-						</div>
-
-						<div class="field-row field-row-wide">
-							<span class="field-label">Cover / Banner Image</span>
-							<div class="image-upload-zone" id="conference-image-zone" data-upload-zone="conference" tabindex="0" role="button" aria-label="Click or drag an image here to upload">
-								<div class="image-upload-placeholder" data-upload-placeholder="conference">
-									<span class="upload-icon" aria-hidden="true">&#x1F5BC;</span>
-									<span>Click to upload or drag &amp; drop</span>
-									<small>PNG, JPG, GIF, WebP &mdash; max 5 MB</small>
-								</div>
-								<img class="image-upload-preview is-hidden" data-upload-preview="conference" alt="Cover image preview" />
-								<input type="file" name="coverImage" accept="image/*" class="image-upload-input" data-upload-input="conference" aria-label="Upload conference cover image" />
-							</div>
-							<div class="image-upload-actions is-hidden" data-upload-actions="conference">
-								<span class="image-upload-filename" data-upload-filename="conference"></span>
-								<button type="button" class="item-action danger" data-upload-clear="conference">Remove image</button>
-							</div>
-						</div>
-
-						<div class="form-actions">
-							<button type="submit" class="button button-primary" data-conference-submit-primary>Save &amp; Publish</button>
-							<button type="submit" class="button button-secondary" data-status-override="draft" data-conference-submit-secondary>Save as Draft</button>
-							<button type="reset" class="button button-quiet">Reset</button>
-						</div>
-					</form>
-				</div>
-
-				<!-- View 2: Conferences List / Overview -->
 				<div class="panel-view" data-conference-view="list">
 					<div class="section-panel-head">
 						<div>
 							<p class="panel-kicker">SPP Conferences</p>
-							<h2>Conference Years Management</h2>
-							<p>Manage annual SPP physics conferences, themes, dates, venues, and portal pages.</p>
-						</div>
-						<div>
-							<button type="button" class="button button-primary" data-show-conference-editor>
-								+ Add New Conference
-							</button>
+							<h2>Conference Editor</h2>
 						</div>
 					</div>
-
-					<div class="conference-toolbar">
-						<div class="conference-years-group" aria-label="Quick portal links">
-							<span class="conference-years-label">Active Portals:</span>
-							<div class="conference-portal-pills" data-conference-portal-pills>
-								<!-- Rendered dynamically -->
-							</div>
+					<div class="compose-form">
+						<div class="empty-state">
+							<p>Conference Editor</p>
 						</div>
-					</div>
-
-					<div class="queue-toolbar" style="margin-top: 18px;">
-						<div class="queue-filters" aria-label="Conference filters">
-							<button type="button" class="filter-tab active" data-conference-filter="all">All (<span data-conference-filter-all-count>0</span>)</button>
-							<button type="button" class="filter-tab" data-conference-filter="published">Published (<span data-conference-filter-published-count>0</span>)</button>
-							<button type="button" class="filter-tab" data-conference-filter="draft">Drafts (<span data-conference-filter-draft-count>0</span>)</button>
-							<button type="button" class="filter-tab" data-conference-filter="archived">Archived (<span data-conference-filter-archived-count>0</span>)</button>
-						</div>
-					</div>
-
-					<div class="conference-grid" data-conference-list>
-						<!-- Rendered dynamically from state -->
 					</div>
 				</div>
 			</section>
 
 			<footer class="site-footer">
 			</footer>
-		</main>
+	<!-- Custom Confirmation Modal -->
+	<div class="confirm-modal-overlay is-hidden" id="custom-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+		<div class="confirm-modal-card">
+			<div class="confirm-modal-icon warning" aria-hidden="true">&#x26A0;</div>
+			<h3 class="confirm-modal-title" id="confirm-modal-title">Confirm Deletion</h3>
+			<p class="confirm-modal-message" id="confirm-modal-message">Are you sure you want to delete this item? This action cannot be undone.</p>
+			<div class="confirm-modal-actions">
+				<button type="button" class="button button-quiet" id="confirm-modal-cancel">Cancel</button>
+				<button type="button" class="button button-danger" id="confirm-modal-proceed">Delete</button>
+			</div>
+		</div>
 	</div>
 </body>
 

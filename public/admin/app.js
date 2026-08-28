@@ -918,10 +918,27 @@ function applyMarkdownFormat(inputOrTextarea, format) {
     el.setSelectionRange(urlStart, urlStart + 30);
     el.dispatchEvent(new Event('input', { bubbles: true }));
   } else if (format === 'table') {
-    const tableSnippet = `\n| Header 1 | Header 2 | Header 3 |\n| --- | --- | --- |\n| Cell 1 | Cell 2 | Cell 3 |\n| Cell 4 | Cell 5 | Cell 6 |\n`;
-    el.value = val.substring(0, start) + tableSnippet + val.substring(end);
-    el.setSelectionRange(start + 3, start + 11);
-    el.dispatchEvent(new Event('input', { bubbles: true }));
+    showTableModal().then((dims) => {
+      if (!dims) return;
+      const { rows, cols } = dims;
+      const headerCells = Array.from({ length: cols }, (_, i) => ` Header ${i + 1} `).join('|');
+      const separators = Array.from({ length: cols }, () => ' --- ').join('|');
+      const dataRow = Array.from({ length: cols }, (_, i) => ` Cell ${i + 1} `).join('|');
+      let snippet = `\n|${headerCells}|\n|${separators}|`;
+      for (let r = 0; r < rows; r++) {
+        const rowCells = Array.from({ length: cols }, (_, i) => ` Cell ${r * cols + i + 1} `).join('|');
+        snippet += `\n|${rowCells}|`;
+      }
+      snippet += '\n';
+      const freshVal = el.value;
+      const freshStart = el.selectionStart;
+      const freshEnd = el.selectionEnd;
+      el.value = freshVal.substring(0, freshStart) + snippet + freshVal.substring(freshEnd);
+      el.setSelectionRange(freshStart + 3, freshStart + 3 + `Header 1`.length);
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+      el.focus();
+    });
+    return; // modal is async, don't fall through
   } else if (format === 'footnote') {
     const fnMatches = val.match(/\[\^(\d+)\]/g) || [];
     const nextFn = fnMatches.length + 1;
@@ -1226,11 +1243,195 @@ async function fetchActivitiesFromDatabase() {
   }
 }
 
+function setButtonLoading(button, isLoading, text = 'Saving...') {
+  if (!button) return;
+  if (isLoading) {
+    button._origHtml = button.innerHTML;
+    button.disabled = true;
+    button.classList.add('is-loading');
+    button.innerHTML = `<span class="btn-spinner" aria-hidden="true"></span>${text}`;
+  } else {
+    button.disabled = false;
+    button.classList.remove('is-loading');
+    if (button._origHtml) {
+      button.innerHTML = button._origHtml;
+      delete button._origHtml;
+    }
+  }
+}
+
+function showTableModal() {
+  return new Promise((resolve) => {
+    let modal = document.getElementById('table-picker-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'table-picker-modal';
+      modal.className = 'confirm-modal-overlay is-hidden';
+      modal.setAttribute('role', 'dialog');
+      modal.setAttribute('aria-modal', 'true');
+      modal.setAttribute('aria-labelledby', 'table-modal-title');
+      modal.innerHTML = `
+        <div class="confirm-modal-card table-modal-card">
+          <div class="confirm-modal-icon table-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+          </div>
+          <h3 class="confirm-modal-title" id="table-modal-title">Insert Table</h3>
+          <p class="confirm-modal-message">Choose the number of columns and rows for your table.</p>
+          <div class="table-modal-inputs">
+            <label class="table-modal-field">
+              <span>Columns</span>
+              <div class="table-modal-stepper">
+                <button type="button" class="table-step-btn" data-table-step="cols" data-dir="-1">−</button>
+                <input type="number" id="table-modal-cols" class="table-modal-num" min="1" max="10" value="3" />
+                <button type="button" class="table-step-btn" data-table-step="cols" data-dir="1">+</button>
+              </div>
+            </label>
+            <label class="table-modal-field">
+              <span>Rows</span>
+              <div class="table-modal-stepper">
+                <button type="button" class="table-step-btn" data-table-step="rows" data-dir="-1">−</button>
+                <input type="number" id="table-modal-rows" class="table-modal-num" min="1" max="20" value="2" />
+                <button type="button" class="table-step-btn" data-table-step="rows" data-dir="1">+</button>
+              </div>
+            </label>
+          </div>
+          <div class="table-modal-preview" id="table-modal-preview" aria-hidden="true"></div>
+          <div class="confirm-modal-actions">
+            <button type="button" class="button button-quiet" id="table-modal-cancel">Cancel</button>
+            <button type="button" class="button button-primary" id="table-modal-insert">Insert Table</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    } else if (modal.parentElement !== document.body) {
+      document.body.appendChild(modal);
+    }
+
+    const colsInput = modal.querySelector('#table-modal-cols');
+    const rowsInput = modal.querySelector('#table-modal-rows');
+    const preview = modal.querySelector('#table-modal-preview');
+    const btnCancel = modal.querySelector('#table-modal-cancel');
+    const btnInsert = modal.querySelector('#table-modal-insert');
+
+    function clamp(val, min, max) { return Math.min(Math.max(Number(val) || min, min), max); }
+
+    function renderPreview() {
+      const cols = clamp(colsInput.value, 1, 10);
+      const rows = clamp(rowsInput.value, 1, 20);
+      let html = '<table class="table-preview-grid">';
+      html += '<thead><tr>' + Array.from({ length: cols }, () => '<th></th>').join('') + '</tr></thead>';
+      html += '<tbody>';
+      for (let r = 0; r < rows; r++) {
+        html += '<tr>' + Array.from({ length: cols }, () => '<td></td>').join('') + '</tr>';
+      }
+      html += '</tbody></table>';
+      preview.innerHTML = html;
+    }
+
+    colsInput.value = 3;
+    rowsInput.value = 2;
+    renderPreview();
+
+    modal.querySelectorAll('.table-step-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.tableStep === 'cols' ? colsInput : rowsInput;
+        const dir = Number(btn.dataset.dir);
+        const max = Number(target.max);
+        const min = Number(target.min);
+        target.value = clamp(Number(target.value) + dir, min, max);
+        renderPreview();
+      });
+    });
+
+    colsInput.addEventListener('input', renderPreview);
+    rowsInput.addEventListener('input', renderPreview);
+
+    const cleanup = (result) => {
+      modal.classList.add('is-hidden');
+      btnCancel.removeEventListener('click', onCancel);
+      btnInsert.removeEventListener('click', onInsert);
+      modal.removeEventListener('click', onBackdrop);
+      resolve(result);
+    };
+
+    const onCancel = () => cleanup(null);
+    const onInsert = () => {
+      const cols = clamp(colsInput.value, 1, 10);
+      const rows = clamp(rowsInput.value, 1, 20);
+      cleanup({ cols, rows });
+    };
+    const onBackdrop = (e) => { if (e.target === modal) cleanup(null); };
+
+    btnCancel.addEventListener('click', onCancel);
+    btnInsert.addEventListener('click', onInsert);
+    modal.addEventListener('click', onBackdrop);
+
+    modal.classList.remove('is-hidden');
+    colsInput.focus();
+  });
+}
+
+function showConfirmModal(title = 'Confirm Deletion', message = 'Are you sure you want to delete this item? This action cannot be undone.') {
+  return new Promise((resolve) => {
+    let modal = document.getElementById('custom-confirm-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'custom-confirm-modal';
+      modal.className = 'confirm-modal-overlay is-hidden';
+      modal.setAttribute('role', 'dialog');
+      modal.setAttribute('aria-modal', 'true');
+      modal.innerHTML = `
+        <div class="confirm-modal-card">
+          <div class="confirm-modal-icon warning" aria-hidden="true">&#x26A0;</div>
+          <h3 class="confirm-modal-title" id="confirm-modal-title">Confirm Deletion</h3>
+          <p class="confirm-modal-message" id="confirm-modal-message">Are you sure you want to delete this item?</p>
+          <div class="confirm-modal-actions">
+            <button type="button" class="button button-quiet" id="confirm-modal-cancel">Cancel</button>
+            <button type="button" class="button button-danger" id="confirm-modal-proceed">Delete</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    } else if (modal.parentElement !== document.body) {
+      document.body.appendChild(modal);
+    }
+
+    const titleEl = modal.querySelector('#confirm-modal-title');
+    const messageEl = modal.querySelector('#confirm-modal-message');
+    const btnCancel = modal.querySelector('#confirm-modal-cancel');
+    const btnProceed = modal.querySelector('#confirm-modal-proceed');
+
+    if (titleEl) titleEl.textContent = title;
+    if (messageEl) messageEl.textContent = message;
+
+    const cleanup = (result) => {
+      modal.classList.add('is-hidden');
+      btnCancel?.removeEventListener('click', onCancel);
+      btnProceed?.removeEventListener('click', onProceed);
+      modal.removeEventListener('click', onBackdrop);
+      resolve(result);
+    };
+
+    const onCancel = () => cleanup(false);
+    const onProceed = () => cleanup(true);
+    const onBackdrop = (e) => {
+      if (e.target === modal) cleanup(false);
+    };
+
+    btnCancel?.addEventListener('click', onCancel);
+    btnProceed?.addEventListener('click', onProceed);
+    modal.addEventListener('click', onBackdrop);
+
+    modal.classList.remove('is-hidden');
+  });
+}
+
 async function handleNewsSubmit(event) {
   event.preventDefault();
   if (!newsForm) return;
 
-  const overrideStatus = event.submitter?.dataset.statusOverride;
+  const submitter = event.submitter;
+  const overrideStatus = submitter?.dataset.statusOverride;
   const data = new FormData(newsForm);
   const title = String(data.get('title') || '').trim();
   if (!title) return;
@@ -1244,6 +1445,8 @@ async function handleNewsSubmit(event) {
   if (imageState.news && !data.get('coverImage')?.name) {
     data.set('coverImage', imageState.news);
   }
+
+  setButtonLoading(submitter, true, 'Saving...');
 
   try {
     let url = '/admin/api/news';
@@ -1277,6 +1480,8 @@ async function handleNewsSubmit(event) {
   } catch (err) {
     console.error('Error saving news:', err);
     alert('An error occurred while saving the news post.');
+  } finally {
+    setButtonLoading(submitter, false);
   }
 }
 
@@ -1298,7 +1503,12 @@ async function handleNewsAction(event) {
   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
   if (action === 'delete') {
-    if (!confirm('Are you sure you want to delete this news post?')) return;
+    const confirmed = await showConfirmModal('Delete News Post', 'Are you sure you want to delete this news post? This action cannot be undone.');
+    if (!confirmed) return;
+
+    setButtonLoading(target, true, 'Deleting...');
+    item.classList.add('is-deleting');
+
     try {
       const res = await fetch(`/admin/api/news/${postId}`, {
         method: 'DELETE',
@@ -1308,14 +1518,19 @@ async function handleNewsAction(event) {
         },
       });
 
-      if (res.ok) {
+      if (res.ok || res.status === 404) {
         if (state.editingNewsId == postId) state.editingNewsId = null;
-        await fetchNewsFromDatabase();
+        state.posts = state.posts.filter((p) => String(p.id) !== String(postId));
+        renderAll();
       } else {
+        item.classList.remove('is-deleting');
+        setButtonLoading(target, false);
         alert('Failed to delete news post.');
       }
     } catch (err) {
       console.error(err);
+      item.classList.remove('is-deleting');
+      setButtonLoading(target, false);
       alert('Error deleting news post.');
     }
     return;
@@ -1323,6 +1538,9 @@ async function handleNewsAction(event) {
 
   if (action === 'publish' || action === 'archive' || action === 'draft') {
     const nextStatus = action === 'publish' ? 'published' : (action === 'archive' ? 'archived' : 'draft');
+    const loadingText = action === 'archive' ? 'Archiving...' : (action === 'publish' ? 'Publishing...' : 'Updating...');
+    setButtonLoading(target, true, loadingText);
+
     try {
       const res = await fetch(`/admin/api/news/${postId}/status`, {
         method: 'PATCH',
@@ -1342,6 +1560,8 @@ async function handleNewsAction(event) {
     } catch (err) {
       console.error(err);
       alert('Error updating status.');
+    } finally {
+      setButtonLoading(target, false);
     }
   }
 }
@@ -1384,7 +1604,8 @@ async function handleActivitySubmit(event) {
   event.preventDefault();
   if (!activityForm) return;
 
-  const overrideStatus = event.submitter?.dataset.statusOverride;
+  const submitter = event.submitter;
+  const overrideStatus = submitter?.dataset.statusOverride;
   const data = new FormData(activityForm);
   const title = String(data.get('title') || '').trim();
   if (!title) return;
@@ -1397,6 +1618,8 @@ async function handleActivitySubmit(event) {
   if (imageState.activity && !data.get('coverImage')?.name) {
     data.set('coverImage', imageState.activity);
   }
+
+  setButtonLoading(submitter, true, 'Saving...');
 
   try {
     let url = '/admin/api/activities';
@@ -1428,6 +1651,8 @@ async function handleActivitySubmit(event) {
   } catch (err) {
     console.error('Error saving activity:', err);
     alert('An error occurred while saving the activity.');
+  } finally {
+    setButtonLoading(submitter, false);
   }
 }
 
@@ -1449,7 +1674,12 @@ async function handleActivityAction(event) {
   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
   if (action === 'delete') {
-    if (!confirm('Are you sure you want to delete this activity?')) return;
+    const confirmed = await showConfirmModal('Delete Activity', 'Are you sure you want to delete this activity? This action cannot be undone.');
+    if (!confirmed) return;
+
+    setButtonLoading(target, true, 'Deleting...');
+    item.classList.add('is-deleting');
+
     try {
       const res = await fetch(`/admin/api/activities/${postId}`, {
         method: 'DELETE',
@@ -1459,14 +1689,19 @@ async function handleActivityAction(event) {
         },
       });
 
-      if (res.ok) {
+      if (res.ok || res.status === 404) {
         if (state.editingActivityId == postId) state.editingActivityId = null;
-        await fetchActivitiesFromDatabase();
+        state.posts = state.posts.filter((p) => String(p.id) !== String(postId));
+        renderAll();
       } else {
+        item.classList.remove('is-deleting');
+        setButtonLoading(target, false);
         alert('Failed to delete activity.');
       }
     } catch (err) {
       console.error(err);
+      item.classList.remove('is-deleting');
+      setButtonLoading(target, false);
       alert('Error deleting activity.');
     }
     return;
@@ -1474,6 +1709,9 @@ async function handleActivityAction(event) {
 
   if (action === 'publish' || action === 'archive' || action === 'draft') {
     const nextStatus = action === 'publish' ? 'published' : (action === 'archive' ? 'archived' : 'draft');
+    const loadingText = action === 'archive' ? 'Archiving...' : (action === 'publish' ? 'Publishing...' : 'Updating...');
+    setButtonLoading(target, true, loadingText);
+
     try {
       const res = await fetch(`/admin/api/activities/${postId}/status`, {
         method: 'PATCH',
@@ -1493,6 +1731,8 @@ async function handleActivityAction(event) {
     } catch (err) {
       console.error(err);
       alert('Error updating status.');
+    } finally {
+      setButtonLoading(target, false);
     }
   }
 }
@@ -1685,7 +1925,7 @@ function handleConferenceSubmit(event) {
   setConferenceView('list');
 }
 
-function handleConferenceAction(event) {
+async function handleConferenceAction(event) {
   const target = event.target.closest('[data-conference-action]');
   if (!target) return;
 
@@ -1704,7 +1944,8 @@ function handleConferenceAction(event) {
   if (idx < 0) return;
 
   if (action === 'delete') {
-    if (!confirm('Are you sure you want to delete this conference entry?')) return;
+    const confirmed = await showConfirmModal('Delete Conference', 'Are you sure you want to delete this conference entry? This action cannot be undone.');
+    if (!confirmed) return;
     if (String(state.editingConferenceId) === String(confId)) state.editingConferenceId = null;
     state.conferences.splice(idx, 1);
   } else if (action === 'publish') {
