@@ -392,9 +392,32 @@ function initSppConference() {
   }
 }
 
+function initUserLoadingScreen() {
+  const userLoader = document.getElementById('user-loading-screen');
+  if (!userLoader) return;
+
+  let isDismissed = false;
+  function hideLoader() {
+    if (isDismissed) return;
+    isDismissed = true;
+    userLoader.classList.add('fade-out');
+    setTimeout(() => {
+      userLoader.classList.add('is-hidden');
+    }, 450);
+  }
+
+  if (document.readyState === 'complete') {
+    hideLoader();
+  } else {
+    window.addEventListener('load', hideLoader, { once: true });
+    setTimeout(hideLoader, 2000);
+  }
+}
+
 // ─── DOM Initialization ───────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
+  initUserLoadingScreen();
 
   if (!window.__sppThemeListenerAttached) {
     window.__sppThemeListenerAttached = true;

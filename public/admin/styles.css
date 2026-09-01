@@ -1934,3 +1934,116 @@ html[data-theme="dark"] .image-upload-zone.is-drag-over {
   color: var(--accent-strong) !important;
   font-weight: 700;
 }
+
+/* ─── Admin UI Loading Screen ─────────────────────────────────────────── */
+.admin-loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-page);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 24px;
+}
+
+.admin-loading-overlay.is-hidden,
+.admin-loading-overlay.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.admin-loading-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 24px;
+  width: 100%;
+  max-width: 280px;
+  padding: 32px 28px;
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.14), 0 0 0 1px var(--border);
+  animation: adminLoadingScaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes adminLoadingScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.admin-loading-spinner-wrap {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-loading-spinner-glow {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-soft) 0%, transparent 70%);
+  filter: blur(8px);
+  animation: adminGlowPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes adminGlowPulse {
+  0% { opacity: 0.4; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1.15); }
+}
+
+.admin-loading-spinner-outer {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent-strong);
+  border-right-color: var(--accent);
+  animation: adminSpinnerRotate 0.9s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+
+.admin-loading-spinner-inner {
+  position: absolute;
+  inset: 10px;
+  border-radius: 50%;
+  border: 2.5px solid transparent;
+  border-bottom-color: var(--accent);
+  animation: adminSpinnerReverse 1.4s ease-in-out infinite;
+}
+
+@keyframes adminSpinnerRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes adminSpinnerReverse {
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.admin-loading-status {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--accent-strong);
+  letter-spacing: 0.06em;
+}
+
+

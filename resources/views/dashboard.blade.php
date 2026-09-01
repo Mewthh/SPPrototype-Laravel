@@ -26,6 +26,18 @@
 </head>
 
 <body>
+	<!-- Admin UI Loading Screen -->
+	<div id="admin-loading-screen" class="admin-loading-overlay" role="status" aria-live="polite" aria-label="Loading Admin Dashboard">
+		<div class="admin-loading-card">
+			<div class="admin-loading-spinner-wrap" aria-hidden="true">
+				<div class="admin-loading-spinner-glow"></div>
+				<div class="admin-loading-spinner-outer"></div>
+				<div class="admin-loading-spinner-inner"></div>
+			</div>
+			<p class="admin-loading-status" id="admin-loading-text">Loading...</p>
+		</div>
+	</div>
+
 	<a class="skip-link" href="#main-content">Skip to content</a>
 
 	<div class="dashboard-shell">

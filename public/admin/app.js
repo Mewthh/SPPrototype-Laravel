@@ -313,6 +313,46 @@ function saveConferences() {
   // Database persists changes; bypass localStorage write
 }
 
+const loadingScreenEl = document.getElementById('admin-loading-screen');
+const loadingScreenText = document.getElementById('admin-loading-text');
+
+function showAdminLoadingScreen(statusText = 'Loading workspace & retrieving database items...') {
+  if (!loadingScreenEl) return;
+  if (loadingScreenText && statusText) {
+    loadingScreenText.textContent = statusText;
+  }
+  loadingScreenEl.classList.remove('is-hidden', 'fade-out');
+}
+
+function hideAdminLoadingScreen() {
+  if (!loadingScreenEl) return;
+  loadingScreenEl.classList.add('fade-out');
+  setTimeout(() => {
+    loadingScreenEl.classList.add('is-hidden');
+  }, 450);
+}
+
+window.showAdminLoadingScreen = showAdminLoadingScreen;
+window.hideAdminLoadingScreen = hideAdminLoadingScreen;
+
+let pendingInitialDatabaseRequests = 2;
+let initialLoadDismissed = false;
+
+function notifyDatabaseFetchComplete() {
+  pendingInitialDatabaseRequests--;
+  if (pendingInitialDatabaseRequests <= 0 && !initialLoadDismissed) {
+    initialLoadDismissed = true;
+    hideAdminLoadingScreen();
+  }
+}
+
+setTimeout(() => {
+  if (!initialLoadDismissed) {
+    initialLoadDismissed = true;
+    hideAdminLoadingScreen();
+  }
+}, 3000);
+
 async function fetchNewsFromDatabase() {
   try {
     const res = await fetch('/admin/api/news');
@@ -338,6 +378,8 @@ async function fetchNewsFromDatabase() {
     }
   } catch (err) {
     console.error('Error fetching news from database:', err);
+  } finally {
+    notifyDatabaseFetchComplete();
   }
 }
 
@@ -370,6 +412,8 @@ async function fetchActivitiesFromDatabase() {
     }
   } catch (err) {
     console.error('Error fetching activities from database:', err);
+  } finally {
+    notifyDatabaseFetchComplete();
   }
 }
 
