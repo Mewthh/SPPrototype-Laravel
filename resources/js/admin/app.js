@@ -1208,16 +1208,30 @@ navLinks.forEach((link) => {
 });
 
 function updateActiveNavLink() {
-  const currentHash = window.location.hash || '#news-section';
+  let currentHash = window.location.hash || '#news-section';
+  if (!['#news-section', '#activities-section', '#conferences-section'].includes(currentHash)) {
+    currentHash = '#news-section';
+  }
   navLinks.forEach((link) => {
     const isActive = link.getAttribute('href') === currentHash;
     link.classList.toggle('active', isActive);
+  });
+
+  const sections = ['news-section', 'activities-section', 'conferences-section'];
+  sections.forEach((secId) => {
+    const secEl = document.getElementById(secId);
+    if (secEl) {
+      const isTarget = currentHash === `#${secId}`;
+      secEl.classList.toggle('is-hidden-section', !isTarget);
+    }
   });
 }
 window.addEventListener('hashchange', updateActiveNavLink);
 window.addEventListener('load', updateActiveNavLink);
 
 renderAll();
+if (!state.editingId) setNewsView('posts');
+if (!state.editingActivityId) setActivityView('posts');
 bindEvents();
 setupRichEditorToolbars();
 updateActiveNavLink();
