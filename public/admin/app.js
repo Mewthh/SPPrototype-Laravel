@@ -329,7 +329,7 @@ async function fetchNewsFromDatabase() {
         publishDate: item.published_at ? item.published_at.slice(0, 10) : (item.created_at ? item.created_at.slice(0, 10) : ''),
         body: item.content || '',
         status: item.status || 'draft',
-        coverImage: item.image || null,
+        coverImage: item.image_url || item.image || item.coverImage || null,
       }));
 
       const otherPosts = state.posts.filter((p) => p.type !== 'announcement');
@@ -358,7 +358,7 @@ async function fetchActivitiesFromDatabase() {
         body: item.description || '',
         location: item.location || '',
         status: item.status || 'draft',
-        coverImage: item.image || null,
+        coverImage: item.image_url || item.image || item.coverImage || null,
         featured: item.is_featured || false,
       }));
 
@@ -1366,7 +1366,7 @@ async function fetchNewsFromDatabase() {
       publishDate: item.published_at ? String(item.published_at).substring(0, 10) : (item.created_at ? String(item.created_at).substring(0, 10) : ''),
       status: item.status || 'published',
       body: item.content || item.body || '',
-      coverImage: item.image || item.coverImage || null,
+      coverImage: item.image_url || item.image || item.coverImage || null,
       featured: Boolean(item.featured),
     }));
     state.posts = state.posts.filter((p) => p.section !== 'News').concat(items);
@@ -1392,7 +1392,7 @@ async function fetchActivitiesFromDatabase() {
       publishDate: item.published_at ? String(item.published_at).substring(0, 10) : (item.created_at ? String(item.created_at).substring(0, 10) : ''),
       status: item.status || 'scheduled',
       body: item.content || item.body || '',
-      coverImage: item.image || item.coverImage || null,
+      coverImage: item.image_url || item.image || item.coverImage || null,
       featured: Boolean(item.featured),
     }));
     state.posts = state.posts.filter((p) => p.section !== 'Activity' && p.type !== 'event' && p.type !== 'activity').concat(items);

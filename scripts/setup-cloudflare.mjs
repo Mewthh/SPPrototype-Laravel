@@ -453,6 +453,31 @@ async function collectCredentials(rl, config, cliOptions) {
 
   // R2 Public URL (Custom domain or pub-xxxx.r2.dev)
   let r2Url = cliOptions.r2Url || vars.CLOUDFLARE_R2_URL;
+  if (!r2Url && config.bucketName) {
+    try {
+      // Check if r2.dev is already enabled via wrangler
+      const devUrlRes = runCommand('npx', ['wrangler', 'r2', 'bucket', 'dev-url', 'get', config.bucketName]);
+      const match = ((devUrlRes.stdout || '') + (devUrlRes.stderr || '')).match(/https:\/\/[a-zA-Z0-9\-\.]+\.r2\.dev/);
+      if (match) {
+        r2Url = match[0];
+        console.log(c.success(`Found active public r2.dev URL for ${config.bucketName}: ${c.bold(r2Url)}`));
+      } else {
+        const enablePrompt = await rl.question(`Enable free public access (r2.dev) for public bucket ${c.green(config.bucketName)}? (Y/n): `);
+        if (enablePrompt.toLowerCase() !== 'n') {
+          console.log(c.info(`Enabling public r2.dev access for ${config.bucketName}...`));
+          const enableRes = runCommand('npx', ['wrangler', 'r2', 'bucket', 'dev-url', 'enable', config.bucketName]);
+          const enabledMatch = ((enableRes.stdout || '') + (enableRes.stderr || '')).match(/https:\/\/[a-zA-Z0-9\-\.]+\.r2\.dev/);
+          if (enabledMatch) {
+            r2Url = enabledMatch[0];
+            console.log(c.success(`Public access enabled at: ${c.bold(r2Url)}`));
+          }
+        }
+      }
+    } catch {
+      // Fallback to manual entry
+    }
+  }
+
   if (!r2Url) {
     r2Url = (await rl.question(`Enter public R2 URL or Custom Domain (e.g. https://pub-xxx.r2.dev or https://cdn.domain.com, or leave blank): `)).trim();
   }
