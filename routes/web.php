@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\Admin\ActivityController as AdminActivityController;
+use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
+use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\SppController;
@@ -15,6 +17,7 @@ Route::get('news/{slug}', [NewsController::class, 'show'])->name('news.show');
 Route::get('activities', [ActivityController::class, 'index'])->name('activities.index');
 Route::get('activities/{slug}', [ActivityController::class, 'show'])->name('activities.show');
 Route::get('spp', [SppController::class, 'show'])->name('spp.show');
+Route::get('downloads/{download}/file', [DownloadController::class, 'download'])->name('downloads.download');
 
 // ─── Legacy URLs (Backward Compatibility) ───────────────────────────────────
 Route::get('index.html', [HomeController::class, 'index']);
@@ -25,6 +28,8 @@ Route::view('AdminDashboard.html', 'dashboard');
 
 // ─── Admin / Dashboard Routes ───────────────────────────────────────────────
 Route::view('admin', 'dashboard')->name('admin');
+
+Route::post('admin/api/media/upload', [AdminMediaController::class, 'upload'])->name('admin.api.media.upload');
 
 Route::prefix('admin/api/news')->name('admin.api.news.')->group(function () {
     Route::get('/', [AdminNewsController::class, 'index'])->name('index');

@@ -225,15 +225,11 @@ class ActivityController extends Controller
         }
 
         if ($request->hasFile('coverImage')) {
-            $path = $request->file('coverImage')->store('activities', $disk);
-
-            return Storage::disk($disk)->url($path);
+            return $request->file('coverImage')->store('activities', $disk);
         }
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('activities', $disk);
-
-            return Storage::disk($disk)->url($path);
+            return $request->file('image')->store('activities', $disk);
         }
 
         $imageString = $request->input('coverImage') ?? $request->input('image');
@@ -247,7 +243,7 @@ class ActivityController extends Controller
                         $fileName = 'activities/'.Str::random(40).'.'.$type;
                         Storage::disk($disk)->put($fileName, $data, 'public');
 
-                        return Storage::disk($disk)->url($fileName);
+                        return $fileName;
                     }
                 }
             }

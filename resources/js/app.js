@@ -220,7 +220,7 @@ function renderPublicNews(page = 1) {
       const title = escapeHtml(post.title);
       const excerpt = escapeHtml(getItemExcerpt(post, 130));
       const dateFormatted = formatDate(post.published_at || post.publishDate);
-      const imageSrc = post.coverImage || post.image || getDefaultImageSvg(post.title);
+      const imageSrc = post.image_url || post.coverImage || post.image || getDefaultImageSvg(post.title);
       const detailUrl = `/news?slug=${encodeURIComponent(slug)}`;
 
       return `
@@ -327,7 +327,7 @@ function renderArticle() {
 
   document.title = `${post.title} | Samahang Pisika ng Pilipinas`;
   const dateFormatted = formatDate(post.published_at || post.publishDate);
-  const imageSrc = post.coverImage || post.image || getDefaultImageSvg(post.title);
+  const imageSrc = post.image_url || post.coverImage || post.image || getDefaultImageSvg(post.title);
   const fullContent = post.content || post.body || '';
 
   const paragraphs = fullContent

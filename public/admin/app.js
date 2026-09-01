@@ -763,7 +763,67 @@ function setupImageUpload(key) {
   zone._applyImage = applyImage;
 }
 
-/* ─── Markdown Toolbar Engine ───────────────────────────────────────────── */
+/* ─── Media Upload & Markdown Toolbar Engine ────────────────────────────── */
+async function uploadMediaAsset(file) {
+  const formData = new FormData();
+  formData.append('image', file);
+
+  const token = document.querySelector('meta[name="csrf-token"]')?.content;
+  const res = await fetch('/admin/api/media/upload', {
+    method: 'POST',
+    headers: {
+      'X-CSRF-TOKEN': token || '',
+      'Accept': 'application/json',
+    },
+    body: formData,
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.message || 'Upload failed');
+  }
+
+  return data;
+}
+
+function handleEditorImageUpload(textarea, visualEditor = null) {
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'image/png, image/jpeg, image/gif, image/webp, image/svg+xml';
+  fileInput.style.display = 'none';
+  document.body.appendChild(fileInput);
+
+  fileInput.addEventListener('change', async () => {
+    if (!fileInput.files || !fileInput.files[0]) {
+      fileInput.remove();
+      return;
+    }
+    const file = fileInput.files[0];
+    fileInput.remove();
+
+    try {
+      const data = await uploadMediaAsset(file);
+      const alt = file.name.replace(/\.[^/.]+$/, '');
+      const markdownSnippet = `![${alt}](${data.url})`;
+
+      if (visualEditor && visualEditor.style.display !== 'none') {
+        visualEditor.focus();
+        document.execCommand('insertImage', false, data.url);
+      } else {
+        const start = textarea.selectionStart ?? textarea.value.length;
+        const end = textarea.selectionEnd ?? textarea.value.length;
+        const val = textarea.value || '';
+        textarea.value = val.substring(0, start) + markdownSnippet + val.substring(end);
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    } catch (err) {
+      alert('Failed to upload image: ' + err.message);
+    }
+  });
+
+  fileInput.click();
+}
+
 function applyMarkdownFormat(inputOrTextarea, format) {
   if (!inputOrTextarea) return;
   const el = inputOrTextarea;
@@ -892,15 +952,9 @@ function applyMarkdownFormat(inputOrTextarea, format) {
     const snippet = `[${text}](https://example.com)`;
     el.value = val.substring(0, start) + snippet + val.substring(end);
     const urlStart = start + text.length + 3;
-    el.setSelectionRange(urlStart, urlStart + 19);
-    el.dispatchEvent(new Event('input', { bubbles: true }));
   } else if (format === 'image') {
-    const alt = selected || 'image alt text';
-    const snippet = `![${alt}](https://example.com/image.png)`;
-    el.value = val.substring(0, start) + snippet + val.substring(end);
-    const urlStart = start + alt.length + 4;
-    el.setSelectionRange(urlStart, urlStart + 30);
-    el.dispatchEvent(new Event('input', { bubbles: true }));
+    handleEditorImageUpload(el);
+    return;
   } else if (format === 'table') {
     showTableModal().then((dims) => {
       if (!dims) return;

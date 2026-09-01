@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @property int $id
@@ -36,5 +37,33 @@ class Download extends Model
         return [
             'year' => 'integer',
         ];
+    }
+
+    /**
+     * Generate a temporary S3 presigned URL for downloading the private file.
+     */
+    public function getTemporaryDownloadUrl(int $minutes = 15): string
+    {
+        if (
+            str_starts_with($this->file_url, 'http://') ||
+            str_starts_with($this->file_url, 'https://')
+        ) {
+            return $this->file_url;
+        }
+
+        $privateDisk = config('filesystems.private', 'r2-private');
+
+        try {
+            return Storage::disk($privateDisk)->temporaryUrl(
+                $this->file_url,
+                now()->addMinutes($minutes),
+                [
+                    'ResponseContentDisposition' => 'attachment; filename="'.rawurlencode($this->file_name).'"',
+                ]
+            );
+        } catch (\Throwable) {
+            // Fallback for local or drivers without presigned URL support
+            return Storage::disk($privateDisk)->url($this->file_url);
+        }
     }
 }

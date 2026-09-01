@@ -226,15 +226,11 @@ class NewsController extends Controller
         }
 
         if ($request->hasFile('coverImage')) {
-            $path = $request->file('coverImage')->store('news', $disk);
-
-            return Storage::disk($disk)->url($path);
+            return $request->file('coverImage')->store('news', $disk);
         }
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('news', $disk);
-
-            return Storage::disk($disk)->url($path);
+            return $request->file('image')->store('news', $disk);
         }
 
         $imageString = $request->input('coverImage') ?? $request->input('image');
@@ -249,7 +245,7 @@ class NewsController extends Controller
                         $fileName = 'news/'.Str::random(40).'.'.$type;
                         Storage::disk($disk)->put($fileName, $data, 'public');
 
-                        return Storage::disk($disk)->url($fileName);
+                        return $fileName;
                     }
                 }
             }

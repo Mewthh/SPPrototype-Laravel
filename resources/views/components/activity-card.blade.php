@@ -16,7 +16,7 @@
     $actualMeta = $meta ?: ($activity?->event_date ? $activity->event_date->format('M j, Y') : ($activity?->location ?: ''));
     $safeTitle = urlencode(mb_substr($actualTitle, 0, 20));
     $placeholder = "data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 520'><rect width='800' height='520' rx='28' fill='%23e5e7eb'/><text x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle' fill='%236b7280' font-family='Segoe UI,Arial,sans-serif' font-size='32'>{$safeTitle}</text></svg>";
-    $src = ($activity?->image ?: $image) ?: $placeholder;
+    $src = ($activity?->image_url ?: ($activity?->image ?: $image)) ?: $placeholder;
 @endphp
 
 <article class="content-card activity-card-item {{ $hidden ? 'activity-item-hidden' : '' }}" @if($slug) data-slug="{{ $slug }}" @endif @if($hidden) style="display: none;" @endif>

@@ -59,7 +59,7 @@ function renderArticle() {
   }
 
   const dateFormatted = formatDate(post.published_at || post.publishDate);
-  const imageSrc = post.coverImage || post.image || getDefaultImageSvg(post.title);
+  const imageSrc = post.image_url || post.coverImage || post.image || getDefaultImageSvg(post.title);
   const fullContent = post.content || post.body || '';
 
   const paragraphs = fullContent

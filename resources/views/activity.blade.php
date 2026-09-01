@@ -10,7 +10,7 @@
                 $dateFormatted = $activity->event_date ? $activity->event_date->format('M j, Y') : ($activity->created_at ? $activity->created_at->format('M j, Y') : 'Recent');
                 $safeTitle = urlencode(mb_substr($activity->title, 0, 20));
                 $defaultSvg = "data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 520'><rect width='800' height='520' rx='24' fill='%23e5e7eb'/><rect x='32' y='32' width='736' height='456' rx='18' fill='%23f8fafc' stroke='%23cbd5e1'/><text x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle' fill='%236b7280' font-family='Segoe UI,Arial,sans-serif' font-size='32'>{$safeTitle}</text></svg>";
-                $imageSrc = $activity->image ?: $defaultSvg;
+                $imageSrc = $activity->image_url ?: ($activity->image ?: $defaultSvg);
             @endphp
 
             <article class="article-container">

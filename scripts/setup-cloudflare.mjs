@@ -69,6 +69,7 @@ function parseArgs() {
     dbName: '',
     dbId: '',
     bucketName: '',
+    privateBucketName: '',
     r2Key: '',
     r2Secret: '',
     r2Url: '',
@@ -87,6 +88,7 @@ function parseArgs() {
     else if (arg.startsWith('--db-name=')) options.dbName = arg.split('=')[1];
     else if (arg.startsWith('--db-id=')) options.dbId = arg.split('=')[1];
     else if (arg.startsWith('--bucket-name=')) options.bucketName = arg.split('=')[1];
+    else if (arg.startsWith('--private-bucket-name=')) options.privateBucketName = arg.split('=')[1];
     else if (arg.startsWith('--r2-key=')) options.r2Key = arg.split('=')[1];
     else if (arg.startsWith('--r2-secret=')) options.r2Secret = arg.split('=')[1];
     else if (arg.startsWith('--r2-url=')) options.r2Url = arg.split('=')[1];
@@ -105,32 +107,35 @@ ${c.bold('USAGE:')}
   npm run configure:cloudflare
 
 ${c.bold('OPTIONS:')}
-  --help, -h             Show this help message
-  --create, -c           Provision brand new D1 Database and R2 Bucket
-  --connect, -e          Connect to already existing remote D1 and R2 resources
-  --sync-storage, -s     Sync local storage/app/public files to Cloudflare R2
-  --test, -t             Test Cloudflare D1 & R2 connections
-  --yes, -y              Automatic yes to confirmation prompts
+  --help, -h                  Show this help message
+  --create, -c                Provision brand new D1 Database and R2 Buckets (Public & Private)
+  --connect, -e               Connect to already existing remote D1 and R2 resources
+  --sync-storage, -s          Sync local storage files to Cloudflare R2
+  --test, -t                  Test Cloudflare D1 & R2 connections
+  --yes, -y                   Automatic yes to confirmation prompts
 
 ${c.bold('DIRECT PARAMETERS (for CI/CD or non-interactive use):')}
-  --account-id=<id>      Cloudflare Account ID
-  --api-token=<token>    Cloudflare D1 API Token (Bearer Token)
-  --db-name=<name>       D1 Database Name (for creation)
-  --db-id=<uuid>         D1 Database ID / UUID (for connect mode)
-  --bucket-name=<name>   R2 Bucket Name
-  --r2-key=<key>         Cloudflare R2 Access Key ID
-  --r2-secret=<secret>   Cloudflare R2 Secret Access Key
-  --r2-url=<url>         Public URL for R2 bucket (custom domain or .r2.dev)
+  --account-id=<id>           Cloudflare Account ID
+  --api-token=<token>         Cloudflare D1 API Token (Bearer Token)
+  --db-name=<name>            D1 Database Name (for creation)
+  --db-id=<uuid>              D1 Database ID / UUID (for connect mode)
+  --bucket-name=<name>        Public R2 Bucket Name (for news, activities, media)
+  --private-bucket-name=<name> Private R2 Bucket Name (for protected downloads)
+  --r2-key=<key>              Cloudflare R2 Access Key ID
+  --r2-secret=<secret>        Cloudflare R2 Secret Access Key
+  --r2-url=<url>              Public URL for public R2 bucket (custom domain or .r2.dev)
 `);
 }
 
 function runCommand(command, args = [], options = {}) {
   const isWindows = process.platform === 'win32';
-  const fullCommand = isWindows && !command.endsWith('.cmd') && !command.endsWith('.exe') ? `${command}.cmd` : command;
+  const fullCommand = isWindows && !command.endsWith('.cmd') && !command.endsWith('.exe') && (command === 'npx' || command === 'npm')
+    ? `${command}.cmd`
+    : command;
 
-  const result = spawnSync(command, args, {
+  const result = spawnSync(fullCommand, args, {
     cwd: projectRoot,
-    shell: true,
+    shell: false,
     encoding: 'utf-8',
     stdio: options.stdio || 'pipe',
     env: { ...process.env, ...options.env },
@@ -277,17 +282,27 @@ async function createMode(rl, initialAccountId, cliOptions) {
     d1Id = (await rl.question(`Could not auto-detect UUID. Enter D1 Database ID: `)).trim();
   }
 
-  // 2. R2 Bucket Creation
+  // 2. R2 Public Bucket Creation
   let bucketName = cliOptions.bucketName;
   if (!bucketName) {
-    bucketName = (await rl.question(`Enter new R2 bucket name (default: ${c.green('spprototype-bucket')}): `)).trim() || 'spprototype-bucket';
+    bucketName = (await rl.question(`Enter public R2 bucket name (default: ${c.green('spp-public')}): `)).trim() || 'spp-public';
   }
 
-  console.log(c.info(`Creating Cloudflare R2 bucket: ${bucketName}...`));
+  console.log(c.info(`Creating public Cloudflare R2 bucket: ${bucketName}...`));
   const r2Res = runCommand('npx', ['wrangler', 'r2', 'bucket', 'create', bucketName]);
   console.log((r2Res.stdout || '') + (r2Res.stderr || ''));
 
-  return await collectCredentials(rl, { accountId, d1Id, bucketName }, cliOptions);
+  // 3. R2 Private Bucket Creation
+  let privateBucketName = cliOptions.privateBucketName;
+  if (!privateBucketName) {
+    privateBucketName = (await rl.question(`Enter private R2 bucket name for protected downloads (default: ${c.green(bucketName + '-private')}): `)).trim() || `${bucketName}-private`;
+  }
+
+  console.log(c.info(`Creating private Cloudflare R2 bucket: ${privateBucketName}...`));
+  const r2PrivRes = runCommand('npx', ['wrangler', 'r2', 'bucket', 'create', privateBucketName]);
+  console.log((r2PrivRes.stdout || '') + (r2PrivRes.stderr || ''));
+
+  return await collectCredentials(rl, { accountId, d1Id, bucketName, privateBucketName }, cliOptions);
 }
 
 async function connectMode(rl, initialAccountId, cliOptions) {
@@ -340,16 +355,22 @@ async function connectMode(rl, initialAccountId, cliOptions) {
 
   // 2. List existing R2 buckets
   let bucketName = cliOptions.bucketName;
-  if (!bucketName) {
+  let privateBucketName = cliOptions.privateBucketName;
+  if (!bucketName || !privateBucketName) {
     console.log(c.info('Fetching existing R2 buckets from Cloudflare...'));
     const r2List = runCommand('npx', ['wrangler', 'r2', 'bucket', 'list']);
     const r2Out = (r2List.stdout || '') + (r2List.stderr || '');
     console.log(r2Out);
 
-    bucketName = (await rl.question(`Enter your Cloudflare R2 bucket name: `)).trim();
+    if (!bucketName) {
+      bucketName = (await rl.question(`Enter your public Cloudflare R2 bucket name: `)).trim();
+    }
+    if (!privateBucketName) {
+      privateBucketName = (await rl.question(`Enter your private Cloudflare R2 bucket name (default: ${c.green(bucketName + '-private')}): `)).trim() || `${bucketName}-private`;
+    }
   }
 
-  return await collectCredentials(rl, { accountId, d1Id, bucketName }, cliOptions);
+  return await collectCredentials(rl, { accountId, d1Id, bucketName, privateBucketName }, cliOptions);
 }
 
 async function collectCredentials(rl, config, cliOptions) {
@@ -410,10 +431,12 @@ async function collectCredentials(rl, config, cliOptions) {
     CLOUDFLARE_D1_DATABASE_ID: config.d1Id,
     CLOUDFLARE_D1_API_TOKEN: d1ApiToken,
     FILESYSTEM_DISK: 'r2',
+    FILESYSTEM_PRIVATE_DISK: 'r2-private',
     CLOUDFLARE_R2_ACCESS_KEY_ID: r2Key,
     CLOUDFLARE_R2_SECRET_ACCESS_KEY: r2Secret,
     CLOUDFLARE_R2_REGION: 'auto',
     CLOUDFLARE_R2_BUCKET: config.bucketName,
+    CLOUDFLARE_R2_PRIVATE_BUCKET: config.privateBucketName || `${config.bucketName}-private`,
     CLOUDFLARE_R2_ENDPOINT: endpoint,
     CLOUDFLARE_R2_URL: r2Url || '',
     CLOUDFLARE_R2_USE_PATH_STYLE_ENDPOINT: 'false',

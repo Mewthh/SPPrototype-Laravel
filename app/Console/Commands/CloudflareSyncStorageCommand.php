@@ -13,21 +13,27 @@ class CloudflareSyncStorageCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'cloudflare:sync-storage {--dry-run : List files without uploading} {--force : Overwrite existing files on R2}';
+    protected $signature = 'cloudflare:sync-storage 
+                            {--private : Sync storage/app/private to the private R2 bucket instead of public}
+                            {--dry-run : List files without uploading} 
+                            {--force : Overwrite existing files on R2}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Sync existing local files from storage/app/public to the Cloudflare R2 bucket';
+    protected $description = 'Sync existing local files from storage/app/public or storage/app/private to Cloudflare R2';
 
     /**
      * Execute the console command.
      */
     public function handle(): int
     {
-        $localPath = storage_path('app/public');
+        $isPrivate = $this->option('private');
+        $diskName = $isPrivate ? 'r2-private' : 'r2';
+        $visibility = $isPrivate ? 'private' : 'public';
+        $localPath = $isPrivate ? storage_path('app/private') : storage_path('app/public');
         $isDryRun = $this->option('dry-run');
         $force = $this->option('force');
 
@@ -46,7 +52,8 @@ class CloudflareSyncStorageCommand extends Command
             return Command::SUCCESS;
         }
 
-        $this->info("Found {$total} file(s) in local public storage.");
+        $targetLabel = $isPrivate ? 'Private R2 Bucket' : 'Public R2 Bucket';
+        $this->info("Found {$total} file(s) in {$localPath} to sync to {$targetLabel} (disk: {$diskName}).");
 
         if ($isDryRun) {
             $this->warn('[DRY RUN] The following files would be uploaded to Cloudflare R2:');
@@ -69,7 +76,7 @@ class CloudflareSyncStorageCommand extends Command
             $relativePath = str_replace('\\', '/', $file->getRelativePathname());
 
             try {
-                if (! $force && Storage::disk('r2')->exists($relativePath)) {
+                if (! $force && Storage::disk($diskName)->exists($relativePath)) {
                     $skipped++;
                     $bar->advance();
 
@@ -84,7 +91,7 @@ class CloudflareSyncStorageCommand extends Command
                     continue;
                 }
 
-                Storage::disk('r2')->put($relativePath, $stream, 'public');
+                Storage::disk($diskName)->put($relativePath, $stream, $visibility);
                 if (is_resource($stream)) {
                     fclose($stream);
                 }
