@@ -24,7 +24,7 @@ const envPath = path.join(projectRoot, '.env');
 const envExamplePath = path.join(projectRoot, '.env.example');
 
 // ANSI Colors for cross-platform output
-const colors = {
+const ansi = {
   reset: '\x1b[0m',
   bright: '\x1b[1m',
   dim: '\x1b[2m',
@@ -37,13 +37,22 @@ const colors = {
 };
 
 const c = {
-  info: (msg) => `${colors.cyan}ℹ ${msg}${colors.reset}`,
-  success: (msg) => `${colors.green}✔ ${msg}${colors.reset}`,
-  warn: (msg) => `${colors.yellow}⚠ ${msg}${colors.reset}`,
-  error: (msg) => `${colors.red}✖ ${msg}${colors.reset}`,
-  title: (msg) => `${colors.bright}${colors.magenta}${msg}${colors.reset}`,
-  bold: (msg) => `${colors.bright}${msg}${colors.reset}`,
-  dim: (msg) => `${colors.dim}${msg}${colors.reset}`,
+  info: (msg) => `${ansi.cyan}ℹ ${msg}${ansi.reset}`,
+  success: (msg) => `${ansi.green}✔ ${msg}${ansi.reset}`,
+  warn: (msg) => `${ansi.yellow}⚠ ${msg}${ansi.reset}`,
+  error: (msg) => `${ansi.red}✖ ${msg}${ansi.reset}`,
+  title: (msg) => `${ansi.bright}${ansi.magenta}${msg}${ansi.reset}`,
+  bold: (msg) => `${ansi.bright}${msg}${ansi.reset}`,
+  dim: (msg) => `${ansi.dim}${msg}${ansi.reset}`,
+  green: (msg) => `${ansi.green}${msg}${ansi.reset}`,
+  cyan: (msg) => `${ansi.cyan}${msg}${ansi.reset}`,
+  yellow: (msg) => `${ansi.yellow}${msg}${ansi.reset}`,
+};
+
+const colors = {
+  ...ansi,
+  bold: c.bold,
+  dim: c.dim,
 };
 
 function parseArgs() {
@@ -242,7 +251,7 @@ async function createMode(rl, initialAccountId, cliOptions) {
   if (!accountId) {
     accountId = (await rl.question(`Enter your Cloudflare Account ID: `)).trim();
   } else {
-    const confirm = await rl.question(`Use detected Cloudflare Account ID (${colors.bright}${accountId}${colors.reset})? (Y/n): `);
+    const confirm = await rl.question(`Use detected Cloudflare Account ID (${c.bold(accountId)})? (Y/n): `);
     if (confirm.toLowerCase() === 'n') {
       accountId = (await rl.question(`Enter your Cloudflare Account ID: `)).trim();
     }
@@ -251,7 +260,7 @@ async function createMode(rl, initialAccountId, cliOptions) {
   // 1. D1 Database Creation
   let dbName = cliOptions.dbName;
   if (!dbName) {
-    dbName = (await rl.question(`Enter new D1 database name (default: ${colors.green}spprototype-d1${colors.reset}): `)).trim() || 'spprototype-d1';
+    dbName = (await rl.question(`Enter new D1 database name (default: ${c.green('spprototype-d1')}): `)).trim() || 'spprototype-d1';
   }
 
   console.log(c.info(`Creating Cloudflare D1 database: ${dbName}...`));
@@ -263,7 +272,7 @@ async function createMode(rl, initialAccountId, cliOptions) {
   const uuidMatch = d1Out.match(/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i);
   if (uuidMatch) {
     d1Id = uuidMatch[1];
-    console.log(c.success(`D1 Database created with UUID: ${colors.bold(d1Id)}`));
+    console.log(c.success(`D1 Database created with UUID: ${c.bold(d1Id)}`));
   } else {
     d1Id = (await rl.question(`Could not auto-detect UUID. Enter D1 Database ID: `)).trim();
   }
@@ -271,7 +280,7 @@ async function createMode(rl, initialAccountId, cliOptions) {
   // 2. R2 Bucket Creation
   let bucketName = cliOptions.bucketName;
   if (!bucketName) {
-    bucketName = (await rl.question(`Enter new R2 bucket name (default: ${colors.green}spprototype-bucket${colors.reset}): `)).trim() || 'spprototype-bucket';
+    bucketName = (await rl.question(`Enter new R2 bucket name (default: ${c.green('spprototype-bucket')}): `)).trim() || 'spprototype-bucket';
   }
 
   console.log(c.info(`Creating Cloudflare R2 bucket: ${bucketName}...`));
@@ -288,7 +297,7 @@ async function connectMode(rl, initialAccountId, cliOptions) {
   if (!accountId) {
     accountId = (await rl.question(`Enter your Cloudflare Account ID: `)).trim();
   } else {
-    const confirm = await rl.question(`Use Cloudflare Account ID (${colors.bright}${accountId}${colors.reset})? (Y/n): `);
+    const confirm = await rl.question(`Use Cloudflare Account ID (${c.bold(accountId)})? (Y/n): `);
     if (confirm.toLowerCase() === 'n') {
       accountId = (await rl.question(`Enter your Cloudflare Account ID: `)).trim();
     }
@@ -311,7 +320,7 @@ async function connectMode(rl, initialAccountId, cliOptions) {
     if (Array.isArray(databases) && databases.length > 0) {
       console.log(`\nFound ${databases.length} existing D1 database(s):`);
       databases.forEach((db, idx) => {
-        console.log(`  [${idx + 1}] ${colors.bold(db.name)} (${colors.dim(db.uuid || db.id)})`);
+        console.log(`  [${idx + 1}] ${c.bold(db.name)} (${c.dim(db.uuid || db.id)})`);
       });
       console.log(`  [0] Enter custom Database UUID manually`);
 
@@ -351,35 +360,35 @@ async function collectCredentials(rl, config, cliOptions) {
   // D1 API Token
   let d1ApiToken = cliOptions.apiToken || vars.CLOUDFLARE_D1_API_TOKEN;
   if (d1ApiToken) {
-    const keep = await rl.question(`Keep existing CLOUDFLARE_D1_API_TOKEN (${colors.dim(d1ApiToken.slice(0, 6) + '...' + d1ApiToken.slice(-4))})? (Y/n): `);
+    const keep = await rl.question(`Keep existing CLOUDFLARE_D1_API_TOKEN (${c.dim(d1ApiToken.slice(0, 6) + '...' + d1ApiToken.slice(-4))})? (Y/n): `);
     if (keep.toLowerCase() === 'n') d1ApiToken = '';
   }
 
   if (!d1ApiToken) {
     console.log(`\n${c.info('To create a Cloudflare D1 API Token:')}`);
-    console.log(`  1. Go to: ${colors.cyan}https://dash.cloudflare.com/profile/api-tokens${colors.reset}`);
+    console.log(`  1. Go to: ${c.cyan('https://dash.cloudflare.com/profile/api-tokens')}`);
     console.log(`  2. Click "Create Token" → Custom Token`);
-    console.log(`  3. Permissions: ${colors.bold('Account > D1 > Edit')} and/or ${colors.bold('Account > Workers R2 Storage > Edit')}`);
+    console.log(`  3. Permissions: ${c.bold('Account > D1 > Edit')} and/or ${c.bold('Account > Workers R2 Storage > Edit')}`);
     d1ApiToken = (await rl.question(`Enter Cloudflare D1 API Token: `)).trim();
   }
 
   // R2 S3 Access Keys
   let r2Key = cliOptions.r2Key || vars.CLOUDFLARE_R2_ACCESS_KEY_ID;
   if (r2Key) {
-    const keep = await rl.question(`Keep existing CLOUDFLARE_R2_ACCESS_KEY_ID (${colors.dim(r2Key.slice(0, 6) + '...')})? (Y/n): `);
+    const keep = await rl.question(`Keep existing CLOUDFLARE_R2_ACCESS_KEY_ID (${c.dim(r2Key.slice(0, 6) + '...')})? (Y/n): `);
     if (keep.toLowerCase() === 'n') r2Key = '';
   }
 
   if (!r2Key) {
     console.log(`\n${c.info('To get R2 S3-Compatible API Credentials:')}`);
-    console.log(`  1. Go to: ${colors.cyan}https://dash.cloudflare.com/${config.accountId}/r2/api-tokens${colors.reset}`);
+    console.log(`  1. Go to: ${c.cyan(`https://dash.cloudflare.com/${config.accountId}/r2/api-tokens`)}`);
     console.log(`  2. Click "Manage R2 API Tokens" → "Create API Token" (Permissions: Object Read & Write)`);
     r2Key = (await rl.question(`Enter Cloudflare R2 Access Key ID: `)).trim();
   }
 
   let r2Secret = cliOptions.r2Secret || vars.CLOUDFLARE_R2_SECRET_ACCESS_KEY;
   if (r2Secret) {
-    const keep = await rl.question(`Keep existing CLOUDFLARE_R2_SECRET_ACCESS_KEY (${colors.dim('••••••••••••')})? (Y/n): `);
+    const keep = await rl.question(`Keep existing CLOUDFLARE_R2_SECRET_ACCESS_KEY (${c.dim('••••••••••••')})? (Y/n): `);
     if (keep.toLowerCase() === 'n') r2Secret = '';
   }
 
@@ -448,7 +457,7 @@ async function postSetupPrompts(rl) {
   }
 
   console.log(`\n${c.title('🎉 Cloudflare D1 & R2 Setup Complete!')}`);
-  console.log(`You can run ${colors.bold('php artisan cloudflare:test')} at any time to verify connectivity.`);
+  console.log(`You can run ${c.bold('php artisan cloudflare:test')} at any time to verify connectivity.`);
 }
 
 async function testConnections() {
@@ -482,9 +491,9 @@ async function main() {
   const rl = readline.createInterface({ input, output });
 
   try {
-    console.log(`\n${colors.bright}${colors.cyan}╔══════════════════════════════════════════════════════════════╗${colors.reset}`);
-    console.log(`${colors.bright}${colors.cyan}║            Cloudflare D1 & R2 Setup Wizard                   ║${colors.reset}`);
-    console.log(`${colors.bright}${colors.cyan}╚══════════════════════════════════════════════════════════════╝${colors.reset}\n`);
+    console.log(`\n${c.cyan('╔══════════════════════════════════════════════════════════════╗')}`);
+    console.log(`${c.cyan('║            Cloudflare D1 & R2 Setup Wizard                   ║')}`);
+    console.log(`${c.cyan('╚══════════════════════════════════════════════════════════════╝')}\n`);
 
     const initialAccountId = await verifyWrangler(rl);
 
@@ -495,11 +504,11 @@ async function main() {
     } else {
       // Interactive Menu
       console.log(`\nPlease choose an option:`);
-      console.log(`  ${colors.bold('1)')} Create new Cloudflare D1 Database & R2 Bucket`);
-      console.log(`  ${colors.bold('2)')} Connect to existing remote Cloudflare D1 & R2 resources`);
-      console.log(`  ${colors.bold('3)')} Sync local storage to Cloudflare R2`);
-      console.log(`  ${colors.bold('4)')} Test Cloudflare D1 & R2 connections`);
-      console.log(`  ${colors.bold('5)')} Exit\n`);
+      console.log(`  ${c.bold('1)')} Create new Cloudflare D1 Database & R2 Bucket`);
+      console.log(`  ${c.bold('2)')} Connect to existing remote Cloudflare D1 & R2 resources`);
+      console.log(`  ${c.bold('3)')} Sync local storage to Cloudflare R2`);
+      console.log(`  ${c.bold('4)')} Test Cloudflare D1 & R2 connections`);
+      console.log(`  ${c.bold('5)')} Exit\n`);
 
       const choice = (await rl.question(`Enter selection [1-5]: `)).trim();
 
