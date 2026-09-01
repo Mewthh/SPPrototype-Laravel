@@ -225,11 +225,15 @@ class ActivityController extends Controller
         }
 
         if ($request->hasFile('coverImage')) {
-            return $request->file('coverImage')->store('activities', $disk);
+            $path = $request->file('coverImage')->store('activities', $disk);
+
+            return $path !== false ? $path : null;
         }
 
         if ($request->hasFile('image')) {
-            return $request->file('image')->store('activities', $disk);
+            $path = $request->file('image')->store('activities', $disk);
+
+            return $path !== false ? $path : null;
         }
 
         $imageString = $request->input('coverImage') ?? $request->input('image');

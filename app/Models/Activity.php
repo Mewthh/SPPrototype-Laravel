@@ -55,12 +55,14 @@ class Activity extends Model
 
     /**
      * Get the resolved public URL for the image.
+     *
+     * @return Attribute<string|null, void>
      */
     protected function imageUrl(): Attribute
     {
         return Attribute::make(
             get: function () {
-                if (empty($this->image)) {
+                if (empty($this->image) || ! is_string($this->image)) {
                     return null;
                 }
 
@@ -73,11 +75,9 @@ class Activity extends Model
                 }
 
                 $disk = config('filesystems.default', 'public');
-                if ($disk === 'local') {
-                    $disk = 'public';
-                }
+                $diskName = is_string($disk) && $disk !== 'local' ? $disk : 'public';
 
-                return Storage::disk($disk)->url($this->image);
+                return Storage::disk($diskName)->url($this->image);
             }
         );
     }
