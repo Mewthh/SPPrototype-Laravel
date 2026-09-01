@@ -32,6 +32,14 @@ return [
 
     'connections' => [
 
+        'd1' => [
+            'driver' => 'd1',
+            'account_id' => env('CLOUDFLARE_ACCOUNT_ID'),
+            'database_id' => env('CLOUDFLARE_D1_DATABASE_ID'),
+            'api_token' => env('CLOUDFLARE_D1_API_TOKEN'),
+            'prefix' => '',
+        ],
+
         'sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DB_URL'),

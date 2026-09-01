@@ -220,21 +220,26 @@ class NewsController extends Controller
      */
     protected function handleImageUpload(Request $request): ?string
     {
-        if ($request->hasFile('coverImage')) {
-            $path = $request->file('coverImage')->store('news', 'public');
+        $disk = config('filesystems.default', 'public');
+        if ($disk === 'local') {
+            $disk = 'public';
+        }
 
-            return '/storage/'.$path;
+        if ($request->hasFile('coverImage')) {
+            $path = $request->file('coverImage')->store('news', $disk);
+
+            return Storage::disk($disk)->url($path);
         }
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('news', 'public');
+            $path = $request->file('image')->store('news', $disk);
 
-            return '/storage/'.$path;
+            return Storage::disk($disk)->url($path);
         }
 
         $imageString = $request->input('coverImage') ?? $request->input('image');
         if (is_string($imageString) && ! empty($imageString)) {
-            // If base64 data image URL is provided, save it to public storage
+            // If base64 data image URL is provided, save it to configured storage disk
             if (preg_match('/^data:image\/(\w+);base64,/', $imageString, $type)) {
                 $data = substr($imageString, strpos($imageString, ',') + 1);
                 $type = strtolower($type[1]);
@@ -242,9 +247,9 @@ class NewsController extends Controller
                     $data = base64_decode($data, true);
                     if ($data !== false) {
                         $fileName = 'news/'.Str::random(40).'.'.$type;
-                        Storage::disk('public')->put($fileName, $data);
+                        Storage::disk($disk)->put($fileName, $data, 'public');
 
-                        return '/storage/'.$fileName;
+                        return Storage::disk($disk)->url($fileName);
                     }
                 }
             }
