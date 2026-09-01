@@ -128,14 +128,21 @@ ${c.bold('DIRECT PARAMETERS (for CI/CD or non-interactive use):')}
 }
 
 function runCommand(command, args = [], options = {}) {
-  const isWindows = process.platform === 'win32';
-  const fullCommand = isWindows && !command.endsWith('.cmd') && !command.endsWith('.exe') && (command === 'npx' || command === 'npm')
-    ? `${command}.cmd`
-    : command;
+  let cmdLine = command;
+  if (Array.isArray(args) && args.length > 0) {
+    const formattedArgs = args.map((arg) => {
+      const s = String(arg);
+      if (s.includes(' ') || s.includes('"') || s.includes('&') || s.includes('|') || s.includes('<') || s.includes('>')) {
+        return `"${s.replace(/"/g, '\\"')}"`;
+      }
+      return s;
+    });
+    cmdLine = `${command} ${formattedArgs.join(' ')}`;
+  }
 
-  const result = spawnSync(fullCommand, args, {
+  const result = spawnSync(cmdLine, {
     cwd: projectRoot,
-    shell: false,
+    shell: true,
     encoding: 'utf-8',
     stdio: options.stdio || 'pipe',
     env: { ...process.env, ...options.env },
@@ -212,7 +219,11 @@ function updateEnv(updates) {
 async function verifyWrangler(rl) {
   console.log(c.info('Checking Cloudflare Wrangler CLI...'));
   const check = runCommand('npx', ['wrangler', '--version']);
-  if (check.status !== 0) {
+  if (check.status === 0 && check.stdout) {
+    const versionMatch = check.stdout.match(/\d+\.\d+\.\d+/);
+    const ver = versionMatch ? versionMatch[0] : check.stdout.trim();
+    console.log(c.success(`Cloudflare Wrangler CLI detected (v${ver})`));
+  } else {
     console.log(c.warn('Wrangler is not yet installed in devDependencies.'));
     const install = await rl.question('Would you like to install wrangler now? (Y/n): ');
     if (install.toLowerCase() !== 'n') {
@@ -223,27 +234,30 @@ async function verifyWrangler(rl) {
 
   // Check login state via `wrangler whoami`
   console.log(c.info('Checking Cloudflare authentication status...'));
-  const whoami = runCommand('npx', ['wrangler', 'whoami']);
-  const output = (whoami.stdout || '') + (whoami.stderr || '');
+  let whoami = runCommand('npx', ['wrangler', 'whoami']);
+  let output = (whoami.stdout || '') + (whoami.stderr || '');
 
-  if (output.includes('You are not logged in') || whoami.status !== 0) {
+  if (whoami.status === 0 && !output.includes('You are not logged in')) {
+    const emailMatch = output.match(/associated with the email ([^\s,]+?)\.?(\s|$)/i) || output.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+    const emailStr = emailMatch ? ` as ${c.bold(emailMatch[1] || emailMatch[0])}` : '';
+    console.log(c.success(`Logged in to Cloudflare Wrangler${emailStr}`));
+  } else {
     console.log(c.warn('You are currently not logged in to Cloudflare Wrangler.'));
     const doLogin = await rl.question('Open browser to login via Cloudflare Wrangler now? (Y/n): ');
     if (doLogin.toLowerCase() !== 'n') {
       console.log(c.info('Running `npx wrangler login`...'));
       runCommand('npx', ['wrangler', 'login'], { stdio: 'inherit' });
+      whoami = runCommand('npx', ['wrangler', 'whoami']);
+      output = (whoami.stdout || '') + (whoami.stderr || '');
     }
   }
 
-  // Re-check whoami to parse Account ID
-  const reWhoami = runCommand('npx', ['wrangler', 'whoami']);
-  const reOutput = (reWhoami.stdout || '') + (reWhoami.stderr || '');
-  let detectedAccountId = '';
-
   // Extract account id if present (format: │ Account ID │ <hex-id> │)
-  const match = reOutput.match(/[0-9a-fA-F]{32}/);
+  let detectedAccountId = '';
+  const match = output.match(/[0-9a-fA-F]{32}/);
   if (match) {
     detectedAccountId = match[0];
+    console.log(c.success(`Detected Cloudflare Account ID: ${c.bold(detectedAccountId)}`));
   }
 
   return detectedAccountId;
@@ -360,7 +374,27 @@ async function connectMode(rl, initialAccountId, cliOptions) {
     console.log(c.info('Fetching existing R2 buckets from Cloudflare...'));
     const r2List = runCommand('npx', ['wrangler', 'r2', 'bucket', 'list']);
     const r2Out = (r2List.stdout || '') + (r2List.stderr || '');
-    console.log(r2Out);
+
+    const bucketMatches = [...r2Out.matchAll(/name:\s+([^\r\n]+)/g)].map((m) => m[1].trim());
+
+    if (bucketMatches.length > 0) {
+      console.log(`\nFound ${bucketMatches.length} existing R2 bucket(s):`);
+      bucketMatches.forEach((b, idx) => {
+        console.log(`  [${idx + 1}] ${c.bold(b)}`);
+      });
+      console.log(`  [0] Enter custom bucket name manually`);
+
+      if (!bucketName) {
+        const choice = (await rl.question(`Select public R2 bucket [1-${bucketMatches.length}]: `)).trim();
+        const num = parseInt(choice, 10);
+        if (num >= 1 && num <= bucketMatches.length) {
+          bucketName = bucketMatches[num - 1];
+          console.log(c.success(`Selected public bucket: ${bucketName}`));
+        }
+      }
+    } else if (r2Out.trim()) {
+      console.log(r2Out);
+    }
 
     if (!bucketName) {
       bucketName = (await rl.question(`Enter your public Cloudflare R2 bucket name: `)).trim();
