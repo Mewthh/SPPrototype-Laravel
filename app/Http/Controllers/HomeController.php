@@ -24,6 +24,8 @@ class HomeController extends Controller
                     });
             })
             ->orderByRaw('COALESCE(published_at, created_at) DESC')
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
             ->get();
 
         $activities = Activity::query()

@@ -218,7 +218,7 @@ const state = {
 };
 
 function loadPosts() {
-  return defaultPosts.slice();
+  return [];
 }
 
 function savePosts() {

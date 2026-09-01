@@ -112,7 +112,7 @@ function getItemExcerpt(item, maxLength = 140) {
 }
 
 function getAllPosts() {
-  return DEFAULT_POSTS_DATA.slice();
+  return [];
 }
 
 function getVisiblePostsByType(type, sectionName) {
@@ -124,9 +124,19 @@ function getVisiblePostsByType(type, sectionName) {
       return (matchType || matchSection) && isContentVisible(item);
     })
     .sort((a, b) => {
-      const dateA = new Date(a.published_at || a.publishDate || 0).getTime();
-      const dateB = new Date(b.published_at || b.publishDate || 0).getTime();
-      return dateB - dateA;
+      const dateA = new Date(a.published_at || a.publishDate || a.created_at || 0).getTime();
+      const dateB = new Date(b.published_at || b.publishDate || b.created_at || 0).getTime();
+      if (dateB !== dateA) {
+        return dateB - dateA;
+      }
+      const createdA = new Date(a.created_at || 0).getTime();
+      const createdB = new Date(b.created_at || 0).getTime();
+      if (createdB !== createdA) {
+        return createdB - createdA;
+      }
+      const idA = Number(a.id) || 0;
+      const idB = Number(b.id) || 0;
+      return idB - idA;
     });
 }
 

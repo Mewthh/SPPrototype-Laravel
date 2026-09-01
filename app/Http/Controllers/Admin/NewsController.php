@@ -17,7 +17,7 @@ class NewsController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $allNews = News::query()->latest('created_at')->get();
+        $allNews = News::query()->latest('created_at')->latest('id')->get();
 
         $counts = [
             'all' => $allNews->count(),

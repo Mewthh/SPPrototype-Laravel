@@ -298,7 +298,7 @@ const state = {
 };
 
 function loadPosts() {
-  return defaultPosts.slice();
+  return [];
 }
 
 function savePosts() {
@@ -306,7 +306,7 @@ function savePosts() {
 }
 
 function loadConferences() {
-  return defaultConferences.slice();
+  return [];
 }
 
 function saveConferences() {
