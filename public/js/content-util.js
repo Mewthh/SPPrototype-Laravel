@@ -233,14 +233,7 @@ function getItemExcerpt(item, maxLength = 140) {
 }
 
 function getAllPosts() {
-  try {
-    const stored = localStorage.getItem(SPP_STORAGE_KEY);
-    if (!stored) return DEFAULT_POSTS_DATA.slice();
-    const parsed = JSON.parse(stored);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : DEFAULT_POSTS_DATA.slice();
-  } catch (err) {
-    return DEFAULT_POSTS_DATA.slice();
-  }
+  return DEFAULT_POSTS_DATA.slice();
 }
 
 function getVisiblePostsByType(type, sectionName) {

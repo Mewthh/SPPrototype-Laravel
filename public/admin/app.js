@@ -298,35 +298,19 @@ const state = {
 };
 
 function loadPosts() {
-  try {
-    const stored = localStorage.getItem(localStorageKey);
-    if (!stored) {
-      return defaultPosts.slice();
-    }
-    const parsed = JSON.parse(stored);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : defaultPosts.slice();
-  } catch (error) {
-    return defaultPosts.slice();
-  }
+  return defaultPosts.slice();
 }
 
 function savePosts() {
-  localStorage.setItem(localStorageKey, JSON.stringify(state.posts));
+  // Database persists changes; bypass localStorage write
 }
 
 function loadConferences() {
-  try {
-    const stored = localStorage.getItem(conferenceStorageKey);
-    if (!stored) return defaultConferences.slice();
-    const parsed = JSON.parse(stored);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : defaultConferences.slice();
-  } catch (error) {
-    return defaultConferences.slice();
-  }
+  return defaultConferences.slice();
 }
 
 function saveConferences() {
-  localStorage.setItem(conferenceStorageKey, JSON.stringify(state.conferences));
+  // Database persists changes; bypass localStorage write
 }
 
 async function fetchNewsFromDatabase() {
@@ -1241,137 +1225,36 @@ function saveNewsDraft() {
   const summary = (newsForm.elements.summary?.value || '').trim();
   const body = (newsForm.elements.body?.value || '').trim();
 
-  // Don't save empty drafts for new posts
-  if (!postId && !title && !summary && !body) {
-    localStorage.removeItem(getNewsDraftKey(null));
-    return;
-  }
-
-  // If editing an existing post and values match server state, clean up
-  if (postId) {
-    const originalPost = state.posts.find((p) => String(p.id) === String(postId));
-    if (originalPost) {
-      const origTitle = (originalPost.title || '').trim();
-      const origSummary = (originalPost.summary || originalPost.excerpt || '').trim();
-      const origBody = (originalPost.body || originalPost.content || '').trim();
-      if (title === origTitle && summary === origSummary && body === origBody) {
-        localStorage.removeItem(getNewsDraftKey(postId));
-        return;
-      }
-    }
-  }
-
-  const draft = {
-    id: postId,
-    title: newsForm.elements.title?.value || '',
-    summary: newsForm.elements.summary?.value || '',
-    body: newsForm.elements.body?.value || '',
-    updatedAt: Date.now(),
-  };
-
-  try {
-    localStorage.setItem(getNewsDraftKey(postId), JSON.stringify(draft));
-  } catch (err) {
-    console.warn('Could not save draft to localStorage:', err);
-  }
+  // Local storage auto-save disabled to rely strictly on database
+  return;
 }
 
 function scheduleNewsAutosave() {
   if (newsAutosaveTimer) clearTimeout(newsAutosaveTimer);
-  newsAutosaveTimer = setTimeout(() => {
-    saveNewsDraft();
-  }, 1500);
 }
 
 function formatDraftTime(timestamp) {
-  if (!timestamp) return '';
-  const now = Date.now();
-  const diffSec = Math.round((now - timestamp) / 1000);
-  if (diffSec < 60) return 'just now';
-  const diffMin = Math.round(diffSec / 60);
-  if (diffMin < 60) return `${diffMin}m ago`;
-  const diffHr = Math.round(diffMin / 60);
-  if (diffHr < 24) return `${diffHr}h ago`;
-  const date = new Date(timestamp);
-  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  return '';
 }
 
 function checkNewsDraft(postId) {
   const banner = document.querySelector('[data-draft-banner="news"]');
-  const timeSpan = document.querySelector('[data-draft-time="news"]');
-  if (!banner || !newsForm) return;
-
-  const key = getNewsDraftKey(postId);
-  const raw = localStorage.getItem(key);
-  if (!raw) {
-    activeNewsDraft = null;
-    banner.classList.add('is-hidden');
-    return;
-  }
-
-  try {
-    const draft = JSON.parse(raw);
-    if (!draft || typeof draft !== 'object') {
-      banner.classList.add('is-hidden');
-      return;
-    }
-
-    const currentTitle = (newsForm.elements.title?.value || '').trim();
-    const currentSummary = (newsForm.elements.summary?.value || '').trim();
-    const currentBody = (newsForm.elements.body?.value || '').trim();
-
-    const draftTitle = (draft.title || '').trim();
-    const draftSummary = (draft.summary || '').trim();
-    const draftBody = (draft.body || '').trim();
-
-    const hasChanges = draftTitle !== currentTitle || draftSummary !== currentSummary || draftBody !== currentBody;
-
-    if (hasChanges && (draftTitle || draftSummary || draftBody)) {
-      activeNewsDraft = draft;
-      if (timeSpan) {
-        timeSpan.textContent = `(Saved ${formatDraftTime(draft.updatedAt)})`;
-      }
-      banner.classList.remove('is-hidden');
-    } else {
-      activeNewsDraft = null;
-      banner.classList.add('is-hidden');
-    }
-  } catch (e) {
-    banner.classList.add('is-hidden');
-  }
+  if (banner) banner.classList.add('is-hidden');
+  activeNewsDraft = null;
 }
 
 function restoreNewsDraft() {
   const banner = document.querySelector('[data-draft-banner="news"]');
-  if (!activeNewsDraft || !newsForm) return;
-
-  if (newsForm.elements.title && activeNewsDraft.title !== undefined) {
-    newsForm.elements.title.value = activeNewsDraft.title;
-  }
-  if (newsForm.elements.summary && activeNewsDraft.summary !== undefined) {
-    newsForm.elements.summary.value = activeNewsDraft.summary;
-  }
-  if (newsForm.elements.body && activeNewsDraft.body !== undefined) {
-    newsForm.elements.body.value = activeNewsDraft.body;
-  }
-
   banner?.classList.add('is-hidden');
 }
 
 function discardNewsDraft() {
   const banner = document.querySelector('[data-draft-banner="news"]');
-  const key = getNewsDraftKey(state.editingNewsId);
-  localStorage.removeItem(key);
   activeNewsDraft = null;
   banner?.classList.add('is-hidden');
 }
 
 function clearNewsDraft(postId) {
-  const key = getNewsDraftKey(postId);
-  localStorage.removeItem(key);
-  if (postId) {
-    localStorage.removeItem(getNewsDraftKey(null));
-  }
   activeNewsDraft = null;
   const banner = document.querySelector('[data-draft-banner="news"]');
   banner?.classList.add('is-hidden');
