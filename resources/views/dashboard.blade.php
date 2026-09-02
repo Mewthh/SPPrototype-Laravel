@@ -553,6 +553,8 @@
 
 			<footer class="site-footer">
 			</footer>
+		</main>
+	</div>
 	<!-- Custom Confirmation Modal -->
 	<div class="confirm-modal-overlay is-hidden" id="custom-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
 		<div class="confirm-modal-card">

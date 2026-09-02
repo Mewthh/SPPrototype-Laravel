@@ -2,38 +2,62 @@
 
 use App\Models\User;
 
-test('home page can be rendered via / and index.html', function (string $url) {
-    $response = $this->get($url);
+test('home page can be rendered via /', function () {
+    $response = $this->get('/');
 
     $response->assertOk()
         ->assertSee('Samahang Pisika ng Pilipinas')
         ->assertSee('News and Announcements')
         ->assertSee('Activities');
-})->with(['/', '/index.html']);
+});
 
-test('news page redirects to home #news when no slug is given', function (string $url) {
-    $response = $this->get($url);
+test('legacy index.html redirects to /', function () {
+    $response = $this->get('/index.html');
+
+    $response->assertRedirect('/');
+});
+
+test('news page redirects to home #news when no slug is given', function () {
+    $response = $this->get('/news');
 
     $response->assertRedirect(route('home').'#news');
-})->with(['/news', '/news.html']);
+});
 
-test('spp conference page can be rendered via /spp and spp.html', function (string $url) {
-    $response = $this->get($url);
+test('legacy news.html redirects to /news', function () {
+    $response = $this->get('/news.html');
+
+    $response->assertRedirect('/news');
+});
+
+test('spp conference page can be rendered via /spp', function () {
+    $response = $this->get('/spp');
 
     $response->assertOk()
         ->assertSee('SPP | Samahang Pisika ng Pilipinas')
         ->assertSee('Conference year choices');
-})->with(['/spp', '/spp.html']);
+});
 
-test('admin dashboard can be rendered via /admin and AdminDashboard.html', function (string $url) {
-    $response = $this->get($url);
+test('legacy spp.html redirects to /spp', function () {
+    $response = $this->get('/spp.html');
+
+    $response->assertRedirect('/spp');
+});
+
+test('admin dashboard can be rendered via /admin', function () {
+    $response = $this->get('/admin');
 
     $response->assertOk()
         ->assertSee('SPP Admin Dashboard')
         ->assertSee('News Management')
         ->assertSee('Activities Management')
         ->assertSee('SPP Conferences');
-})->with(['/admin', '/AdminDashboard.html']);
+});
+
+test('legacy AdminDashboard.html redirects to /admin', function () {
+    $response = $this->get('/AdminDashboard.html');
+
+    $response->assertRedirect('/admin');
+});
 
 test('authenticated users can access dashboard and view admin panels', function () {
     $user = User::factory()->create();

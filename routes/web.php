@@ -19,12 +19,12 @@ Route::get('activities/{slug}', [ActivityController::class, 'show'])->name('acti
 Route::get('spp', [SppController::class, 'show'])->name('spp.show');
 Route::get('downloads/{download}/file', [DownloadController::class, 'download'])->name('downloads.download');
 
-// ─── Legacy URLs (Backward Compatibility) ───────────────────────────────────
-Route::get('index.html', [HomeController::class, 'index']);
-Route::get('news.html', [NewsController::class, 'index']);
-Route::get('activities.html', [ActivityController::class, 'index']);
-Route::get('spp.html', [SppController::class, 'show']);
-Route::view('AdminDashboard.html', 'dashboard');
+// ─── Legacy URLs (Backward Compatibility - 301 Redirects) ───────────────────
+Route::redirect('index.html', '/', 301);
+Route::redirect('news.html', '/news', 301);
+Route::redirect('activities.html', '/activities', 301);
+Route::redirect('spp.html', '/spp', 301);
+Route::redirect('AdminDashboard.html', '/admin', 301);
 
 // ─── Admin / Dashboard Routes ───────────────────────────────────────────────
 Route::view('admin', 'dashboard')->name('admin');
