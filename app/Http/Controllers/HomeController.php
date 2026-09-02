@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Activity;
 use App\Models\News;
+use App\Models\Page;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
@@ -34,9 +35,13 @@ class HomeController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+        $heroPage = Page::where('slug', 'home-hero')->first();
+        $heroBanner = $heroPage ? $heroPage->image_url : null;
+
         return view('welcome', [
             'news' => $news,
             'activities' => $activities,
+            'heroBanner' => $heroBanner,
         ]);
     }
 }

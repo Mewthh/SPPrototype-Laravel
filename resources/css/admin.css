@@ -1524,7 +1524,7 @@ html[data-theme="dark"] .image-upload-zone.is-drag-over {
   font-size: 0.88rem;
   line-height: 1.7;
   color: var(--text);
-  background: var(--bg-page);
+  background: var(--surface);
   min-height: 220px;
   max-height: 480px;
 }

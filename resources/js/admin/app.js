@@ -1408,7 +1408,7 @@ navLinks.forEach((link) => {
 
 function updateActiveNavLink() {
   let currentHash = window.location.hash || '#news-section';
-  if (!['#news-section', '#activities-section', '#conferences-section'].includes(currentHash)) {
+  if (!['#news-section', '#activities-section', '#conferences-section', '#hero-banner-section'].includes(currentHash)) {
     currentHash = '#news-section';
   }
   navLinks.forEach((link) => {
@@ -1416,7 +1416,7 @@ function updateActiveNavLink() {
     link.classList.toggle('active', isActive);
   });
 
-  const sections = ['news-section', 'activities-section', 'conferences-section'];
+  const sections = ['news-section', 'activities-section', 'conferences-section', 'hero-banner-section'];
   sections.forEach((secId) => {
     const secEl = document.getElementById(secId);
     if (secEl) {
@@ -1438,6 +1438,153 @@ checkNewsDraft(null);
 
 setupImageUpload('news');
 setupImageUpload('activity');
+setupImageUpload('hero-banner');
+
+async function loadHeroBannerSetting() {
+  try {
+    const res = await fetch('/admin/api/hero-banner');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.image_url) {
+        imageState['hero-banner'] = data.image_url;
+        const zone = document.querySelector('[data-upload-zone="hero-banner"]');
+        if (zone && zone._applyImage) {
+          zone._applyImage(data.image_url, 'Current Hero Banner');
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Error fetching hero banner:', err);
+  }
+}
+loadHeroBannerSetting();
+
+document.querySelector('[data-hero-banner-form]')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const submitter = e.submitter || form.querySelector('[data-hero-banner-submit]');
+  const fileInput = form.querySelector('input[type="file"]');
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+  const formData = new FormData();
+
+  if (fileInput && fileInput.files[0]) {
+    formData.append('image', fileInput.files[0]);
+  } else if (imageState['hero-banner']) {
+    formData.append('image_url', imageState['hero-banner']);
+  } else {
+    alert('Please select or upload a banner image first.');
+    return;
+  }
+
+  setButtonLoading(submitter, true, 'Saving Banner...');
+
+  try {
+    const res = await fetch('/admin/api/hero-banner', {
+      method: 'POST',
+      headers: {
+        'X-CSRF-TOKEN': csrfToken || '',
+        'Accept': 'application/json',
+      },
+      body: formData,
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      imageState['hero-banner'] = data.image_url;
+      const zone = document.querySelector('[data-upload-zone="hero-banner"]');
+      if (zone && zone._applyImage) {
+        zone._applyImage(data.image_url, 'Current Hero Banner');
+      }
+      const userHeroBannerImg = document.getElementById('hero-banner-img');
+      const userHeroBannerTitle = document.getElementById('hero-banner-title');
+      if (userHeroBannerImg) {
+        userHeroBannerImg.src = data.image_url;
+        userHeroBannerImg.style.display = 'block';
+      }
+      if (userHeroBannerTitle) {
+        userHeroBannerTitle.style.display = 'none';
+      }
+      alert('Hero Banner image uploaded to storage and saved to database successfully!');
+    } else {
+      alert(data.message || 'Failed to save hero banner.');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('An error occurred while uploading hero banner.');
+  } finally {
+    setButtonLoading(submitter, false);
+  }
+});
+
+document.querySelector('[data-hero-banner-reset]')?.addEventListener('click', async (e) => {
+  const target = e.currentTarget;
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+  setButtonLoading(target, true, 'Resetting...');
+  try {
+    const res = await fetch('/admin/api/hero-banner', {
+      method: 'DELETE',
+      headers: {
+        'X-CSRF-TOKEN': csrfToken || '',
+        'Accept': 'application/json',
+      },
+    });
+    if (res.ok) {
+      imageState['hero-banner'] = null;
+      const zone = document.querySelector('[data-upload-zone="hero-banner"]');
+      if (zone && zone._clearImage) zone._clearImage();
+      const userHeroBannerImg = document.getElementById('hero-banner-img');
+      const userHeroBannerTitle = document.getElementById('hero-banner-title');
+      if (userHeroBannerImg) {
+        userHeroBannerImg.src = '';
+        userHeroBannerImg.style.display = 'none';
+      }
+      if (userHeroBannerTitle) {
+        userHeroBannerTitle.style.display = 'block';
+      }
+      alert('Hero Banner removed. Website title will be displayed.');
+    } else {
+      alert('Failed to reset hero banner.');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Error resetting hero banner.');
+  } finally {
+    setButtonLoading(target, false);
+  }
+});
+
+document.querySelector('[data-upload-clear="hero-banner"]')?.addEventListener('click', async (e) => {
+  const target = e.currentTarget;
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+  setButtonLoading(target, true, 'Removing...');
+  try {
+    const res = await fetch('/admin/api/hero-banner', {
+      method: 'DELETE',
+      headers: {
+        'X-CSRF-TOKEN': csrfToken || '',
+        'Accept': 'application/json',
+      },
+    });
+    if (res.ok) {
+      imageState['hero-banner'] = null;
+      const zone = document.querySelector('[data-upload-zone="hero-banner"]');
+      if (zone && zone._clearImage) zone._clearImage();
+      const userHeroBannerImg = document.getElementById('hero-banner-img');
+      const userHeroBannerTitle = document.getElementById('hero-banner-title');
+      if (userHeroBannerImg) {
+        userHeroBannerImg.src = '';
+        userHeroBannerImg.style.display = 'none';
+      }
+      if (userHeroBannerTitle) {
+        userHeroBannerTitle.style.display = 'block';
+      }
+    }
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setButtonLoading(target, false);
+  }
+});
 
 newsForm?.addEventListener('reset', () => {
   window.setTimeout(() => {

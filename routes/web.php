@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\Admin\ActivityController as AdminActivityController;
+use App\Http\Controllers\Admin\HeroBannerController as AdminHeroBannerController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\DownloadController;
@@ -30,6 +31,12 @@ Route::redirect('AdminDashboard.html', '/admin', 301);
 Route::view('admin', 'dashboard')->name('admin');
 
 Route::post('admin/api/media/upload', [AdminMediaController::class, 'upload'])->name('admin.api.media.upload');
+
+Route::prefix('admin/api/hero-banner')->name('admin.api.hero-banner.')->group(function () {
+    Route::get('/', [AdminHeroBannerController::class, 'show'])->name('show');
+    Route::post('/', [AdminHeroBannerController::class, 'update'])->name('update');
+    Route::delete('/', [AdminHeroBannerController::class, 'destroy'])->name('destroy');
+});
 
 Route::prefix('admin/api/news')->name('admin.api.news.')->group(function () {
     Route::get('/', [AdminNewsController::class, 'index'])->name('index');

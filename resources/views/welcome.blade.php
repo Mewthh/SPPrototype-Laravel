@@ -2,29 +2,13 @@
     <section class="hero section-shell" id="top">
         <div class="hero-grid shell">
             <div class="hero-copy">
-                <p class="eyebrow">SAMAHANG PISIKA NG PILIPINAS</p>
-                <h1>title</h1>
-                <p class="hero-text">sample text.</p>
-
-                <div class="hero-actions">
-                    <a class="button button-primary" href="#events">View Events</a>
-                    <a class="button button-secondary" href="#about">Join SPP</a>
+                <div class="hero-banner-wrap" id="hero-banner-container">
+                    <img src="{{ $heroBanner ?? asset('images/hero-banner.jpg') }}" alt="Hero Banner" class="hero-banner-img" id="hero-banner-img" style="{{ !empty($heroBanner) ? 'display: block;' : 'display: none;' }}" onload="if(this.getAttribute('src') && !this.getAttribute('src').endsWith('hero-banner.jpg')){ document.getElementById('hero-banner-title').style.display='none'; this.style.display='block'; }" onerror="this.style.display='none'; document.getElementById('hero-banner-title').style.display='block';" />
+                    <div id="hero-banner-title" class="hero-banner-title" style="{{ !empty($heroBanner) ? 'display: none;' : 'display: block;' }}">
+                        <h1>Samahang Pisika ng Pilipinas</h1>
+                    </div>
                 </div>
 
-                <div class="hero-meta" aria-label="Quick highlights">
-                    <article>
-                        <strong>sample text</strong>
-                        <span>sample text</span>
-                    </article>
-                    <article>
-                        <strong>sample text</strong>
-                        <span>sample text</span>
-                    </article>
-                    <article>
-                        <strong>sample text</strong>
-                        <span>sample text</span>
-                    </article>
-                </div>
             </div>
         </div>
     </section>

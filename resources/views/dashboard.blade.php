@@ -57,7 +57,6 @@
 				<div class="brand-copy">
 					<p class="eyebrow">Admin</p>
 					<h1>Samahang Pisika ng Pilipinas</h1>
-					<p class="brand-desc">sample text.</p>
 				</div>
 			</div>
 
@@ -83,6 +82,13 @@
 					</span>
 					<span class="nav-text">Conferences</span>
 					<span class="nav-badge" data-conference-count-badge>0</span>
+				</a>
+				<a href="#hero-banner-section" class="nav-item" data-nav-link>
+					<span class="nav-icon" aria-hidden="true">
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+					</span>
+					<span class="nav-text">Hero Banner</span>
+					<span class="nav-badge" data-hero-banner-count-badge>1</span>
 				</a>
 			</nav>
 
@@ -551,8 +557,42 @@
 				</div>
 			</section>
 
-			<footer class="site-footer">
-			</footer>
+			<section class="panel editor-panel" id="hero-banner-section">
+				<div class="panel-view">
+					<div class="section-panel-head">
+						<div>
+							<p class="panel-kicker">Homepage Banner</p>
+							<h2>Hero Banner Management</h2>
+						</div>
+					</div>
+
+					<form class="compose-form" data-hero-banner-form>
+						<div class="field-row field-row-wide">
+							<span class="field-label">Homepage Hero Banner Image</span>
+							<div class="image-upload-zone" id="hero-banner-upload-zone" data-upload-zone="hero-banner" tabindex="0" role="button" aria-label="Click or drag a banner image here to upload">
+								<div class="image-upload-placeholder" data-upload-placeholder="hero-banner">
+									<span class="upload-icon" aria-hidden="true">&#x1F5BC;</span>
+									<span>Click to upload or drag &amp; drop Hero Banner</span>
+									<small>PNG, JPG, GIF, WebP &mdash; max 5 MB</small>
+								</div>
+								<img class="image-upload-preview is-hidden" data-upload-preview="hero-banner" alt="Hero banner image preview" />
+								<input type="file" name="heroBannerImage" accept="image/*" class="image-upload-input" data-upload-input="hero-banner" aria-label="Upload hero banner image" />
+							</div>
+							<div class="image-upload-actions is-hidden" data-upload-actions="hero-banner">
+								<span class="image-upload-filename" data-upload-filename="hero-banner"></span>
+								<button type="button" class="item-action danger" data-upload-clear="hero-banner">Remove image</button>
+							</div>
+						</div>
+
+						<div class="form-actions">
+							<button type="submit" class="button button-primary" data-hero-banner-submit>Save & Apply Banner</button>
+							<button type="button" class="button button-quiet" data-hero-banner-reset>Reset Banner</button>
+						</div>
+					</form>
+				</div>
+			</section>
+
+
 		</main>
 	</div>
 	<!-- Custom Confirmation Modal -->
