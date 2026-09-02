@@ -359,7 +359,7 @@ a {
 .dashboard-nav a.active .nav-badge,
 .dashboard-nav .nav-item.active .nav-badge {
   background: var(--accent-strong);
-  color: #ffffff;
+  color: var(--bg-page);
   border-color: transparent;
 }
 

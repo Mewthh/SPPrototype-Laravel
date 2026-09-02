@@ -317,18 +317,25 @@ const loadingScreenEl = document.getElementById('admin-loading-screen');
 const loadingScreenText = document.getElementById('admin-loading-text');
 
 function showAdminLoadingScreen(statusText = 'Loading workspace & retrieving database items...') {
-  if (!loadingScreenEl) return;
+  console.log('[SPP Admin Loader Debug] showAdminLoadingScreen requested with status:', statusText);
+  if (!loadingScreenEl) {
+    console.warn('[SPP Admin Loader Debug] #admin-loading-screen element not found.');
+    return;
+  }
   if (loadingScreenText && statusText) {
     loadingScreenText.textContent = statusText;
   }
   loadingScreenEl.classList.remove('is-hidden', 'fade-out');
+  console.log('[SPP Admin Loader Debug] #admin-loading-screen is now visible.');
 }
 
-function hideAdminLoadingScreen() {
+function hideAdminLoadingScreen(trigger = 'unspecified') {
+  console.log(`[SPP Admin Loader Debug] hideAdminLoadingScreen called. Trigger: "${trigger}"`);
   if (!loadingScreenEl) return;
   loadingScreenEl.classList.add('fade-out');
   setTimeout(() => {
     loadingScreenEl.classList.add('is-hidden');
+    console.log('[SPP Admin Loader Debug] #admin-loading-screen is now hidden.');
   }, 450);
 }
 
@@ -338,18 +345,20 @@ window.hideAdminLoadingScreen = hideAdminLoadingScreen;
 let pendingInitialDatabaseRequests = 2;
 let initialLoadDismissed = false;
 
-function notifyDatabaseFetchComplete() {
+function notifyDatabaseFetchComplete(source = 'unknown') {
   pendingInitialDatabaseRequests--;
+  console.log(`[SPP Admin Loader Debug] notifyDatabaseFetchComplete from "${source}". Remaining pending requests:`, pendingInitialDatabaseRequests);
   if (pendingInitialDatabaseRequests <= 0 && !initialLoadDismissed) {
     initialLoadDismissed = true;
-    hideAdminLoadingScreen();
+    hideAdminLoadingScreen('all database requests completed');
   }
 }
 
 setTimeout(() => {
   if (!initialLoadDismissed) {
     initialLoadDismissed = true;
-    hideAdminLoadingScreen();
+    console.log('[SPP Admin Loader Debug] 3000ms safety timeout reached, dismissing admin loader.');
+    hideAdminLoadingScreen('timeout 3000ms');
   }
 }, 3000);
 

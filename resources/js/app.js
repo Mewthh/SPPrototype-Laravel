@@ -394,23 +394,39 @@ function initSppConference() {
 
 function initUserLoadingScreen() {
   const userLoader = document.getElementById('user-loading-screen');
-  if (!userLoader) return;
+  console.log('[SPP Loader Debug] Checking #user-loading-screen:', {
+    elementFound: Boolean(userLoader),
+    readyState: document.readyState,
+    classList: userLoader ? Array.from(userLoader.classList) : null,
+    computedDisplay: userLoader ? window.getComputedStyle(userLoader).display : null,
+    computedVisibility: userLoader ? window.getComputedStyle(userLoader).visibility : null,
+    computedOpacity: userLoader ? window.getComputedStyle(userLoader).opacity : null,
+  });
+
+  if (!userLoader) {
+    console.warn('[SPP Loader Debug] #user-loading-screen not found on page.');
+    return;
+  }
 
   let isDismissed = false;
-  function hideLoader() {
+  function hideLoader(trigger = 'unspecified') {
     if (isDismissed) return;
     isDismissed = true;
+    console.log(`[SPP Loader Debug] Hiding user loading screen. Trigger: "${trigger}". readyState: "${document.readyState}"`);
     userLoader.classList.add('fade-out');
     setTimeout(() => {
       userLoader.classList.add('is-hidden');
+      console.log('[SPP Loader Debug] User loading screen is now hidden (classes: is-hidden, fade-out).');
     }, 450);
   }
 
   if (document.readyState === 'complete') {
-    hideLoader();
+    console.log('[SPP Loader Debug] document.readyState is already complete when script ran.');
+    hideLoader('readyState:complete');
   } else {
-    window.addEventListener('load', hideLoader, { once: true });
-    setTimeout(hideLoader, 2000);
+    console.log('[SPP Loader Debug] Waiting for window load event or timeout...');
+    window.addEventListener('load', () => hideLoader('window.onload'), { once: true });
+    setTimeout(() => hideLoader('fallback-timeout-2000ms'), 2000);
   }
 }
 

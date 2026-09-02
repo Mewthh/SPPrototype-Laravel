@@ -75,11 +75,7 @@
             @if(isset($activities) && $activities->count() > 0)
                 <div id="activity-grid" class="card-grid activity-grid" data-server-rendered="true">
                     @foreach($activities as $index => $activity)
-                        <x-activity-card
-                            :activity="$activity"
-                            chip="Activities"
-                            :hidden="$index >= 4"
-                        />
+                        <x-activity-card :activity="$activity" chip="Activities" :hidden="$index >= 4" />
                     @endforeach
                 </div>
 
@@ -88,7 +84,8 @@
                         <button type="button" class="button button-secondary" id="activity-show-more-btn">
                             Show More
                         </button>
-                        <button type="button" class="button button-secondary" id="activity-show-less-btn" style="display: none;">
+                        <button type="button" class="button button-secondary" id="activity-show-less-btn"
+                            style="display: none;">
                             Show Less
                         </button>
                     </div>
