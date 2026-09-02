@@ -184,13 +184,13 @@
 						</label>
 
 						<label class="field-row">
-							<span>Title</span>
-							<input type="text" name="title" placeholder="News title..." required />
+							<span>Title <small style="font-weight: 400; opacity: 0.6;">(max 100 chars)</small></span>
+							<input type="text" name="title" placeholder="News title..." required maxlength="100" />
 						</label>
 
 						<label class="field-row">
-							<span>Summary</span>
-							<textarea name="summary" rows="2" placeholder="Brief summary of the article..."></textarea>
+							<span>Summary <small style="font-weight: 400; opacity: 0.6;">(max 200 chars)</small></span>
+							<textarea name="summary" rows="2" placeholder="Brief summary of the article..." maxlength="200"></textarea>
 						</label>
 
 						<label class="field-row">
@@ -407,13 +407,13 @@
 						</label>
 
 						<label class="field-row">
-							<span>Activity Title</span>
-							<input type="text" name="title" placeholder="Activity title..." required />
+							<span>Activity Title <small style="font-weight: 400; opacity: 0.6;">(max 100 chars)</small></span>
+							<input type="text" name="title" placeholder="Activity title..." required maxlength="100" />
 						</label>
 
 						<label class="field-row">
-							<span>Summary</span>
-							<textarea name="summary" rows="2" placeholder="Brief activity description..."></textarea>
+							<span>Summary <small style="font-weight: 400; opacity: 0.6;">(max 200 chars)</small></span>
+							<textarea name="summary" rows="2" placeholder="Brief activity description..." maxlength="200"></textarea>
 						</label>
 
 						<label class="field-row">
@@ -635,8 +635,8 @@
 						</label>
 
 						<label class="field-row">
-							<span>Conference Title</span>
-							<input type="text" name="title" placeholder="e.g. 44th SPP Physics Conference" required />
+							<span>Conference Title <small style="font-weight: 400; opacity: 0.6;">(max 100 chars)</small></span>
+							<input type="text" name="title" placeholder="e.g. 44th SPP Physics Conference" required maxlength="100" />
 						</label>
 
 						<label class="field-row">
@@ -655,9 +655,8 @@
 						</label>
 
 						<label class="field-row">
-							<span>Short Summary</span>
-							<textarea name="summary" rows="2"
-								placeholder="Brief overview of the conference..."></textarea>
+							<span>Short Summary <small style="font-weight: 400; opacity: 0.6;">(max 200 chars)</small></span>
+							<textarea name="summary" rows="2" placeholder="Brief overview of the conference..." maxlength="200"></textarea>
 						</label>
 
 						<div class="field-row field-row-wide">

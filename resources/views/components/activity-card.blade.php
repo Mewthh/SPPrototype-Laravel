@@ -11,8 +11,8 @@
 @php
     $slug = $activity?->slug ?: ($activity?->id ?: null);
     $detailUrl = $slug ? route('activities.show', ['slug' => $slug]) : ($slug ? route('activities.index', ['slug' => $slug]) : null);
-    $actualTitle = $activity?->title ?: $title;
-    $actualSummary = $activity ? ($activity->summary ?: Str::limit(strip_tags($activity->description), 130)) : $summary;
+    $actualTitle = Str::limit($activity?->title ?: $title, 100, '…');
+    $actualSummary = Str::limit($activity ? ($activity->summary ?: Str::limit(strip_tags($activity->description), 200)) : $summary, 200, '…');
     $actualMeta = $meta ?: ($activity?->event_date ? $activity->event_date->format('M j, Y') : ($activity?->location ?: ''));
     $safeTitle = urlencode(mb_substr($actualTitle, 0, 20));
     $placeholder = "data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 520'><rect width='800' height='520' rx='28' fill='%23e5e7eb'/><text x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle' fill='%236b7280' font-family='Segoe UI,Arial,sans-serif' font-size='32'>{$safeTitle}</text></svg>";
