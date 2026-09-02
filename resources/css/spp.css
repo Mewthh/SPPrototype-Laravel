@@ -2342,15 +2342,25 @@ html[data-theme="dark"] .mobile-nav-years button.active {
     border-radius: var(--radius-lg);
     overflow: hidden;
     border: 1px solid var(--border);
-    background: var(--card-bg);
+    background: var(--surface);
     box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    min-height: 220px;
 }
 
 .article-hero-media img {
-    width: 100%;
-    max-height: 480px;
-    object-fit: cover;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    max-height: 520px;
+    object-fit: contain;
+    object-position: center;
     display: block;
+    margin: 0 auto;
+    border-radius: calc(var(--radius-lg) - 6px);
 }
 
 .article-body {
@@ -2511,7 +2521,10 @@ html[data-theme="dark"] .mobile-nav-years button.active {
 .article-body img {
     max-width: 100%;
     height: auto;
-    border-radius: var(--radius-sm);
+    object-fit: contain;
+    display: block;
+    margin: 16px auto;
+    border-radius: var(--radius-md);
     border: 1px solid var(--border);
 }
 

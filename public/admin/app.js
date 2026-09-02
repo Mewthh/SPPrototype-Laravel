@@ -1172,86 +1172,101 @@ function setupRichEditorToolbars() {
     visualEditor.setAttribute('aria-multiline', 'true');
     visualEditor.setAttribute('placeholder', textarea.placeholder || 'Type here...');
 
+    let isSyncing = false;
+
     // Function to convert raw markdown/HTML into visual editor HTML
-    const syncToVisual = () => {
-      let raw = textarea.value || '';
-      let html = raw
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-        .replace(/_([^_]+)_/g, '<em>$1</em>')
-        .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-        .replace(/<u>([^<]+)<\/u>/g, '<u>$1</u>')
-        .replace(/==([^=]+)==/g, '<mark>$1</mark>')
-        .replace(/~([^~]+)~/g, '<sub>$1</sub>')
-        .replace(/\^([^^]+)\^/g, '<sup>$1</sup>')
-        .replace(/`([^`]+)`/g, '<code>$1</code>')
-        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-        .replace(/^## (.*$)/gim, '<h2>$2</h2>')
-        .replace(/\n/g, '<br>');
-      visualEditor.innerHTML = html;
+    const syncToVisual = (force = false) => {
+      if (isSyncing) return;
+      if (!force && document.activeElement === visualEditor) return;
+      isSyncing = true;
+      try {
+        let raw = textarea.value || '';
+        let html = raw
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+          .replace(/_([^_]+)_/g, '<em>$1</em>')
+          .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+          .replace(/<u>([^<]+)<\/u>/g, '<u>$1</u>')
+          .replace(/==([^=]+)==/g, '<mark>$1</mark>')
+          .replace(/~([^~]+)~/g, '<sub>$1</sub>')
+          .replace(/\^([^^]+)\^/g, '<sup>$1</sup>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+          .replace(/^## (.*$)/gim, '<h2>$2</h2>')
+          .replace(/\n/g, '<br>');
+        visualEditor.innerHTML = html;
+      } finally {
+        isSyncing = false;
+      }
     };
 
     // Function to sync visual content back to textarea value
     const syncToTextarea = () => {
-      // Convert an HTML table element to GFM markdown table
-      function tableToMarkdown(table) {
-        const rows = Array.from(table.querySelectorAll('tr'));
-        if (!rows.length) return '';
-        const allCells = rows.map((row) =>
-          Array.from(row.querySelectorAll('th, td')).map((cell) => cell.innerText.trim().replace(/\|/g, '\\|'))
-        );
-        const header = allCells[0] || [];
-        const body = allCells.slice(1);
-        const sep = header.map(() => '---');
-        const toRow = (cells) => `| ${cells.join(' | ')} |`;
-        return '\n' + [toRow(header), toRow(sep), ...body.map(toRow)].join('\n') + '\n';
+      if (isSyncing) return;
+      isSyncing = true;
+      try {
+        // Convert an HTML table element to GFM markdown table
+        function tableToMarkdown(table) {
+          const rows = Array.from(table.querySelectorAll('tr'));
+          if (!rows.length) return '';
+          const allCells = rows.map((row) =>
+            Array.from(row.querySelectorAll('th, td')).map((cell) => cell.innerText.trim().replace(/\|/g, '\\|'))
+          );
+          const header = allCells[0] || [];
+          const body = allCells.slice(1);
+          const sep = header.map(() => '---');
+          const toRow = (cells) => `| ${cells.join(' | ')} |`;
+          return '\n' + [toRow(header), toRow(sep), ...body.map(toRow)].join('\n') + '\n';
+        }
+
+        // Clone editor DOM so we can manipulate it safely
+        const clone = visualEditor.cloneNode(true);
+
+        // Replace each <table> with its markdown equivalent as a text node
+        clone.querySelectorAll('table').forEach((tbl) => {
+          // Find matching original table to extract text from live DOM
+          const idx = Array.from(visualEditor.querySelectorAll('table'))
+            .findIndex((t) => t.isEqualNode(tbl));
+          const liveTable = visualEditor.querySelectorAll('table')[idx] || tbl;
+          const md = tableToMarkdown(liveTable);
+          const placeholder = document.createTextNode(md);
+          tbl.parentNode.replaceChild(placeholder, tbl);
+        });
+
+        let html = clone.innerHTML;
+        let raw = html
+          .replace(/<div><br><\/div>/gi, '\n')
+          .replace(/<div>/gi, '\n').replace(/<\/div>/gi, '')
+          .replace(/<br\s*[\/]?>/gi, '\n')
+          .replace(/<strong>(.*?)<\/strong>/gi, '**$1**')
+          .replace(/<b>(.*?)<\/b>/gi, '**$1**')
+          .replace(/<em>(.*?)<\/em>/gi, '*$1*')
+          .replace(/<i>(.*?)<\/i>/gi, '*$1*')
+          .replace(/<u>(.*?)<\/u>/gi, '<u>$1</u>')
+          .replace(/<mark[^>]*>(.*?)<\/mark>/gi, '==$1==')
+          .replace(/<sub>(.*?)<\/sub>/gi, '~$1~')
+          .replace(/<sup class="footnote-ref">\[(\d+)\]<\/sup>/gi, '[^$1]')
+          .replace(/<sup>(.*?)<\/sup>/gi, '^$1^')
+          .replace(/<code>(.*?)<\/code>/gi, '`$1`')
+          .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '\n# $1\n')
+          .replace(/<h2[^>]*>(.*?)<\/h2>/gi, '\n## $1\n')
+          .replace(/<h3[^>]*>(.*?)<\/h3>/gi, '\n### $1\n')
+          .replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi, (_, inner) => '\n> ' + inner.trim() + '\n')
+          .replace(/<li[^>]*>(.*?)<\/li>/gi, '\n- $1')
+          .replace(/<\/?(ul|ol|p)[^>]*>/gi, '\n')
+          .replace(/<a[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi, '[$2]($1)')
+          .replace(/<[^>]+>/g, '')
+          .replace(/&nbsp;/gi, ' ')
+          .replace(/&amp;/gi, '&')
+          .replace(/&lt;/gi, '<')
+          .replace(/&gt;/gi, '>')
+          .replace(/\n{3,}/g, '\n\n')
+          .trim();
+        textarea.value = raw;
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+      } finally {
+        isSyncing = false;
       }
-
-      // Clone editor DOM so we can manipulate it safely
-      const clone = visualEditor.cloneNode(true);
-
-      // Replace each <table> with its markdown equivalent as a text node
-      clone.querySelectorAll('table').forEach((tbl) => {
-        // Find matching original table to extract text from live DOM
-        const idx = Array.from(visualEditor.querySelectorAll('table'))
-          .findIndex((t) => t.isEqualNode(tbl));
-        const liveTable = visualEditor.querySelectorAll('table')[idx] || tbl;
-        const md = tableToMarkdown(liveTable);
-        const placeholder = document.createTextNode(md);
-        tbl.parentNode.replaceChild(placeholder, tbl);
-      });
-
-      let html = clone.innerHTML;
-      let raw = html
-        .replace(/<div><br><\/div>/gi, '\n')
-        .replace(/<div>/gi, '\n').replace(/<\/div>/gi, '')
-        .replace(/<br\s*[\/]?>/gi, '\n')
-        .replace(/<strong>(.*?)<\/strong>/gi, '**$1**')
-        .replace(/<b>(.*?)<\/b>/gi, '**$1**')
-        .replace(/<em>(.*?)<\/em>/gi, '*$1*')
-        .replace(/<i>(.*?)<\/i>/gi, '*$1*')
-        .replace(/<u>(.*?)<\/u>/gi, '<u>$1</u>')
-        .replace(/<mark[^>]*>(.*?)<\/mark>/gi, '==$1==')
-        .replace(/<sub>(.*?)<\/sub>/gi, '~$1~')
-        .replace(/<sup class="footnote-ref">\[(\d+)\]<\/sup>/gi, '[^$1]')
-        .replace(/<sup>(.*?)<\/sup>/gi, '^$1^')
-        .replace(/<code>(.*?)<\/code>/gi, '`$1`')
-        .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '\n# $1\n')
-        .replace(/<h2[^>]*>(.*?)<\/h2>/gi, '\n## $1\n')
-        .replace(/<h3[^>]*>(.*?)<\/h3>/gi, '\n### $1\n')
-        .replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi, (_, inner) => '\n> ' + inner.trim() + '\n')
-        .replace(/<li[^>]*>(.*?)<\/li>/gi, '\n- $1')
-        .replace(/<\/?(ul|ol|p)[^>]*>/gi, '\n')
-        .replace(/<a[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi, '[$2]($1)')
-        .replace(/<[^>]+>/g, '')
-        .replace(/&nbsp;/gi, ' ')
-        .replace(/&amp;/gi, '&')
-        .replace(/&lt;/gi, '<')
-        .replace(/&gt;/gi, '>')
-        .replace(/\n{3,}/g, '\n\n')
-        .trim();
-      textarea.value = raw;
-      textarea.dispatchEvent(new Event('input', { bubbles: true }));
     };
 
 
@@ -1330,6 +1345,8 @@ function setupRichEditorToolbars() {
     syncToVisual();
     textarea.style.display = 'none';
     wrap.appendChild(visualEditor);
+    wrap._syncToVisual = (force = true) => syncToVisual(force);
+    textarea._syncToVisual = (force = true) => syncToVisual(force);
 
     // Listen for input and selection changes
     visualEditor.addEventListener('input', () => {
@@ -1342,6 +1359,15 @@ function setupRichEditorToolbars() {
     });
 
     textarea.addEventListener('change', syncToVisual);
+    textarea.addEventListener('input', syncToVisual);
+
+    if (textarea.form) {
+      textarea.form.addEventListener('reset', () => {
+        window.setTimeout(() => {
+          syncToVisual();
+        }, 0);
+      });
+    }
 
     // Toolbar formatting actions
     toolbar.querySelectorAll('[data-format]').forEach((btn) => {
@@ -1582,6 +1608,11 @@ function startEditingNews(postId) {
   newsForm.elements.summary.value = post.summary || '';
   newsForm.elements.publishDate.value = post.publishDate || '';
   newsForm.elements.body.value = post.body || '';
+  if (newsForm.elements.body._syncToVisual) {
+    newsForm.elements.body._syncToVisual();
+  }
+  newsForm.elements.body.dispatchEvent(new Event('input', { bubbles: true }));
+  newsForm.elements.body.dispatchEvent(new Event('change', { bubbles: true }));
   if (newsForm.elements.status) {
     newsForm.elements.status.value = post.status || 'published';
   }
@@ -1603,6 +1634,14 @@ function startEditingNews(postId) {
 function cancelEditingNews() {
   state.editingNewsId = null;
   newsForm?.reset();
+  if (newsForm?.elements.body) {
+    newsForm.elements.body.value = '';
+    if (newsForm.elements.body._syncToVisual) {
+      newsForm.elements.body._syncToVisual();
+    }
+    newsForm.elements.body.dispatchEvent(new Event('input', { bubbles: true }));
+    newsForm.elements.body.dispatchEvent(new Event('change', { bubbles: true }));
+  }
   document.querySelector('[data-upload-zone="news"]')?._clearImage?.();
   updateNewsEditorUI();
   renderNewsQueue();
@@ -1891,6 +1930,14 @@ async function handleNewsSubmit(event) {
     const savedId = state.editingNewsId;
     state.editingNewsId = null;
     newsForm.reset();
+    if (newsForm?.elements.body) {
+      newsForm.elements.body.value = '';
+      if (newsForm.elements.body._syncToVisual) {
+        newsForm.elements.body._syncToVisual();
+      }
+      newsForm.elements.body.dispatchEvent(new Event('input', { bubbles: true }));
+      newsForm.elements.body.dispatchEvent(new Event('change', { bubbles: true }));
+    }
     document.querySelector('[data-upload-zone="news"]')?._clearImage?.();
     clearNewsDraft(savedId);
     await fetchNewsFromDatabase();
@@ -1993,6 +2040,11 @@ function startEditingActivity(postId) {
   activityForm.elements.summary.value = post.summary || '';
   activityForm.elements.publishDate.value = post.publishDate || '';
   activityForm.elements.body.value = post.body || '';
+  if (activityForm.elements.body._syncToVisual) {
+    activityForm.elements.body._syncToVisual();
+  }
+  activityForm.elements.body.dispatchEvent(new Event('input', { bubbles: true }));
+  activityForm.elements.body.dispatchEvent(new Event('change', { bubbles: true }));
   if (activityForm.elements.status) {
     activityForm.elements.status.value = post.status || 'scheduled';
   }
@@ -2013,6 +2065,14 @@ function startEditingActivity(postId) {
 function cancelEditingActivity() {
   state.editingActivityId = null;
   activityForm?.reset();
+  if (activityForm?.elements.body) {
+    activityForm.elements.body.value = '';
+    if (activityForm.elements.body._syncToVisual) {
+      activityForm.elements.body._syncToVisual();
+    }
+    activityForm.elements.body.dispatchEvent(new Event('input', { bubbles: true }));
+    activityForm.elements.body.dispatchEvent(new Event('change', { bubbles: true }));
+  }
   document.querySelector('[data-upload-zone="activity"]')?._clearImage?.();
   updateActivityEditorUI();
   renderActivityQueue();
@@ -2426,6 +2486,14 @@ function bindEvents() {
   newsForm?.addEventListener('reset', () => {
     state.editingNewsId = null;
     window.setTimeout(() => {
+      if (newsForm?.elements.body) {
+        newsForm.elements.body.value = '';
+        if (newsForm.elements.body._syncToVisual) {
+          newsForm.elements.body._syncToVisual();
+        }
+        newsForm.elements.body.dispatchEvent(new Event('input', { bubbles: true }));
+        newsForm.elements.body.dispatchEvent(new Event('change', { bubbles: true }));
+      }
       updateNewsEditorUI();
       checkNewsDraft(null);
     }, 0);
@@ -2439,7 +2507,17 @@ function bindEvents() {
   activityForm?.addEventListener('submit', handleActivitySubmit);
   activityForm?.addEventListener('reset', () => {
     state.editingActivityId = null;
-    window.setTimeout(updateActivityEditorUI, 0);
+    window.setTimeout(() => {
+      if (activityForm?.elements.body) {
+        activityForm.elements.body.value = '';
+        if (activityForm.elements.body._syncToVisual) {
+          activityForm.elements.body._syncToVisual();
+        }
+        activityForm.elements.body.dispatchEvent(new Event('input', { bubbles: true }));
+        activityForm.elements.body.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      updateActivityEditorUI();
+    }, 0);
   });
   activityCancelEdit?.addEventListener('click', cancelEditingActivity);
   activityList?.addEventListener('click', handleActivityAction);
@@ -2701,11 +2779,27 @@ document.querySelector('[data-upload-clear="hero-banner"]')?.addEventListener('c
 
 newsForm?.addEventListener('reset', () => {
   window.setTimeout(() => {
+    if (newsForm?.elements.body) {
+      newsForm.elements.body.value = '';
+      if (newsForm.elements.body._syncToVisual) {
+        newsForm.elements.body._syncToVisual();
+      }
+      newsForm.elements.body.dispatchEvent(new Event('input', { bubbles: true }));
+      newsForm.elements.body.dispatchEvent(new Event('change', { bubbles: true }));
+    }
     document.querySelector('[data-upload-zone="news"]')?._clearImage?.();
   }, 0);
 });
 activityForm?.addEventListener('reset', () => {
   window.setTimeout(() => {
+    if (activityForm?.elements.body) {
+      activityForm.elements.body.value = '';
+      if (activityForm.elements.body._syncToVisual) {
+        activityForm.elements.body._syncToVisual();
+      }
+      activityForm.elements.body.dispatchEvent(new Event('input', { bubbles: true }));
+      activityForm.elements.body.dispatchEvent(new Event('change', { bubbles: true }));
+    }
     document.querySelector('[data-upload-zone="activity"]')?._clearImage?.();
   }, 0);
 });

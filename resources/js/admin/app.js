@@ -955,6 +955,12 @@ function setupRichEditorToolbars() {
     previewToggle.addEventListener('click', (e) => { e.preventDefault(); togglePreview(); });
 
     inputOrTextarea.addEventListener('input', updatePreview);
+    inputOrTextarea.addEventListener('change', updatePreview);
+    if (inputOrTextarea.form) {
+      inputOrTextarea.form.addEventListener('reset', () => {
+        window.setTimeout(updatePreview, 0);
+      });
+    }
     updatePreview();
     previewToggle.classList.add('is-active');
     // ─────────────────────────────────────────────────────────────────────
@@ -1083,6 +1089,11 @@ function startEditingNews(postId) {
   newsForm.elements.summary.value = post.summary || '';
   newsForm.elements.publishDate.value = post.publishDate || '';
   newsForm.elements.body.value = post.body || '';
+  if (newsForm.elements.body._syncToVisual) {
+    newsForm.elements.body._syncToVisual();
+  }
+  newsForm.elements.body.dispatchEvent(new Event('input', { bubbles: true }));
+  newsForm.elements.body.dispatchEvent(new Event('change', { bubbles: true }));
   if (newsForm.elements.status) {
     newsForm.elements.status.value = post.status || 'published';
   }
@@ -1104,6 +1115,14 @@ function startEditingNews(postId) {
 function cancelEditingNews() {
   state.editingNewsId = null;
   newsForm?.reset();
+  if (newsForm?.elements.body) {
+    newsForm.elements.body.value = '';
+    if (newsForm.elements.body._syncToVisual) {
+      newsForm.elements.body._syncToVisual();
+    }
+    newsForm.elements.body.dispatchEvent(new Event('input', { bubbles: true }));
+    newsForm.elements.body.dispatchEvent(new Event('change', { bubbles: true }));
+  }
   document.querySelector('[data-upload-zone="news"]')?._clearImage?.();
   updateNewsEditorUI();
   renderNewsQueue();
@@ -1149,6 +1168,14 @@ function handleNewsSubmit(event) {
   const savedId = state.editingNewsId;
   savePosts();
   newsForm.reset();
+  if (newsForm?.elements.body) {
+    newsForm.elements.body.value = '';
+    if (newsForm.elements.body._syncToVisual) {
+      newsForm.elements.body._syncToVisual();
+    }
+    newsForm.elements.body.dispatchEvent(new Event('input', { bubbles: true }));
+    newsForm.elements.body.dispatchEvent(new Event('change', { bubbles: true }));
+  }
   document.querySelector('[data-upload-zone="news"]')?._clearImage?.();
   clearNewsDraft(savedId);
   renderAll();
@@ -1197,6 +1224,11 @@ function startEditingActivity(postId) {
   activityForm.elements.summary.value = post.summary || '';
   activityForm.elements.publishDate.value = post.publishDate || '';
   activityForm.elements.body.value = post.body || '';
+  if (activityForm.elements.body._syncToVisual) {
+    activityForm.elements.body._syncToVisual();
+  }
+  activityForm.elements.body.dispatchEvent(new Event('input', { bubbles: true }));
+  activityForm.elements.body.dispatchEvent(new Event('change', { bubbles: true }));
   if (activityForm.elements.status) {
     activityForm.elements.status.value = post.status || 'scheduled';
   }
@@ -1217,6 +1249,14 @@ function startEditingActivity(postId) {
 function cancelEditingActivity() {
   state.editingActivityId = null;
   activityForm?.reset();
+  if (activityForm?.elements.body) {
+    activityForm.elements.body.value = '';
+    if (activityForm.elements.body._syncToVisual) {
+      activityForm.elements.body._syncToVisual();
+    }
+    activityForm.elements.body.dispatchEvent(new Event('input', { bubbles: true }));
+    activityForm.elements.body.dispatchEvent(new Event('change', { bubbles: true }));
+  }
   document.querySelector('[data-upload-zone="activity"]')?._clearImage?.();
   updateActivityEditorUI();
   renderActivityQueue();
@@ -1340,6 +1380,14 @@ function bindEvents() {
   newsForm?.addEventListener('reset', () => {
     state.editingNewsId = null;
     window.setTimeout(() => {
+      if (newsForm?.elements.body) {
+        newsForm.elements.body.value = '';
+        if (newsForm.elements.body._syncToVisual) {
+          newsForm.elements.body._syncToVisual();
+        }
+        newsForm.elements.body.dispatchEvent(new Event('input', { bubbles: true }));
+        newsForm.elements.body.dispatchEvent(new Event('change', { bubbles: true }));
+      }
       updateNewsEditorUI();
       checkNewsDraft(null);
     }, 0);
@@ -1353,7 +1401,17 @@ function bindEvents() {
   activityForm?.addEventListener('submit', handleActivitySubmit);
   activityForm?.addEventListener('reset', () => {
     state.editingActivityId = null;
-    window.setTimeout(updateActivityEditorUI, 0);
+    window.setTimeout(() => {
+      if (activityForm?.elements.body) {
+        activityForm.elements.body.value = '';
+        if (activityForm.elements.body._syncToVisual) {
+          activityForm.elements.body._syncToVisual();
+        }
+        activityForm.elements.body.dispatchEvent(new Event('input', { bubbles: true }));
+        activityForm.elements.body.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      updateActivityEditorUI();
+    }, 0);
   });
   activityCancelEdit?.addEventListener('click', cancelEditingActivity);
   activityList?.addEventListener('click', handleActivityAction);
@@ -1588,11 +1646,27 @@ document.querySelector('[data-upload-clear="hero-banner"]')?.addEventListener('c
 
 newsForm?.addEventListener('reset', () => {
   window.setTimeout(() => {
+    if (newsForm?.elements.body) {
+      newsForm.elements.body.value = '';
+      if (newsForm.elements.body._syncToVisual) {
+        newsForm.elements.body._syncToVisual();
+      }
+      newsForm.elements.body.dispatchEvent(new Event('input', { bubbles: true }));
+      newsForm.elements.body.dispatchEvent(new Event('change', { bubbles: true }));
+    }
     document.querySelector('[data-upload-zone="news"]')?._clearImage?.();
   }, 0);
 });
 activityForm?.addEventListener('reset', () => {
   window.setTimeout(() => {
+    if (activityForm?.elements.body) {
+      activityForm.elements.body.value = '';
+      if (activityForm.elements.body._syncToVisual) {
+        activityForm.elements.body._syncToVisual();
+      }
+      activityForm.elements.body.dispatchEvent(new Event('input', { bubbles: true }));
+      activityForm.elements.body.dispatchEvent(new Event('change', { bubbles: true }));
+    }
     document.querySelector('[data-upload-zone="activity"]')?._clearImage?.();
   }, 0);
 });
