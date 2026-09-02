@@ -1167,6 +1167,10 @@ html[data-theme="dark"] .theme-label-light {
   box-shadow: 0 0 0 4px var(--accent-soft);
 }
 
+.is-hidden {
+  display: none !important;
+}
+
 .image-upload-placeholder {
   display: flex;
   flex-direction: column;
@@ -1177,6 +1181,10 @@ html[data-theme="dark"] .theme-label-light {
   color: var(--muted);
   pointer-events: none;
   user-select: none;
+}
+
+.image-upload-placeholder.is-hidden {
+  display: none !important;
 }
 
 .upload-icon {
@@ -1210,10 +1218,14 @@ html[data-theme="dark"] .theme-label-light {
 .image-upload-preview {
   display: block;
   width: 100%;
-  height: 100%;
-  max-height: 280px;
-  object-fit: cover;
+  max-height: 320px;
+  object-fit: contain;
+  background: var(--surface);
   border-radius: calc(var(--radius-md) - 2px);
+}
+
+.image-upload-preview.is-hidden {
+  display: none !important;
 }
 
 
@@ -1227,6 +1239,10 @@ html[data-theme="dark"] .theme-label-light {
   background: var(--surface-strong);
   border-radius: var(--radius-sm);
   font-size: 0.82rem;
+}
+
+.image-upload-actions.is-hidden {
+  display: none !important;
 }
 
 .image-upload-filename {
