@@ -52,6 +52,12 @@ class MediaController extends Controller
         $safeName = Str::random(40).($extension ? '.'.$extension : '');
         $storedPath = $uploadedFile->storeAs($folder, $safeName, $disk);
 
+        if ($storedPath === false) {
+            return response()->json([
+                'message' => 'Failed to store uploaded file.',
+            ], 500);
+        }
+
         $url = $isPrivate
             ? route('downloads.download', ['download' => 0, 'file' => $storedPath])
             : Storage::disk($disk)->url($storedPath);

@@ -45,7 +45,7 @@ class Page extends Model
     {
         return Attribute::make(
             get: function () {
-                if (empty($this->image) || ! is_string($this->image)) {
+                if ($this->image === null || $this->image === '') {
                     return null;
                 }
 
