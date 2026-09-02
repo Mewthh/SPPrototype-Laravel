@@ -662,6 +662,104 @@ function handleEditorImageUpload(textarea) {
   fileInput.click();
 }
 
+/* ─── Lightweight Markdown → HTML Renderer ─────────────────────────────── */
+function markdownToHtml(md) {
+  if (!md) return '';
+  let html = md;
+
+  // Fenced code blocks
+  html = html.replace(/```([\s\S]*?)```/g, (_, code) => `<pre><code>${escapeHtmlPreview(code.trim())}</code></pre>`);
+
+  // Tables (GFM)
+  html = html.replace(/^(\|.+\|[ \t]*\n)(\|[-| :]+\|[ \t]*\n)((?:\|.+\|[ \t]*\n?)*)/gm, (match, header, _sep, body) => {
+    const parseRow = (row) => row.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim());
+    const headers = parseRow(header);
+    const rows = body.trim() ? body.trim().split('\n').map(parseRow) : [];
+    const thead = `<thead><tr>${headers.map((h) => `<th>${inlineMarkdown(h)}</th>`).join('')}</tr></thead>`;
+    const tbody = rows.length ? `<tbody>${rows.map((r) => `<tr>${r.map((c) => `<td>${inlineMarkdown(c)}</td>`).join('')}</tr>`).join('')}</tbody>` : '';
+    return `<table class="md-table">${thead}${tbody}</table>`;
+  });
+
+  // Headings
+  html = html.replace(/^######\s+(.+)$/gm, '<h6>$1</h6>');
+  html = html.replace(/^#####\s+(.+)$/gm, '<h5>$1</h5>');
+  html = html.replace(/^####\s+(.+)$/gm, '<h4>$1</h4>');
+  html = html.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^##\s+(.+)$/gm, '<h2>$1</h2>');
+  html = html.replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
+
+  // Horizontal rules
+  html = html.replace(/^---+$/gm, '<hr>');
+
+  // Blockquotes
+  html = html.replace(/^>\s?(.+)$/gm, '<blockquote>$1</blockquote>');
+
+  // Unordered lists
+  html = html.replace(/((?:^[-*+]\s+.+\n?)+)/gm, (block) => {
+    const items = block.trim().split('\n').map((l) => `<li>${inlineMarkdown(l.replace(/^[-*+]\s+/, ''))}</li>`);
+    return `<ul>${items.join('')}</ul>`;
+  });
+
+  // Ordered lists
+  html = html.replace(/((?:^\d+\.\s+.+\n?)+)/gm, (block) => {
+    const items = block.trim().split('\n').map((l) => `<li>${inlineMarkdown(l.replace(/^\d+\.\s+/, ''))}</li>`);
+    return `<ol>${items.join('')}</ol>`;
+  });
+
+  // Paragraphs (lines not already wrapped in a block-level tag)
+  const blockTags = ['<h', '<ul', '<ol', '<li', '<blockquote', '<pre', '<table', '<hr', '<p'];
+  const lines = html.split('\n');
+  const result = [];
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    const trimmed = line.trim();
+    if (!trimmed) { i++; continue; }
+    const isBlock = blockTags.some((t) => trimmed.startsWith(t));
+    if (isBlock) {
+      result.push(line);
+    } else {
+      result.push(`<p>${inlineMarkdown(trimmed)}</p>`);
+    }
+    i++;
+  }
+  return result.join('\n');
+}
+
+function inlineMarkdown(text) {
+  if (!text) return '';
+  let s = text;
+  // Images before links
+  s = s.replace(/!\[([^\]]*?)\]\(([^)]+?)\)/g, '<img src="$2" alt="$1" style="max-width:100%">');
+  // Links
+  s = s.replace(/\[([^\]]+?)\]\(([^)]+?)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  // Bold+italic
+  s = s.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+  // Bold
+  s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  // Italic
+  s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  // Underline <u>
+  s = s.replace(/<u>(.+?)<\/u>/g, '<u>$1</u>');
+  // Underline ++
+  s = s.replace(/\+\+(.+?)\+\+/g, '<u>$1</u>');
+  // Highlight
+  s = s.replace(/==(.+?)==/g, '<mark>$1</mark>');
+  // Subscript
+  s = s.replace(/~(.+?)~/g, '<sub>$1</sub>');
+  // Superscript
+  s = s.replace(/\^(.+?)\^/g, '<sup>$1</sup>');
+  // Inline code
+  s = s.replace(/`(.+?)`/g, '<code>$1</code>');
+  // Footnote refs
+  s = s.replace(/\[\^(\d+)\]/g, '<sup class="footnote-ref">[$1]</sup>');
+  return s;
+}
+
+function escapeHtmlPreview(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 function applyMarkdownFormat(inputOrTextarea, format) {
   if (!inputOrTextarea) return;
   const el = inputOrTextarea;
@@ -817,6 +915,50 @@ function setupRichEditorToolbars() {
     if (!inputOrTextarea || !toolbar || wrap._richEditorAttached) return;
     wrap._richEditorAttached = true;
 
+    // ── Inject split preview pane ──────────────────────────────────────────
+    const editorBody = document.createElement('div');
+    editorBody.className = 'rich-editor-body';
+
+    // Move textarea into editor body
+    inputOrTextarea.parentNode.insertBefore(editorBody, inputOrTextarea);
+    editorBody.appendChild(inputOrTextarea);
+
+    const preview = document.createElement('div');
+    preview.className = 'rich-editor-preview';
+    preview.setAttribute('aria-label', 'Markdown preview');
+    preview.setAttribute('aria-live', 'polite');
+    editorBody.appendChild(preview);
+
+    // Add a toggle button to the toolbar
+    const previewToggle = document.createElement('button');
+    previewToggle.type = 'button';
+    previewToggle.className = 'toolbar-btn toolbar-preview-toggle';
+    previewToggle.title = 'Toggle preview';
+    previewToggle.setAttribute('aria-label', 'Toggle preview');
+    previewToggle.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>';
+    toolbar.appendChild(previewToggle);
+
+    let previewVisible = true;
+
+    function updatePreview() {
+      preview.innerHTML = markdownToHtml(inputOrTextarea.value);
+    }
+
+    function togglePreview() {
+      previewVisible = !previewVisible;
+      preview.style.display = previewVisible ? '' : 'none';
+      editorBody.classList.toggle('preview-hidden', !previewVisible);
+      previewToggle.classList.toggle('is-active', previewVisible);
+    }
+
+    previewToggle.addEventListener('mousedown', (e) => e.preventDefault());
+    previewToggle.addEventListener('click', (e) => { e.preventDefault(); togglePreview(); });
+
+    inputOrTextarea.addEventListener('input', updatePreview);
+    updatePreview();
+    previewToggle.classList.add('is-active');
+    // ─────────────────────────────────────────────────────────────────────
+
     toolbar.querySelectorAll('[data-format]').forEach((btn) => {
       btn.addEventListener('mousedown', (e) => {
         e.preventDefault(); // Prevents input from losing focus / selection
@@ -825,6 +967,7 @@ function setupRichEditorToolbars() {
         e.preventDefault();
         e.stopPropagation();
         applyMarkdownFormat(inputOrTextarea, btn.dataset.format);
+        updatePreview();
       });
     });
 
@@ -832,12 +975,15 @@ function setupRichEditorToolbars() {
       if ((e.ctrlKey || e.metaKey) && (e.key === 'b' || e.key === 'B')) {
         e.preventDefault();
         applyMarkdownFormat(inputOrTextarea, 'bold');
+        updatePreview();
       } else if ((e.ctrlKey || e.metaKey) && (e.key === 'i' || e.key === 'I')) {
         e.preventDefault();
         applyMarkdownFormat(inputOrTextarea, 'italic');
+        updatePreview();
       } else if ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'U')) {
         e.preventDefault();
         applyMarkdownFormat(inputOrTextarea, 'underline');
+        updatePreview();
       }
     });
   });
@@ -861,6 +1007,8 @@ if (!window.__sppRichToolbarDelegated) {
     if (!inputOrTextarea) return;
     e.preventDefault();
     applyMarkdownFormat(inputOrTextarea, btn.dataset.format);
+    // Trigger preview update if it was set up
+    inputOrTextarea.dispatchEvent(new Event('input', { bubbles: true }));
   });
 }
 

@@ -1041,6 +1041,122 @@ function applyMarkdownFormat(inputOrTextarea, format) {
   }
 }
 
+/* ─── Table Grid Picker ─────────────────────────────────────────────────── */
+function showTableGridPicker(anchorBtn, onSelect) {
+  const MAX = 8;
+
+  // Remove any existing picker
+  document.getElementById('spp-table-picker')?.remove();
+
+  const picker = document.createElement('div');
+  picker.id = 'spp-table-picker';
+  picker.setAttribute('role', 'dialog');
+  picker.setAttribute('aria-label', 'Choose table size');
+  Object.assign(picker.style, {
+    position: 'fixed',
+    zIndex: '9999',
+    background: 'var(--surface, #ffffff)',
+    border: '1px solid var(--border, #e2e8f0)',
+    borderRadius: '10px',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+    padding: '14px',
+    userSelect: 'none',
+  });
+
+  const label = document.createElement('div');
+  label.textContent = 'Insert Table';
+  Object.assign(label.style, {
+    fontSize: '0.78rem',
+    fontWeight: '600',
+    color: 'var(--text-muted, #64748b)',
+    marginBottom: '10px',
+    textAlign: 'center',
+    letterSpacing: '0.04em',
+    textTransform: 'uppercase',
+  });
+  picker.appendChild(label);
+
+  const grid = document.createElement('div');
+  Object.assign(grid.style, {
+    display: 'grid',
+    gridTemplateColumns: `repeat(${MAX}, 22px)`,
+    gap: '3px',
+  });
+  picker.appendChild(grid);
+
+  let hoverRow = 0;
+  let hoverCol = 0;
+  const cells = [];
+
+  function updateHighlight(r, c) {
+    hoverRow = r;
+    hoverCol = c;
+    cells.forEach((cell, idx) => {
+      const cr = Math.floor(idx / MAX) + 1;
+      const cc = (idx % MAX) + 1;
+      const active = cr <= r && cc <= c;
+      cell.style.background = active
+        ? 'var(--accent-strong, #3b82f6)'
+        : 'var(--surface-strong, #f1f5f9)';
+      cell.style.borderColor = active
+        ? 'var(--accent-strong, #3b82f6)'
+        : 'var(--border, #e2e8f0)';
+    });
+    label.textContent = (r && c) ? `${r} × ${c} Table` : 'Insert Table';
+  }
+
+  for (let r = 1; r <= MAX; r++) {
+    for (let c = 1; c <= MAX; c++) {
+      const cell = document.createElement('div');
+      Object.assign(cell.style, {
+        width: '22px',
+        height: '22px',
+        border: '1px solid var(--border, #e2e8f0)',
+        borderRadius: '3px',
+        background: 'var(--surface-strong, #f1f5f9)',
+        cursor: 'pointer',
+        transition: 'background 0.1s, border-color 0.1s',
+      });
+      cell.addEventListener('mouseenter', () => updateHighlight(r, c));
+      cell.addEventListener('click', (e) => {
+        e.stopPropagation();
+        picker.remove();
+        document.removeEventListener('mousedown', outsideHandler, true);
+        onSelect(r, c);
+      });
+      grid.appendChild(cell);
+      cells.push(cell);
+    }
+  }
+
+  // Position below the anchor button
+  document.body.appendChild(picker);
+  const rect = anchorBtn.getBoundingClientRect();
+  const pickerRect = picker.getBoundingClientRect();
+  let top = rect.bottom + 6;
+  let left = rect.left;
+  if (left + pickerRect.width > window.innerWidth - 8) {
+    left = window.innerWidth - pickerRect.width - 8;
+  }
+  if (top + pickerRect.height > window.innerHeight - 8) {
+    top = rect.top - pickerRect.height - 6;
+  }
+  picker.style.top = top + 'px';
+  picker.style.left = left + 'px';
+
+  // Close on outside click
+  function outsideHandler(e) {
+    if (!picker.contains(e.target)) {
+      picker.remove();
+      document.removeEventListener('mousedown', outsideHandler, true);
+    }
+  }
+  setTimeout(() => document.addEventListener('mousedown', outsideHandler, true), 0);
+
+  // Default highlight 3×3
+  updateHighlight(3, 3);
+}
+
 function setupRichEditorToolbars() {
   document.querySelectorAll('[data-rich-editor]').forEach((wrap) => {
     const textarea = wrap.querySelector('textarea');
@@ -1077,7 +1193,35 @@ function setupRichEditorToolbars() {
 
     // Function to sync visual content back to textarea value
     const syncToTextarea = () => {
-      let html = visualEditor.innerHTML;
+      // Convert an HTML table element to GFM markdown table
+      function tableToMarkdown(table) {
+        const rows = Array.from(table.querySelectorAll('tr'));
+        if (!rows.length) return '';
+        const allCells = rows.map((row) =>
+          Array.from(row.querySelectorAll('th, td')).map((cell) => cell.innerText.trim().replace(/\|/g, '\\|'))
+        );
+        const header = allCells[0] || [];
+        const body = allCells.slice(1);
+        const sep = header.map(() => '---');
+        const toRow = (cells) => `| ${cells.join(' | ')} |`;
+        return '\n' + [toRow(header), toRow(sep), ...body.map(toRow)].join('\n') + '\n';
+      }
+
+      // Clone editor DOM so we can manipulate it safely
+      const clone = visualEditor.cloneNode(true);
+
+      // Replace each <table> with its markdown equivalent as a text node
+      clone.querySelectorAll('table').forEach((tbl) => {
+        // Find matching original table to extract text from live DOM
+        const idx = Array.from(visualEditor.querySelectorAll('table'))
+          .findIndex((t) => t.isEqualNode(tbl));
+        const liveTable = visualEditor.querySelectorAll('table')[idx] || tbl;
+        const md = tableToMarkdown(liveTable);
+        const placeholder = document.createTextNode(md);
+        tbl.parentNode.replaceChild(placeholder, tbl);
+      });
+
+      let html = clone.innerHTML;
       let raw = html
         .replace(/<div><br><\/div>/gi, '\n')
         .replace(/<div>/gi, '\n').replace(/<\/div>/gi, '')
@@ -1087,17 +1231,29 @@ function setupRichEditorToolbars() {
         .replace(/<em>(.*?)<\/em>/gi, '*$1*')
         .replace(/<i>(.*?)<\/i>/gi, '*$1*')
         .replace(/<u>(.*?)<\/u>/gi, '<u>$1</u>')
-        .replace(/<mark>(.*?)<\/mark>/gi, '==$1==')
+        .replace(/<mark[^>]*>(.*?)<\/mark>/gi, '==$1==')
         .replace(/<sub>(.*?)<\/sub>/gi, '~$1~')
+        .replace(/<sup class="footnote-ref">\[(\d+)\]<\/sup>/gi, '[^$1]')
         .replace(/<sup>(.*?)<\/sup>/gi, '^$1^')
         .replace(/<code>(.*?)<\/code>/gi, '`$1`')
+        .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '\n# $1\n')
+        .replace(/<h2[^>]*>(.*?)<\/h2>/gi, '\n## $1\n')
+        .replace(/<h3[^>]*>(.*?)<\/h3>/gi, '\n### $1\n')
+        .replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi, (_, inner) => '\n> ' + inner.trim() + '\n')
+        .replace(/<li[^>]*>(.*?)<\/li>/gi, '\n- $1')
+        .replace(/<\/?(ul|ol|p)[^>]*>/gi, '\n')
+        .replace(/<a[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi, '[$2]($1)')
+        .replace(/<[^>]+>/g, '')
         .replace(/&nbsp;/gi, ' ')
         .replace(/&amp;/gi, '&')
         .replace(/&lt;/gi, '<')
-        .replace(/&gt;/gi, '>');
+        .replace(/&gt;/gi, '>')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
       textarea.value = raw;
       textarea.dispatchEvent(new Event('input', { bubbles: true }));
     };
+
 
     // Helper to check selection hierarchy
     const getSelectionNode = () => {
@@ -1270,11 +1426,61 @@ function setupRichEditorToolbars() {
               }
             }
             break;
+          case 'table': {
+            // Show a grid picker anchored to this button; insert on selection
+            const savedRange = (window.getSelection() && window.getSelection().rangeCount)
+              ? window.getSelection().getRangeAt(0).cloneRange()
+              : null;
+            showTableGridPicker(btn, (rows, cols) => {
+              // Restore caret position before inserting
+              if (savedRange) {
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(savedRange);
+              }
+              visualEditor.focus();
+
+              const thCells = Array.from({ length: cols }, (_, i) =>
+                `<th style="border:1px solid var(--border,#cbd5e1);padding:6px 12px;background:var(--surface-strong,#f1f5f9);font-weight:600;">Header ${i + 1}</th>`
+              ).join('');
+              const tdCells = (r) => Array.from({ length: cols }, (_, i) =>
+                `<td style="border:1px solid var(--border,#cbd5e1);padding:6px 12px;">Cell ${r * cols + i + 1}</td>`
+              ).join('');
+              const bodyRows = Array.from({ length: rows }, (_, r) =>
+                `<tr>${tdCells(r)}</tr>`
+              ).join('');
+
+              const tableHtml =
+                `<table class="rich-editor-table" style="border-collapse:collapse;width:100%;margin:8px 0;">` +
+                  `<thead><tr>${thCells}</tr></thead>` +
+                  `<tbody>${bodyRows}</tbody>` +
+                `</table><p><br></p>`;
+
+              document.execCommand('insertHTML', false, tableHtml);
+              syncToTextarea();
+              updateFormatIndicators();
+            });
+            return; // picker is async — skip the syncToTextarea below
+          }
+          case 'link': {
+            const sel = window.getSelection();
+            const linkText = (sel && !sel.isCollapsed) ? sel.toString() : 'link text';
+            const linkHtml = `<a href="https://example.com">${linkText}</a>`;
+            document.execCommand('insertHTML', false, linkHtml);
+            break;
+          }
+          case 'footnote': {
+            const existingFns = visualEditor.querySelectorAll('sup.footnote-ref');
+            const nextFn = existingFns.length + 1;
+            document.execCommand('insertHTML', false, `<sup class="footnote-ref">[${nextFn}]</sup>`);
+            break;
+          }
           default:
             applyMarkdownFormat(textarea, format);
             syncToVisual();
             break;
         }
+
         syncToTextarea();
         updateFormatIndicators();
       });
