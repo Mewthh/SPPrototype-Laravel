@@ -138,7 +138,6 @@
 						<div>
 							<p class="panel-kicker">News Management</p>
 							<h2>News Editor</h2>
-							<p>Compose and publish news announcements for the SPP community.</p>
 						</div>
 						<div>
 							<button type="button" class="button button-secondary" data-show-news-posts>
@@ -190,7 +189,8 @@
 
 						<label class="field-row">
 							<span>Summary <small style="font-weight: 400; opacity: 0.6;">(max 200 chars)</small></span>
-							<textarea name="summary" rows="2" placeholder="Brief summary of the article..." maxlength="200"></textarea>
+							<textarea name="summary" rows="2" placeholder="Brief summary of the article..."
+								maxlength="200"></textarea>
 						</label>
 
 						<label class="field-row">
@@ -323,11 +323,15 @@
 						<div>
 							<p class="panel-kicker">News Management</p>
 							<h2>All News Posts</h2>
-							<p>Manage existing news items and view status queues.</p>
 						</div>
 						<div>
 							<button type="button" class="button button-primary" data-show-news-editor style="gap: 6px;">
-								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+									stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+									aria-hidden="true">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
 								Create
 							</button>
 						</div>
@@ -378,7 +382,6 @@
 						<div>
 							<p class="panel-kicker">Activities Management</p>
 							<h2>Activities Editor</h2>
-							<p>Create and edit events, workshops, and SPP activities.</p>
 						</div>
 						<div>
 							<button type="button" class="button button-secondary" data-show-activity-posts>
@@ -407,13 +410,15 @@
 						</label>
 
 						<label class="field-row">
-							<span>Activity Title <small style="font-weight: 400; opacity: 0.6;">(max 100 chars)</small></span>
+							<span>Activity Title <small style="font-weight: 400; opacity: 0.6;">(max 100
+									chars)</small></span>
 							<input type="text" name="title" placeholder="Activity title..." required maxlength="100" />
 						</label>
 
 						<label class="field-row">
 							<span>Summary <small style="font-weight: 400; opacity: 0.6;">(max 200 chars)</small></span>
-							<textarea name="summary" rows="2" placeholder="Brief activity description..." maxlength="200"></textarea>
+							<textarea name="summary" rows="2" placeholder="Brief activity description..."
+								maxlength="200"></textarea>
 						</label>
 
 						<label class="field-row">
@@ -547,11 +552,16 @@
 						<div>
 							<p class="panel-kicker">Activities Management</p>
 							<h2>All Activities</h2>
-							<p>View and manage all registered SPP events and activities.</p>
 						</div>
 						<div>
-							<button type="button" class="button button-primary" data-show-activity-editor style="gap: 6px;">
-								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+							<button type="button" class="button button-primary" data-show-activity-editor
+								style="gap: 6px;">
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+									stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+									aria-hidden="true">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
 								Create
 							</button>
 						</div>
@@ -602,7 +612,6 @@
 						<div>
 							<p class="panel-kicker">Conference Management</p>
 							<h2>Conference Editor</h2>
-							<p>Manage Samahang Pisika ng Pilipinas national physics conferences.</p>
 						</div>
 						<div>
 							<button type="button" class="button button-secondary" data-show-conference-list>
@@ -635,8 +644,10 @@
 						</label>
 
 						<label class="field-row">
-							<span>Conference Title <small style="font-weight: 400; opacity: 0.6;">(max 100 chars)</small></span>
-							<input type="text" name="title" placeholder="e.g. 44th SPP Physics Conference" required maxlength="100" />
+							<span>Conference Title <small style="font-weight: 400; opacity: 0.6;">(max 100
+									chars)</small></span>
+							<input type="text" name="title" placeholder="e.g. 44th SPP Physics Conference" required
+								maxlength="100" />
 						</label>
 
 						<label class="field-row">
@@ -655,8 +666,10 @@
 						</label>
 
 						<label class="field-row">
-							<span>Short Summary <small style="font-weight: 400; opacity: 0.6;">(max 200 chars)</small></span>
-							<textarea name="summary" rows="2" placeholder="Brief overview of the conference..." maxlength="200"></textarea>
+							<span>Short Summary <small style="font-weight: 400; opacity: 0.6;">(max 200
+									chars)</small></span>
+							<textarea name="summary" rows="2" placeholder="Brief overview of the conference..."
+								maxlength="200"></textarea>
 						</label>
 
 						<div class="field-row field-row-wide">
@@ -786,11 +799,16 @@
 						<div>
 							<p class="panel-kicker">SPP Conferences</p>
 							<h2>All Conferences</h2>
-							<p>Overview of all recorded physics conferences and annual portals.</p>
 						</div>
 						<div>
-							<button type="button" class="button button-primary" data-show-conference-editor style="gap: 6px;">
-								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+							<button type="button" class="button button-primary" data-show-conference-editor
+								style="gap: 6px;">
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+									stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+									aria-hidden="true">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
 								Create
 							</button>
 						</div>
@@ -864,30 +882,39 @@
 									<option value="url">Custom Web Link</option>
 								</select>
 							</label>
-							<p style="font-size: 0.82rem; color: var(--muted); margin-top: 4px;">Choose what happens when visitors click the homepage hero banner.</p>
+							<p style="font-size: 0.82rem; color: var(--muted); margin-top: 4px;">Choose what happens
+								when visitors click the homepage hero banner.</p>
 						</div>
 
-						<div class="field-row field-row-wide is-hidden" data-hero-banner-post-row style="margin-top: 12px;">
+						<div class="field-row field-row-wide is-hidden" data-hero-banner-post-row
+							style="margin-top: 12px;">
 							<label class="field-row" style="margin-bottom: 0;">
 								<span>Select Existing Post</span>
 								<select name="heroBannerPostSelect" data-hero-banner-post-select>
 									<option value="">-- Choose a post --</option>
 								</select>
 							</label>
-							<p style="font-size: 0.82rem; color: var(--muted); margin-top: 4px;">When clicked, users will be taken directly to this published post or portal.</p>
+							<p style="font-size: 0.82rem; color: var(--muted); margin-top: 4px;">When clicked, users
+								will be taken directly to this published post or portal.</p>
 						</div>
 
-						<div class="field-row field-row-wide is-hidden" data-hero-banner-url-row style="margin-top: 12px;">
+						<div class="field-row field-row-wide is-hidden" data-hero-banner-url-row
+							style="margin-top: 12px;">
 							<label class="field-row" style="margin-bottom: 0;">
 								<span>Custom Link URL</span>
-								<input type="url" name="heroBannerCustomUrl" data-hero-banner-custom-url placeholder="https://example.com or /news" />
+								<input type="url" name="heroBannerCustomUrl" data-hero-banner-custom-url
+									placeholder="https://example.com or /news" />
 							</label>
-							<p style="font-size: 0.82rem; color: var(--muted); margin-top: 4px;">Enter a complete web URL (e.g. https://...) or internal site path.</p>
+							<p style="font-size: 0.82rem; color: var(--muted); margin-top: 4px;">Enter a complete web
+								URL (e.g. https://...) or internal site path.</p>
 						</div>
 
-						<div class="field-row field-row-wide is-hidden" data-hero-banner-target-row style="margin-top: 12px;">
-							<label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 500;">
-								<input type="checkbox" name="heroBannerOpenInNewTab" data-hero-banner-new-tab value="1" style="width: 16px; height: 16px; cursor: pointer;" />
+						<div class="field-row field-row-wide is-hidden" data-hero-banner-target-row
+							style="margin-top: 12px;">
+							<label
+								style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 500;">
+								<input type="checkbox" name="heroBannerOpenInNewTab" data-hero-banner-new-tab value="1"
+									style="width: 16px; height: 16px; cursor: pointer;" />
 								<span>Open link in a new tab</span>
 							</label>
 						</div>
