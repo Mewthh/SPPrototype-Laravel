@@ -28,38 +28,37 @@ Route::redirect('spp.html', '/spp', 301);
 Route::redirect('AdminDashboard.html', '/admin', 301);
 
 // ─── Admin / Dashboard Routes ───────────────────────────────────────────────
-Route::view('admin', 'dashboard')->name('admin');
-
-Route::post('admin/api/media/upload', [AdminMediaController::class, 'upload'])->name('admin.api.media.upload');
-
-Route::prefix('admin/api/hero-banner')->name('admin.api.hero-banner.')->group(function () {
-    Route::get('/', [AdminHeroBannerController::class, 'show'])->name('show');
-    Route::post('/', [AdminHeroBannerController::class, 'update'])->name('update');
-    Route::delete('/', [AdminHeroBannerController::class, 'destroy'])->name('destroy');
-});
-
-Route::prefix('admin/api/news')->name('admin.api.news.')->group(function () {
-    Route::get('/', [AdminNewsController::class, 'index'])->name('index');
-    Route::post('/', [AdminNewsController::class, 'store'])->name('store');
-    Route::get('{news}', [AdminNewsController::class, 'show'])->name('show');
-    Route::post('{news}', [AdminNewsController::class, 'update'])->name('update.post');
-    Route::match(['put', 'patch'], '{news}', [AdminNewsController::class, 'update'])->name('update');
-    Route::delete('{news}', [AdminNewsController::class, 'destroy'])->name('destroy');
-    Route::patch('{news}/status', [AdminNewsController::class, 'updateStatus'])->name('status');
-});
-
-Route::prefix('admin/api/activities')->name('admin.api.activities.')->group(function () {
-    Route::get('/', [AdminActivityController::class, 'index'])->name('index');
-    Route::post('/', [AdminActivityController::class, 'store'])->name('store');
-    Route::get('{activity}', [AdminActivityController::class, 'show'])->name('show');
-    Route::post('{activity}', [AdminActivityController::class, 'update'])->name('update.post');
-    Route::match(['put', 'patch'], '{activity}', [AdminActivityController::class, 'update'])->name('update');
-    Route::delete('{activity}', [AdminActivityController::class, 'destroy'])->name('destroy');
-    Route::patch('{activity}/status', [AdminActivityController::class, 'updateStatus'])->name('status');
-});
-
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::view('admin', 'dashboard')->name('admin');
     Route::view('dashboard', 'dashboard')->name('dashboard');
+
+    Route::post('admin/api/media/upload', [AdminMediaController::class, 'upload'])->name('admin.api.media.upload');
+
+    Route::prefix('admin/api/hero-banner')->name('admin.api.hero-banner.')->group(function () {
+        Route::get('/', [AdminHeroBannerController::class, 'show'])->name('show');
+        Route::post('/', [AdminHeroBannerController::class, 'update'])->name('update');
+        Route::delete('/', [AdminHeroBannerController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('admin/api/news')->name('admin.api.news.')->group(function () {
+        Route::get('/', [AdminNewsController::class, 'index'])->name('index');
+        Route::post('/', [AdminNewsController::class, 'store'])->name('store');
+        Route::get('{news}', [AdminNewsController::class, 'show'])->name('show');
+        Route::post('{news}', [AdminNewsController::class, 'update'])->name('update.post');
+        Route::match(['put', 'patch'], '{news}', [AdminNewsController::class, 'update'])->name('update');
+        Route::delete('{news}', [AdminNewsController::class, 'destroy'])->name('destroy');
+        Route::patch('{news}/status', [AdminNewsController::class, 'updateStatus'])->name('status');
+    });
+
+    Route::prefix('admin/api/activities')->name('admin.api.activities.')->group(function () {
+        Route::get('/', [AdminActivityController::class, 'index'])->name('index');
+        Route::post('/', [AdminActivityController::class, 'store'])->name('store');
+        Route::get('{activity}', [AdminActivityController::class, 'show'])->name('show');
+        Route::post('{activity}', [AdminActivityController::class, 'update'])->name('update.post');
+        Route::match(['put', 'patch'], '{activity}', [AdminActivityController::class, 'update'])->name('update');
+        Route::delete('{activity}', [AdminActivityController::class, 'destroy'])->name('destroy');
+        Route::patch('{activity}/status', [AdminActivityController::class, 'updateStatus'])->name('status');
+    });
 });
 
 require __DIR__.'/settings.php';

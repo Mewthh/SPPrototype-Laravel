@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
     Storage::fake('public');
-    $this->user = User::factory()->create();
+    $this->user = User::factory()->create(['role' => 'admin']);
 });
 
 test('hero banner settings can be viewed and return available posts', function () {

@@ -43,8 +43,10 @@ test('legacy spp.html redirects to /spp', function () {
     $response->assertRedirect('/spp');
 });
 
-test('admin dashboard can be rendered via /admin', function () {
-    $response = $this->get('/admin');
+test('admin dashboard can be rendered via /admin by authenticated admin', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+
+    $response = $this->actingAs($admin)->get('/admin');
 
     $response->assertOk()
         ->assertSee('SPP Admin Dashboard')
@@ -59,10 +61,10 @@ test('legacy AdminDashboard.html redirects to /admin', function () {
     $response->assertRedirect('/admin');
 });
 
-test('authenticated users can access dashboard and view admin panels', function () {
-    $user = User::factory()->create();
+test('authenticated admin users can access dashboard and view admin panels', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
 
-    $response = $this->actingAs($user)->get(route('dashboard'));
+    $response = $this->actingAs($admin)->get(route('dashboard'));
 
     $response->assertOk()
         ->assertSee('SPP Admin Dashboard')

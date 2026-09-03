@@ -19,6 +19,11 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input): User
     {
+        // Enforce 1-time admin registration
+        if (User::where('role', 'admin')->exists()) {
+            abort(403, 'Admin registration is closed. An administrator has already been registered.');
+        }
+
         Validator::make($input, [
             ...$this->profileRules(),
             'password' => $this->passwordRules(),
@@ -27,6 +32,7 @@ class CreateNewUser implements CreatesNewUsers
         return User::create([
             'name' => $input['name'],
             'email' => $input['email'],
+            'role' => 'admin',
             'password' => $input['password'],
         ]);
     }

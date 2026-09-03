@@ -1,9 +1,15 @@
 <?php
 
 use App\Models\Activity;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
+
+beforeEach(function () {
+    $this->admin = User::factory()->create(['role' => 'admin']);
+    $this->actingAs($this->admin);
+});
 
 test('admin can retrieve activity list and status counts from database', function () {
     Activity::factory()->create([

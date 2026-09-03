@@ -1,9 +1,15 @@
 <?php
 
 use App\Models\News;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
+
+beforeEach(function () {
+    $this->admin = User::factory()->create(['role' => 'admin']);
+    $this->actingAs($this->admin);
+});
 
 test('admin can retrieve news list and status counts from database', function () {
     News::factory()->create([

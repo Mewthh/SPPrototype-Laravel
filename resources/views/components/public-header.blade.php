@@ -50,6 +50,8 @@
 
             <a class="btn-join-spp" href="#about">Join SPP</a>
 
+
+
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark mode">
                 <span class="theme-icon theme-icon-moon" aria-hidden="true">&#x263E;</span>
                 <span class="theme-icon theme-icon-sun" aria-hidden="true">&#x2600;</span>
@@ -89,6 +91,7 @@
                             class="year-menu-link">SPP2026</a>
                     </div>
                     <a class="btn-join-spp mobile" href="#about">Join SPP</a>
+
                 </nav>
             </details>
         </div>

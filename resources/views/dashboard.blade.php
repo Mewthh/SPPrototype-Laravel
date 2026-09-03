@@ -45,11 +45,21 @@
 
 	<div class="dashboard-shell">
 		<header class="mobile-topbar" data-mobile-header>
-			<div class="topbar-inner">
-				<button class="menu-toggle" type="button" aria-label="Toggle menu" data-menu-toggle>
-					<span class="menu-toggle-icon" aria-hidden="true">&#x2630;</span>
-				</button>
-				<div class="mobile-brand">SPP Admin</div>
+			<div class="topbar-inner" style="justify-content: space-between;">
+				<div style="display: flex; align-items: center; gap: 10px;">
+					<button class="menu-toggle" type="button" aria-label="Toggle menu" data-menu-toggle>
+						<span class="menu-toggle-icon" aria-hidden="true">&#x2630;</span>
+					</button>
+					<div class="mobile-brand">SPP Admin</div>
+				</div>
+				@auth
+					<form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+						@csrf
+						<button type="submit" class="ghost-button" style="padding: 6px 12px; height: 36px; min-height: 36px; font-size: 0.8rem; color: var(--danger); border-color: rgba(220, 53, 69, 0.25);" aria-label="Log out">
+							<span>Log Out</span>
+						</button>
+					</form>
+				@endauth
 			</div>
 		</header>
 
@@ -117,10 +127,21 @@
 			</nav>
 
 			<div class="sidebar-footer">
+				@auth
+					<div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--surface-soft); border-radius: var(--radius-md); border: 1px solid var(--border); font-size: 0.85rem;">
+						<div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+							<div style="font-weight: 700; color: var(--accent-strong); font-size: 0.88rem;">{{ auth()->user()->name }}</div>
+							<div style="color: var(--muted); font-size: 0.78rem;">{{ auth()->user()->email }}</div>
+						</div>
+						<span style="background: #1b7a4c; color: #fff; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 2px 7px; border-radius: var(--radius-pill); letter-spacing: 0.04em;">Admin</span>
+					</div>
+				@endauth
+
 				<a class="ghost-button" href="{{ route('home') }}" aria-label="Go to user side">
 					<span aria-hidden="true">&#x2302;</span>
 					<span>Go to User Side</span>
 				</a>
+
 				<button class="ghost-button theme-toggle" type="button" data-theme-toggle
 					aria-label="Toggle theme mode">
 					<span class="theme-icon theme-icon-moon" aria-hidden="true">&#x263E;</span>
@@ -128,6 +149,20 @@
 					<span class="theme-toggle-text theme-label-dark">Dark Mode</span>
 					<span class="theme-toggle-text theme-label-light">Light Mode</span>
 				</button>
+
+				@auth
+					<form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+						@csrf
+						<button type="submit" class="ghost-button" style="color: var(--danger); border-color: rgba(220, 53, 69, 0.25);" aria-label="Log out of admin session">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+								<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+								<polyline points="16 17 21 12 16 7"></polyline>
+								<line x1="21" y1="12" x2="9" y2="12"></line>
+							</svg>
+							<span>Log Out</span>
+						</button>
+					</form>
+				@endauth
 			</div>
 		</aside>
 
