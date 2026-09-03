@@ -2631,11 +2631,71 @@ setupImageUpload('activity');
 setupImageUpload('conference');
 setupImageUpload('hero-banner');
 
+// ─── Hero Banner Settings & Link Handling ─────────────────────────────────────
+const bannerLinkTypeSelect = document.querySelector('[data-hero-banner-link-type]');
+const bannerPostRow = document.querySelector('[data-hero-banner-post-row]');
+const bannerPostSelect = document.querySelector('[data-hero-banner-post-select]');
+const bannerUrlRow = document.querySelector('[data-hero-banner-url-row]');
+const bannerCustomUrlInput = document.querySelector('[data-hero-banner-custom-url]');
+const bannerTargetRow = document.querySelector('[data-hero-banner-target-row]');
+const bannerNewTabCheckbox = document.querySelector('[data-hero-banner-new-tab]');
+
+let availableBannerPosts = { news: [], activities: [], conferences: [] };
+
+function updateBannerLinkVisibility() {
+  const val = bannerLinkTypeSelect ? bannerLinkTypeSelect.value : 'none';
+  if (bannerPostRow) bannerPostRow.classList.toggle('is-hidden', val !== 'post');
+  if (bannerUrlRow) bannerUrlRow.classList.toggle('is-hidden', val !== 'url');
+  if (bannerTargetRow) bannerTargetRow.classList.toggle('is-hidden', val === 'none');
+}
+
+bannerLinkTypeSelect?.addEventListener('change', updateBannerLinkVisibility);
+
+function populateBannerPostsDropdown(selectedType, selectedId, selectedSlug) {
+  if (!bannerPostSelect) return;
+  bannerPostSelect.innerHTML = '<option value="">-- Choose a post --</option>';
+
+  if (availableBannerPosts.news && availableBannerPosts.news.length > 0) {
+    const newsGroup = document.createElement('optgroup');
+    newsGroup.label = 'News Articles';
+    availableBannerPosts.news.forEach((post) => {
+      const opt = document.createElement('option');
+      opt.value = `news:${post.id}`;
+      opt.textContent = `${post.title} (${post.date || 'Recent'})`;
+      if (selectedType === 'news' && String(selectedId) === String(post.id)) {
+        opt.selected = true;
+      }
+      newsGroup.appendChild(opt);
+    });
+    bannerPostSelect.appendChild(newsGroup);
+  }
+
+  if (availableBannerPosts.activities && availableBannerPosts.activities.length > 0) {
+    const actGroup = document.createElement('optgroup');
+    actGroup.label = 'Activities & Events';
+    availableBannerPosts.activities.forEach((post) => {
+      const opt = document.createElement('option');
+      opt.value = `activity:${post.id}`;
+      opt.textContent = `${post.title} (${post.date || 'Upcoming'})`;
+      if (selectedType === 'activity' && String(selectedId) === String(post.id)) {
+        opt.selected = true;
+      }
+      actGroup.appendChild(opt);
+    });
+    bannerPostSelect.appendChild(actGroup);
+  }
+}
+
+
 async function loadHeroBannerSetting() {
   try {
     const res = await fetch('/admin/api/hero-banner');
     if (res.ok) {
       const data = await res.json();
+      if (data.available_posts) {
+        availableBannerPosts = data.available_posts;
+      }
+
       if (data.image_url) {
         imageState['hero-banner'] = data.image_url;
         const zone = document.querySelector('[data-upload-zone="hero-banner"]');
@@ -2643,6 +2703,27 @@ async function loadHeroBannerSetting() {
           zone._applyImage(data.image_url, 'Current Hero Banner');
         }
       }
+
+      // Populate Link Form fields
+      const linkType = data.link_type || 'none';
+      if (['news', 'activity', 'conference'].includes(linkType)) {
+        if (bannerLinkTypeSelect) bannerLinkTypeSelect.value = 'post';
+        populateBannerPostsDropdown(linkType, data.link_target_id, data.link_target_slug);
+      } else if (linkType === 'url') {
+        if (bannerLinkTypeSelect) bannerLinkTypeSelect.value = 'url';
+        populateBannerPostsDropdown(null, null, null);
+        if (bannerCustomUrlInput) bannerCustomUrlInput.value = data.link_url || '';
+      } else {
+        if (bannerLinkTypeSelect) bannerLinkTypeSelect.value = 'none';
+        populateBannerPostsDropdown(null, null, null);
+        if (bannerCustomUrlInput) bannerCustomUrlInput.value = '';
+      }
+
+      if (bannerNewTabCheckbox) {
+        bannerNewTabCheckbox.checked = Boolean(data.open_in_new_tab);
+      }
+
+      updateBannerLinkVisibility();
     }
   } catch (err) {
     console.error('Error fetching hero banner setting:', err);
@@ -2665,6 +2746,40 @@ document.querySelector('[data-hero-banner-form]')?.addEventListener('submit', as
   } else {
     alert('Please select or upload a banner image first.');
     return;
+  }
+
+  // Handle Link Destination
+  const chosenLinkType = bannerLinkTypeSelect ? bannerLinkTypeSelect.value : 'none';
+  if (chosenLinkType === 'post') {
+    const postVal = bannerPostSelect ? bannerPostSelect.value : '';
+    if (!postVal) {
+      alert('Please choose an existing post for the banner link.');
+      return;
+    }
+    const [tType, tId, tSlug] = postVal.split(':');
+    formData.append('link_type', tType);
+    if (tType === 'conference') {
+      if (tSlug) formData.append('link_target_slug', tSlug);
+      if (tId && !isNaN(Number(tId))) formData.append('link_target_id', tId);
+    } else {
+      formData.append('link_target_id', tId);
+    }
+  } else if (chosenLinkType === 'url') {
+    const urlVal = bannerCustomUrlInput ? bannerCustomUrlInput.value.trim() : '';
+    if (!urlVal) {
+      alert('Please enter a destination URL.');
+      return;
+    }
+    formData.append('link_type', 'url');
+    formData.append('link_url', urlVal);
+  } else {
+    formData.append('link_type', 'none');
+  }
+
+  if (chosenLinkType !== 'none' && bannerNewTabCheckbox && bannerNewTabCheckbox.checked) {
+    formData.append('open_in_new_tab', '1');
+  } else {
+    formData.append('open_in_new_tab', '0');
   }
 
   setButtonLoading(submitter, true, 'Saving Banner...');
@@ -2695,7 +2810,7 @@ document.querySelector('[data-hero-banner-form]')?.addEventListener('submit', as
       if (userHeroBannerTitle) {
         userHeroBannerTitle.style.display = 'none';
       }
-      alert('Hero Banner image uploaded to storage and saved to database successfully!');
+      alert('Hero Banner and link destination saved successfully!');
     } else {
       alert(data.message || 'Failed to save hero banner.');
     }
@@ -2732,6 +2847,13 @@ document.querySelector('[data-hero-banner-reset]')?.addEventListener('click', as
       if (userHeroBannerTitle) {
         userHeroBannerTitle.style.display = 'block';
       }
+
+      if (bannerLinkTypeSelect) bannerLinkTypeSelect.value = 'none';
+      if (bannerPostSelect) bannerPostSelect.value = '';
+      if (bannerCustomUrlInput) bannerCustomUrlInput.value = '';
+      if (bannerNewTabCheckbox) bannerNewTabCheckbox.checked = false;
+      updateBannerLinkVisibility();
+
       alert('Hero Banner removed. Website title will be displayed.');
     } else {
       alert('Failed to reset hero banner.');
@@ -2769,6 +2891,12 @@ document.querySelector('[data-upload-clear="hero-banner"]')?.addEventListener('c
       if (userHeroBannerTitle) {
         userHeroBannerTitle.style.display = 'block';
       }
+
+      if (bannerLinkTypeSelect) bannerLinkTypeSelect.value = 'none';
+      if (bannerPostSelect) bannerPostSelect.value = '';
+      if (bannerCustomUrlInput) bannerCustomUrlInput.value = '';
+      if (bannerNewTabCheckbox) bannerNewTabCheckbox.checked = false;
+      updateBannerLinkVisibility();
     }
   } catch (err) {
     console.error(err);

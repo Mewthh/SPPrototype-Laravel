@@ -3,7 +3,13 @@
         <div class="hero-grid shell">
             <div class="hero-copy">
                 <div class="hero-banner-wrap" id="hero-banner-container">
-                    <img src="{{ $heroBanner ?? asset('images/hero-banner.jpg') }}" alt="Hero Banner" class="hero-banner-img" id="hero-banner-img" style="{{ !empty($heroBanner) ? 'display: block;' : 'display: none;' }}" onload="if(this.getAttribute('src') && !this.getAttribute('src').endsWith('hero-banner.jpg')){ document.getElementById('hero-banner-title').style.display='none'; this.style.display='block'; }" onerror="this.style.display='none'; document.getElementById('hero-banner-title').style.display='block';" />
+                    @if(!empty($heroBannerLink))
+                        <a href="{{ $heroBannerLink }}" class="hero-banner-link" id="hero-banner-link" target="{{ !empty($heroBannerOpenInNewTab) ? '_blank' : '_self' }}" {!! !empty($heroBannerOpenInNewTab) ? 'rel="noopener noreferrer"' : '' !!} aria-label="Visit linked page">
+                            <img src="{{ $heroBanner ?? asset('images/hero-banner.jpg') }}" alt="Hero Banner" class="hero-banner-img" id="hero-banner-img" style="{{ !empty($heroBanner) ? 'display: block;' : 'display: none;' }}" onload="if(this.getAttribute('src') && !this.getAttribute('src').endsWith('hero-banner.jpg')){ document.getElementById('hero-banner-title').style.display='none'; this.style.display='block'; }" onerror="this.style.display='none'; document.getElementById('hero-banner-title').style.display='block';" />
+                        </a>
+                    @else
+                        <img src="{{ $heroBanner ?? asset('images/hero-banner.jpg') }}" alt="Hero Banner" class="hero-banner-img" id="hero-banner-img" style="{{ !empty($heroBanner) ? 'display: block;' : 'display: none;' }}" onload="if(this.getAttribute('src') && !this.getAttribute('src').endsWith('hero-banner.jpg')){ document.getElementById('hero-banner-title').style.display='none'; this.style.display='block'; }" onerror="this.style.display='none'; document.getElementById('hero-banner-title').style.display='block';" />
+                    @endif
                     <div id="hero-banner-title" class="hero-banner-title" style="{{ !empty($heroBanner) ? 'display: none;' : 'display: block;' }}">
                         <h1>Samahang Pisika ng Pilipinas</h1>
                     </div>

@@ -855,7 +855,44 @@
 							</div>
 						</div>
 
-						<div class="form-actions">
+						<div class="field-row field-row-wide" style="margin-top: 20px;">
+							<label class="field-row" style="margin-bottom: 0;">
+								<span>Link Destination</span>
+								<select name="heroBannerLinkType" data-hero-banner-link-type>
+									<option value="none" selected>None (Image only)</option>
+									<option value="post">Existing Post</option>
+									<option value="url">Custom Web Link</option>
+								</select>
+							</label>
+							<p style="font-size: 0.82rem; color: var(--muted); margin-top: 4px;">Choose what happens when visitors click the homepage hero banner.</p>
+						</div>
+
+						<div class="field-row field-row-wide is-hidden" data-hero-banner-post-row style="margin-top: 12px;">
+							<label class="field-row" style="margin-bottom: 0;">
+								<span>Select Existing Post</span>
+								<select name="heroBannerPostSelect" data-hero-banner-post-select>
+									<option value="">-- Choose a post --</option>
+								</select>
+							</label>
+							<p style="font-size: 0.82rem; color: var(--muted); margin-top: 4px;">When clicked, users will be taken directly to this published post or portal.</p>
+						</div>
+
+						<div class="field-row field-row-wide is-hidden" data-hero-banner-url-row style="margin-top: 12px;">
+							<label class="field-row" style="margin-bottom: 0;">
+								<span>Custom Link URL</span>
+								<input type="url" name="heroBannerCustomUrl" data-hero-banner-custom-url placeholder="https://example.com or /news" />
+							</label>
+							<p style="font-size: 0.82rem; color: var(--muted); margin-top: 4px;">Enter a complete web URL (e.g. https://...) or internal site path.</p>
+						</div>
+
+						<div class="field-row field-row-wide is-hidden" data-hero-banner-target-row style="margin-top: 12px;">
+							<label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 500;">
+								<input type="checkbox" name="heroBannerOpenInNewTab" data-hero-banner-new-tab value="1" style="width: 16px; height: 16px; cursor: pointer;" />
+								<span>Open link in a new tab</span>
+							</label>
+						</div>
+
+						<div class="form-actions" style="margin-top: 24px;">
 							<button type="submit" class="button button-primary" data-hero-banner-submit>Save & Apply
 								Banner</button>
 							<button type="button" class="button button-quiet" data-hero-banner-reset>Reset

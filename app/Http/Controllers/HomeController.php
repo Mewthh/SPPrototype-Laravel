@@ -37,11 +37,15 @@ class HomeController extends Controller
 
         $heroPage = Page::where('slug', 'home-hero')->first();
         $heroBanner = $heroPage ? $heroPage->image_url : null;
+        $heroBannerLink = $heroPage ? $heroPage->resolved_link_url : null;
+        $heroBannerOpenInNewTab = $heroPage ? (bool) $heroPage->open_in_new_tab : false;
 
         return view('welcome', [
             'news' => $news,
             'activities' => $activities,
             'heroBanner' => $heroBanner,
+            'heroBannerLink' => $heroBannerLink,
+            'heroBannerOpenInNewTab' => $heroBannerOpenInNewTab,
         ]);
     }
 }

@@ -1548,15 +1548,25 @@ html[data-theme="dark"] .btn-join-spp:focus-visible {
     padding: 20px;
 }
 
-.hero-banner-img {
-    max-width: calc(100% - 40px);
-    width: 100%;
-    height: auto;
-    max-height: 380px;
-    object-fit: contain;
-    object-position: center;
-    display: block;
-    border-radius: calc(var(--radius-lg) - 4px);
+.hero-banner-link {
+    display: contents;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.hero-banner-link .hero-banner-img {
+    transition: transform 0.25s ease, opacity 0.25s ease, box-shadow 0.25s ease;
+    cursor: pointer;
+}
+
+.hero-banner-link:hover .hero-banner-img {
+    transform: scale(1.015);
+    opacity: 0.96;
+}
+
+.hero-banner-link:focus-visible .hero-banner-img {
+    outline: 3px solid var(--accent);
+    outline-offset: 4px;
 }
 
 .hero-banner-title {
