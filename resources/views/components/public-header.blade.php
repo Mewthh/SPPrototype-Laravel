@@ -48,14 +48,8 @@
                 </button>
             </form>
 
+            <a class="btn-login-header" href="javascript:void(0)" aria-label="Log in">Log In</a>
             <a class="btn-join-spp" href="#about">Join SPP</a>
-
-
-
-            <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark mode">
-                <span class="theme-icon theme-icon-moon" aria-hidden="true">&#x263E;</span>
-                <span class="theme-icon theme-icon-sun" aria-hidden="true">&#x2600;</span>
-            </button>
 
             <details class="mobile-nav">
                 <summary class="mobile-nav-toggle" aria-label="Open menu">
@@ -90,6 +84,7 @@
                         <a href="{{ route('spp.show', ['year' => '2026']) }}" id="mob-year-btn-2026"
                             class="year-menu-link">SPP2026</a>
                     </div>
+                    <a class="btn-login-header mobile" href="javascript:void(0)">Log In</a>
                     <a class="btn-join-spp mobile" href="#about">Join SPP</a>
 
                 </nav>
