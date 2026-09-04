@@ -60,9 +60,7 @@
         </span>
     </button>
 
-    @if (view()->exists('components.image-debug-bar'))
-        <x-image-debug-bar />
-    @endif
+    @includeIf('components.image-debug-bar')
 </body>
 
 </html>
