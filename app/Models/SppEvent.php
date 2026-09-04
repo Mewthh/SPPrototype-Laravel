@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string|null $dates
  * @property string|null $location
  * @property string|null $summary
- * @property array|null $tabs
+ * @property array<int, array<string, mixed>>|null $tabs
  * @property string $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at

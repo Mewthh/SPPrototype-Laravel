@@ -277,7 +277,9 @@ class ConferenceController extends Controller
                     Storage::disk($diskName)->delete($currentImage);
                 }
 
-                return $file->store('conferences', $diskName);
+                $path = $file->store('conferences', $diskName);
+
+                return is_string($path) ? $path : null;
             }
         }
 
