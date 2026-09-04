@@ -34,7 +34,7 @@
                 </header>
 
                 <div class="article-hero-media">
-                    <img src="{{ $imageSrc }}" alt="{{ strip_tags(\App\Support\Markdown::renderInline($activity->title)) }}" data-fallback-src="{{ $defaultSvg }}" data-original-src="{{ $imageSrc }}" onerror="if(this.dataset.fallbackSrc && this.src !== this.dataset.fallbackSrc){ this.src = this.dataset.fallbackSrc; this.dataset.imageFailed = 'true'; this.dataset.isUsingFallback = 'true'; }" />
+                    <img src="{{ $imageSrc }}" alt="{{ strip_tags(\App\Support\Markdown::renderInline($activity->title)) }}" />
                 </div>
 
                 <div class="article-body">

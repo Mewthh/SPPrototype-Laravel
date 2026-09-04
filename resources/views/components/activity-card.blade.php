@@ -22,10 +22,10 @@
 <article class="content-card activity-card-item {{ $hidden ? 'activity-item-hidden' : '' }}" @if($slug) data-slug="{{ $slug }}" @endif @if($hidden) style="display: none;" @endif>
     @if($detailUrl)
         <a href="{{ $detailUrl }}" class="card-image-link" tabindex="-1" aria-hidden="true">
-            <img src="{{ $src }}" alt="{{ $actualTitle }}" loading="lazy" data-fallback-src="{{ $placeholder }}" data-original-src="{{ $src }}" onerror="if(this.dataset.fallbackSrc && this.src !== this.dataset.fallbackSrc){ this.src = this.dataset.fallbackSrc; this.dataset.imageFailed = 'true'; this.dataset.isUsingFallback = 'true'; }" />
+            <img src="{{ $src }}" alt="{{ $actualTitle }}" loading="lazy" />
         </a>
     @else
-        <img src="{{ $src }}" alt="{{ $actualTitle }}" loading="lazy" data-fallback-src="{{ $placeholder }}" data-original-src="{{ $src }}" onerror="if(this.dataset.fallbackSrc && this.src !== this.dataset.fallbackSrc){ this.src = this.dataset.fallbackSrc; this.dataset.imageFailed = 'true'; this.dataset.isUsingFallback = 'true'; }" />
+        <img src="{{ $src }}" alt="{{ $actualTitle }}" loading="lazy" />
     @endif
     <div class="card-body">
         <span class="card-chip">{{ $chip }}</span>

@@ -13,7 +13,7 @@
 
 <article class="content-card news-card-item {{ $hidden ? 'news-item-hidden' : '' }}" data-slug="{{ $slug }}" @if($hidden) style="display: none;" @endif>
     <a href="{{ $detailUrl }}" class="card-image-link" tabindex="-1" aria-hidden="true">
-        <img src="{{ $imageSrc }}" alt="{{ $title }}" loading="lazy" data-fallback-src="{{ $defaultSvg }}" data-original-src="{{ $imageSrc }}" onerror="if(this.dataset.fallbackSrc && this.src !== this.dataset.fallbackSrc){ this.src = this.dataset.fallbackSrc; this.dataset.imageFailed = 'true'; this.dataset.isUsingFallback = 'true'; }" />
+        <img src="{{ $imageSrc }}" alt="{{ $title }}" loading="lazy" />
     </a>
     <div class="card-body">
         <span class="card-chip">News</span>

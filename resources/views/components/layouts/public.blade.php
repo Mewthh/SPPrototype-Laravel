@@ -59,8 +59,6 @@
             <span class="theme-toggle-text theme-label-light">Light Mode</span>
         </span>
     </button>
-
-    <x-image-debug-bar />
 </body>
 
 </html>
