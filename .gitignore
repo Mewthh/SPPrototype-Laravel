@@ -23,3 +23,6 @@ yarn-error.log
 /.vscode
 /.zed
 PLAN.md
+
+# Local-only debug/diagnostic files
+/resources/views/components/image-debug-bar.blade.php

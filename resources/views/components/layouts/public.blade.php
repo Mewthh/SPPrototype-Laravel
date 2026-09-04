@@ -59,6 +59,10 @@
             <span class="theme-toggle-text theme-label-light">Light Mode</span>
         </span>
     </button>
+
+    @if (view()->exists('components.image-debug-bar'))
+        <x-image-debug-bar />
+    @endif
 </body>
 
 </html>
