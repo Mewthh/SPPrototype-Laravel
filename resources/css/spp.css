@@ -1336,6 +1336,43 @@ html[data-theme="dark"] .desktop-nav .nav-dropdown-panel a:focus-visible {
     border-color: transparent;
 }
 
+.year-menu-more {
+    width: 100%;
+    margin-top: 2px;
+    border-top: 1px dashed var(--border);
+    padding-top: 6px;
+}
+
+.year-menu-more-trigger {
+    list-style: none;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--text-muted, #64748b);
+    text-align: center;
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 8px;
+    user-select: none;
+    transition: background-color 150ms ease, color 150ms ease;
+}
+
+.year-menu-more-trigger::-webkit-details-marker {
+    display: none;
+}
+
+.year-menu-more-trigger:hover {
+    background: var(--surface-soft);
+    color: var(--text);
+}
+
+.year-menu-more-list {
+    display: grid;
+    gap: 6px;
+    margin-top: 6px;
+    max-height: 180px;
+    overflow-y: auto;
+}
+
 .desktop-nav a,
 .mobile-nav-panel a {
     padding: 10px 10px;
@@ -2775,4 +2812,212 @@ html[data-theme="dark"] .theme-label-light {
     .floating-theme-tooltip {
         display: none;
     }
+}
+
+/* ─── Conference Portal & Dynamic Tabs ───────────────────────────── */
+.conference-portal {
+    min-height: 70vh;
+    padding: 32px 0 64px;
+    display: grid;
+    gap: 32px;
+}
+
+.conference-hero {
+    border-radius: var(--radius-lg, 20px);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.conference-hero-banner {
+    position: relative;
+    min-height: 240px;
+    max-height: 400px;
+    background: var(--surface-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.conference-hero-banner img {
+    width: 100%;
+    height: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    object-position: center;
+}
+
+.conference-hero-content {
+    padding: 32px;
+    display: grid;
+    gap: 16px;
+}
+
+.conference-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.conference-badge {
+    background: var(--accent);
+    color: #ffffff;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.conference-title {
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    line-height: 1.2;
+    margin: 0;
+    letter-spacing: -0.02em;
+    color: var(--text);
+}
+
+.conference-theme {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--accent-strong, var(--accent));
+    margin: 0;
+}
+
+.conference-info-grid {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    color: var(--text-muted, #64748b);
+    font-size: 0.95rem;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+}
+
+.conference-info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Conference Content Layout with Sidebar */
+.conference-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 32px;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .conference-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.conference-sidebar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md, 16px);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    display: grid;
+    gap: 8px;
+    position: sticky;
+    top: 96px;
+}
+
+.conference-sidebar-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted, #64748b);
+    padding: 8px 12px 4px;
+    margin: 0;
+}
+
+.conference-tab-nav {
+    display: grid;
+    gap: 4px;
+}
+
+.conference-tab-btn {
+    width: 100%;
+    text-align: left;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 160ms ease;
+}
+
+.conference-tab-btn:hover {
+    background: var(--surface-soft);
+    color: var(--text);
+}
+
+.conference-tab-btn.active {
+    background: var(--accent);
+    color: #ffffff;
+    border-color: var(--accent);
+}
+
+.conference-main-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md, 16px);
+    padding: 32px;
+    box-shadow: var(--shadow);
+    min-height: 360px;
+}
+
+.conference-tab-pane {
+    display: none;
+}
+
+.conference-tab-pane.active {
+    display: block;
+    animation: fadeInTab 200ms ease;
+}
+
+@keyframes fadeInTab {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.conference-body-text {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text);
+    display: grid;
+    gap: 16px;
+}
+
+.conference-body-text h1,
+.conference-body-text h2,
+.conference-body-text h3,
+.conference-body-text h4 {
+    margin: 16px 0 8px;
+    color: var(--accent-strong, var(--accent));
+}
+
+.conference-body-text ul,
+.conference-body-text ol {
+    margin: 0;
+    padding-left: 24px;
+    display: grid;
+    gap: 8px;
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Database\Factories\SppEventFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,18 +13,23 @@ use Illuminate\Support\Facades\Storage;
 
 /**
  * @property int $id
+ * @property string|null $year
  * @property string $title
  * @property string $slug
+ * @property string|null $theme
  * @property string $description
  * @property string|null $image
  * @property-read string|null $image_url
  * @property Carbon|null $event_date
+ * @property string|null $dates
  * @property string|null $location
+ * @property string|null $summary
+ * @property array|null $tabs
  * @property string $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['title', 'slug', 'description', 'image', 'event_date', 'location', 'status'])]
+#[Fillable(['year', 'title', 'slug', 'theme', 'description', 'image', 'event_date', 'dates', 'location', 'summary', 'tabs', 'status'])]
 class SppEvent extends Model
 {
     /** @use HasFactory<SppEventFactory> */
@@ -54,7 +60,19 @@ class SppEvent extends Model
     {
         return [
             'event_date' => 'date',
+            'tabs' => 'array',
         ];
+    }
+
+    /**
+     * Scope a query to only include published conferences.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopePublished($query)
+    {
+        return $query->where('status', 'published');
     }
 
     /**

@@ -790,6 +790,26 @@
 							</div>
 						</div>
 
+						<!-- Conference Custom Sidebar Tabs Section -->
+						<div class="field-row field-row-wide conference-tabs-manager-wrap">
+							<div class="conference-tabs-header-bar">
+								<div>
+									<span class="field-label" style="font-size: 0.95rem; font-weight: 700; display: block;">Conference Sidebar Tabs</span>
+									<p style="font-size: 0.82rem; color: var(--muted); margin: 2px 0 0 0;">Add custom tab sections (e.g. Important Dates, Registration, Program, Venue) displayed on the public conference page sidebar.</p>
+								</div>
+								<div class="conference-tabs-actions-bar">
+									<button type="button" class="btn-add-tab-primary" data-add-conference-tab>
+										<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+										Add New Tab
+									</button>
+								</div>
+							</div>
+
+							<div class="conference-tabs-container" data-conference-tabs-container>
+								<!-- Tab items will be dynamically injected here -->
+							</div>
+						</div>
+
 						<div class="field-row field-row-wide">
 							<span class="field-label">Banner Image</span>
 							<div class="image-upload-zone" id="conference-image-zone" data-upload-zone="conference"
@@ -842,14 +862,6 @@
 					</div>
 
 					<div class="posts-view-wrapper">
-						<div class="conference-portal-quicklinks" style="margin-bottom: 20px;">
-							<span class="portal-quicklinks-title"
-								style="font-size: 0.85rem; font-weight: 700; color: var(--muted); display: block; margin-bottom: 8px;">Public
-								Portal Shortcuts:</span>
-							<div class="conference-portal-pills" data-conference-portal-pills
-								style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
-						</div>
-
 						<div class="queue-toolbar">
 							<div class="queue-filters" aria-label="Conference filters">
 								<button type="button" class="filter-tab active" data-conference-filter="all">All (<span

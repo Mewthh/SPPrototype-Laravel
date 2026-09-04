@@ -57,7 +57,6 @@ const conferenceViews = {
   list: document.querySelector('[data-conference-view="list"]'),
 };
 const conferenceList = document.querySelector('[data-conference-list]');
-const conferencePortalPills = document.querySelector('[data-conference-portal-pills]');
 const conferenceBanner = document.querySelector('[data-conference-banner]');
 const conferenceBannerText = document.querySelector('[data-conference-banner-text]');
 const conferenceCancelEdit = document.querySelector('[data-conference-cancel-edit]');
@@ -361,70 +360,6 @@ setTimeout(() => {
     hideAdminLoadingScreen('timeout 3000ms');
   }
 }, 3000);
-
-async function fetchNewsFromDatabase() {
-  try {
-    const res = await fetch('/admin/api/news');
-    if (!res.ok) throw new Error('Failed to load news');
-    const result = await res.json();
-    if (result && Array.isArray(result.data)) {
-      const dbNews = result.data.map((item) => ({
-        id: item.id,
-        type: 'announcement',
-        section: 'News',
-        title: item.title,
-        slug: item.slug,
-        summary: item.excerpt || '',
-        publishDate: item.published_at ? item.published_at.slice(0, 10) : (item.created_at ? item.created_at.slice(0, 10) : ''),
-        body: item.content || '',
-        status: item.status || 'draft',
-        coverImage: item.image_url || item.image || item.coverImage || null,
-      }));
-
-      const otherPosts = state.posts.filter((p) => p.type !== 'announcement');
-      state.posts = [...dbNews, ...otherPosts];
-      renderAll();
-    }
-  } catch (err) {
-    console.error('Error fetching news from database:', err);
-  } finally {
-    notifyDatabaseFetchComplete();
-  }
-}
-
-async function fetchActivitiesFromDatabase() {
-  try {
-    const res = await fetch('/admin/api/activities');
-    if (!res.ok) throw new Error('Failed to load activities');
-    const result = await res.json();
-    if (result && Array.isArray(result.data)) {
-      const dbActivities = result.data.map((item) => ({
-        id: item.id,
-        type: 'event',
-        section: 'Activities',
-        title: item.title,
-        slug: item.slug,
-        summary: item.summary || '',
-        publishDate: item.event_date ? item.event_date.slice(0, 10) : (item.created_at ? item.created_at.slice(0, 10) : ''),
-        body: item.description || '',
-        location: item.location || '',
-        status: item.status || 'draft',
-        coverImage: item.image_url || item.image || item.coverImage || null,
-        featured: item.is_featured || false,
-      }));
-
-      state.posts = [
-        ...state.posts.filter((p) => p.type !== 'event'),
-        ...dbActivities,
-      ];
-      renderAll();
-    }
-  } catch (err) {
-    console.error('Error fetching activities from database:', err);
-  } finally {
-    notifyDatabaseFetchComplete();
-  }
-}
 
 function setTheme(theme) {
   const nextTheme = theme === 'dark' ? 'dark' : 'light';
@@ -2265,20 +2200,43 @@ function renderConferences() {
   if (elDraft) elDraft.textContent = String(draftCount);
   if (elArch) elArch.textContent = String(archCount);
 
-  // Render Portal Pills
-  if (conferencePortalPills) {
-    const sorted = allConfs
-      .filter((c) => c.year)
-      .slice()
-      .sort((a, b) => parseInt(a.year, 10) - parseInt(b.year, 10));
+  // Helper to format button / display label cleanly (e.g. SPP2027)
+  const getCleanConfLabel = (c) => {
+    const rawYear = String(c.year || '').trim();
+    const rawTitle = String(c.title || '').trim();
+    const match = rawTitle.match(/^spp\s*(\d{4}|\w+)/i);
+    if (match) return `SPP${match[1]}`;
+    if (rawYear) return /^spp/i.test(rawYear) ? rawYear.toUpperCase() : `SPP${rawYear}`;
+    if (rawTitle) return /^spp/i.test(rawTitle) ? rawTitle : `SPP ${rawTitle}`;
+    return 'SPP';
+  };
 
-    conferencePortalPills.innerHTML = sorted
-      .map((c) => {
-        const isCurrent = c.year === '2026' || c.status === 'published';
-        return `<a href="/spp?year=${encodeURIComponent(c.year)}" class="conference-year-btn ${isCurrent ? 'active' : ''}" target="_blank">SPP ${escapeHtml(c.year)} &#x2197;</a>`;
-      })
-      .join('');
-  }
+  const renderTabSummary = (tabs) => {
+    if (!Array.isArray(tabs) || tabs.length === 0) return '';
+
+    const tabItems = tabs.slice(0, 3).map((tab, index) => {
+      const title = String(tab?.title || `Tab ${index + 1}`).trim();
+      const rawContent = String(tab?.content || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+      const excerpt = rawContent ? `${rawContent.slice(0, 90)}${rawContent.length > 90 ? '…' : ''}` : 'No content yet';
+      return `
+        <div class="conference-card-tab-summary">
+          <strong>${escapeHtml(title)}</strong>
+          <span>${escapeHtml(excerpt)}</span>
+        </div>
+      `;
+    }).join('');
+
+    const moreCount = tabs.length - 3;
+    const moreBadge = moreCount > 0 ? `<span class="conference-card-tabs-more">+${moreCount} more tab${moreCount === 1 ? '' : 's'}</span>` : '';
+
+    return `
+      <div class="conference-card-tabs">
+        <div class="conference-card-tabs-label">Tabs</div>
+        <div class="conference-card-tabs-list">${tabItems}</div>
+        ${moreBadge}
+      </div>
+    `;
+  };
 
   // Filter conferences
   const filtered = state.conferenceFilter === 'all'
@@ -2303,10 +2261,13 @@ function renderConferences() {
         quickAction = '<button type="button" class="item-action primary" data-conference-action="publish">Publish</button>';
       }
 
+      const confTarget = conf.year || conf.title || conf.id;
+      const confBadgeLabel = getCleanConfLabel(conf);
+
       return `
         <article class="conference-card" data-conference-id="${escapeHtml(conf.id)}">
           <div class="conference-card-head">
-            <h3>${escapeHtml(conf.title || `SPP ${conf.year}`)}</h3>
+            <h3>${escapeHtml(conf.title || confBadgeLabel)}</h3>
             <span class="conference-badge ${statusClass}">${statusText}</span>
           </div>
           ${conf.theme ? `<div class="conference-theme-line">&ldquo;${escapeHtml(conf.theme)}&rdquo;</div>` : ''}
@@ -2317,7 +2278,7 @@ function renderConferences() {
           </div>
           ${conf.summary ? `<p class="conference-card-summary">${escapeHtml(conf.summary)}</p>` : ''}
           <div class="conference-card-actions">
-            ${conf.year ? `<a href="/spp?year=${encodeURIComponent(conf.year)}" class="button button-secondary" target="_blank">View Portal &#x2197;</a>` : ''}
+            <a href="/spp?year=${encodeURIComponent(confTarget)}" class="button button-secondary" target="_blank">View Portal (${escapeHtml(confBadgeLabel)}) &#x2197;</a>
             <button type="button" class="item-action primary" data-conference-action="edit">Edit Details</button>
             ${quickAction}
             <button type="button" class="item-action danger" data-conference-action="delete">Delete</button>
@@ -2326,6 +2287,328 @@ function renderConferences() {
       `;
     })
     .join('');
+}
+
+// ─── Conference Tabs Manager ──────────────────────────────────────────────────
+let _conferenceTabCounter = 0;
+let _activeConferenceTabId = null;
+
+function getConferenceTabExcerpt(content) {
+  const plainText = String(content || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  if (!plainText) return 'No content yet';
+  return plainText.length > 110 ? `${plainText.slice(0, 110)}…` : plainText;
+}
+
+function updateConferenceTabView(tabEl, isActive) {
+  const summaryEl = tabEl.querySelector('.conference-tab-summary');
+  const bodyEl = tabEl.querySelector('.conference-tab-body');
+  const editBtn = tabEl.querySelector('[data-conference-tab-edit]');
+  const cancelBtn = tabEl.querySelector('[data-conference-tab-cancel]');
+
+  tabEl.classList.toggle('is-expanded', isActive);
+  tabEl.classList.toggle('is-collapsed', !isActive);
+  tabEl.classList.toggle('is-hidden', _activeConferenceTabId !== null && !isActive);
+
+  if (summaryEl) summaryEl.classList.toggle('is-hidden', isActive);
+  if (bodyEl) bodyEl.classList.toggle('is-hidden', !isActive);
+  if (editBtn) editBtn.style.display = isActive ? 'none' : 'inline-flex';
+  if (cancelBtn) cancelBtn.style.display = isActive ? 'inline-flex' : 'none';
+}
+
+function refreshConferenceTabSummaries() {
+  const container = document.querySelector('[data-conference-tabs-container]');
+  if (!container) return;
+
+  const items = Array.from(container.querySelectorAll('.conference-tab-item'));
+  items.forEach((tabEl, index) => {
+    const badge = tabEl.querySelector('.conference-tab-badge');
+    if (badge) badge.textContent = `Tab ${index + 1}`;
+
+    const title = (tabEl.querySelector('.conference-tab-title-input')?.value || '').trim();
+    const content = tabEl.querySelector('.conference-tab-content-textarea')?.value || '';
+    const summaryTitle = tabEl.querySelector('[data-conference-tab-summary-title]');
+    const summaryExcerpt = tabEl.querySelector('[data-conference-tab-summary-excerpt]');
+    if (summaryTitle) summaryTitle.textContent = title || `Tab ${index + 1}`;
+    if (summaryExcerpt) summaryExcerpt.textContent = getConferenceTabExcerpt(content);
+  });
+
+  if (_activeConferenceTabId) {
+    items.forEach((tabEl) => updateConferenceTabView(tabEl, String(tabEl.dataset.tabId) === String(_activeConferenceTabId)));
+  } else {
+    items.forEach((tabEl) => updateConferenceTabView(tabEl, false));
+  }
+}
+
+function setActiveConferenceTab(tabId = null) {
+  _activeConferenceTabId = tabId;
+  refreshConferenceTabSummaries();
+}
+
+function updateConferenceTabsEmptyState() {
+  const container = document.querySelector('[data-conference-tabs-container]');
+  if (!container) return;
+  const items = container.querySelectorAll('.conference-tab-item');
+  const existingEmpty = container.querySelector('.conference-tabs-empty');
+  if (items.length === 0) {
+    if (!existingEmpty) {
+      const emptyDiv = document.createElement('div');
+      emptyDiv.className = 'conference-tabs-empty';
+      emptyDiv.innerHTML = `
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.5; margin: 0 auto 8px; display: block;" aria-hidden="true">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="3" y1="9" x2="21" y2="9"></line>
+          <line x1="9" y1="21" x2="9" y2="9"></line>
+        </svg>
+        <p style="margin: 0; font-weight: 500;">No custom sidebar tabs added yet.</p>
+        <p style="margin: 4px 0 0; font-size: 0.8rem; opacity: 0.7;">Click <strong>&ldquo;Add New Tab&rdquo;</strong> above to create one.</p>
+      `;
+      container.appendChild(emptyDiv);
+    }
+  } else {
+    if (existingEmpty) existingEmpty.remove();
+    // Update badge numbers
+    items.forEach((item, index) => {
+      const badge = item.querySelector('.conference-tab-badge');
+      if (badge) badge.textContent = `Tab ${index + 1}`;
+    });
+  }
+}
+
+function addConferenceTab(tabData = {}) {
+  const container = document.querySelector('[data-conference-tabs-container]');
+  if (!container) return;
+  const existingEmpty = container.querySelector('.conference-tabs-empty');
+  if (existingEmpty) existingEmpty.remove();
+
+  _conferenceTabCounter++;
+  const tabId = tabData.id || `tab-${Date.now()}-${_conferenceTabCounter}`;
+  const currentCount = container.querySelectorAll('.conference-tab-item').length + 1;
+  const tabEl = document.createElement('div');
+  tabEl.className = 'conference-tab-item';
+  tabEl.dataset.tabId = tabId;
+  tabEl.innerHTML = `
+    <div class="conference-tab-header">
+      <span class="conference-tab-badge">Tab ${currentCount}</span>
+      <input type="text" class="conference-tab-title-input" placeholder="Tab Title (e.g. Important Dates)" value="${escapeHtml(tabData.title || '')}" aria-label="Tab title" />
+      <button type="button" class="conference-tab-remove" aria-label="Remove tab" title="Remove this tab">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M6 6l1 14h10l1-14"></path><path d="M10 11v5"></path><path d="M14 11v5"></path></svg>
+      </button>
+    </div>
+    <div class="conference-tab-summary">
+      <div class="conference-tab-summary-meta">
+        <strong data-conference-tab-summary-title>Tab ${currentCount}</strong>
+        <span class="conference-tab-summary-excerpt" data-conference-tab-summary-excerpt>${escapeHtml(getConferenceTabExcerpt(tabData.content || ''))}</span>
+      </div>
+      <button type="button" class="button button-quiet conference-tab-edit-button" data-conference-tab-edit>Edit Tab</button>
+    </div>
+    <div class="conference-tab-body rich-editor-wrap" data-rich-editor="conference-tab-${tabId}">
+      <div class="editor-toolbar" role="toolbar" aria-label="Tab content formatting toolbar">
+        <button type="button" class="toolbar-btn" data-format="bold" title="Bold" aria-label="Bold"><strong>B</strong></button>
+        <button type="button" class="toolbar-btn" data-format="italic" title="Italic" aria-label="Italic"><em>I</em></button>
+        <button type="button" class="toolbar-btn" data-format="underline" title="Underline (<u>text</u>)" aria-label="Underline"><u>U</u></button>
+        <button type="button" class="toolbar-btn" data-format="h1" title="Heading 1 (# Title)" aria-label="Heading 1">H1</button>
+        <button type="button" class="toolbar-btn" data-format="h2" title="Heading 2 (## Subtitle)" aria-label="Heading 2">H2</button>
+        <button type="button" class="toolbar-btn" data-format="ul" title="Bullet List (- item)" aria-label="Bullet List"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><circle cx="3.5" cy="6" r="1.5" fill="currentColor"></circle><circle cx="3.5" cy="12" r="1.5" fill="currentColor"></circle><circle cx="3.5" cy="18" r="1.5" fill="currentColor"></circle></svg></button>
+        <button type="button" class="toolbar-btn" data-format="ol" title="Numbered List (1. item)" aria-label="Numbered List"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><path d="M4 6h1v4M4 10h2" stroke-width="1.6"></path><path d="M4 14h2a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H4v1h3" stroke-width="1.6"></path></svg></button>
+        <button type="button" class="toolbar-btn" data-format="blockquote" title="Blockquote (> text)" aria-label="Blockquote"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.75-2-2-2H4c-1.25 0-2 .75-2 2v6c0 1.25.75 2 2 2 0 4-1 6-1 8z" fill="currentColor" stroke="none"></path><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.75-2-2-2h-4c-1.25 0-2 .75-2 2v6c0 1.25.75 2 2 2 0 4-1 6-1 8z" fill="currentColor" stroke="none"></path></svg></button>
+        <button type="button" class="toolbar-btn" data-format="code" title="Inline code (&grave;code&grave;)" aria-label="Code">&lt;/&gt;</button>
+        <button type="button" class="toolbar-btn" data-format="hr" title="Horizontal rule (---)" aria-label="Horizontal Rule">&#x2014;</button>
+        <button type="button" class="toolbar-btn" data-format="link" title="Link" aria-label="Link">&#x1F517;</button>
+        <button type="button" class="toolbar-btn" data-format="image" title="Image (![alt](url))" aria-label="Image">&#x1F5BC;</button>
+        <button type="button" class="toolbar-btn" data-format="table" title="Insert table" aria-label="Table"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg></button>
+        <button type="button" class="toolbar-btn" data-format="footnote" title="Footnote ([^1])" aria-label="Footnote">fn</button>
+        <button type="button" class="toolbar-btn" data-format="highlight" title="Highlight (==text==)" aria-label="Highlight"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 11-6 6v3h3l6-6"></path><path d="m22 7-4.5-4.5a2.12 2.12 0 0 0-3 0L10 7l7 7 4.5-4.5a2.12 2.12 0 0 0 0-3z"></path><line x1="14" y1="20" x2="22" y2="20" stroke-width="2.5" stroke="#f59e0b"></line></svg></button>
+        <button type="button" class="toolbar-btn" data-format="sub" title="Subscript (~text~)" aria-label="Subscript">X<sub>2</sub></button>
+        <button type="button" class="toolbar-btn" data-format="sup" title="Superscript (^text^)" aria-label="Superscript">X<sup>2</sup></button>
+      </div>
+      <textarea rows="6" class="conference-tab-content-textarea" placeholder="Tab section details (markdown supported)..." aria-label="Tab content">${escapeHtml(tabData.content || '')}</textarea>
+      <div class="conference-tab-footer">
+        <button type="button" class="button button-secondary btn-save-conference-tabs" data-conference-tab-save>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h12l4 4v10H4z"></path><path d="M7 5v6h8V5"></path><path d="M7 19v-5h10v5"></path></svg>
+          Save
+        </button>
+        <button type="button" class="button button-quiet conference-tab-cancel-button" data-conference-tab-cancel style="display: none;">
+          Cancel Editing
+        </button>
+      </div>
+    </div>
+  `;
+  container.appendChild(tabEl);
+
+  const removeButton = tabEl.querySelector('.conference-tab-remove');
+  const saveButton = tabEl.querySelector('[data-conference-tab-save]');
+  const cancelButton = tabEl.querySelector('[data-conference-tab-cancel]');
+
+  removeButton?.addEventListener('click', async () => {
+    const confirmed = await showConfirmModal('Delete Tab', 'Are you sure you want to delete this tab? This action cannot be undone.', 'Delete Tab');
+    if (!confirmed) return;
+
+    setButtonLoading(removeButton, true, 'Deleting...');
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+
+    tabEl.remove();
+    if (String(_activeConferenceTabId) === String(tabId)) {
+      _activeConferenceTabId = null;
+    }
+    updateConferenceTabsEmptyState();
+    refreshConferenceTabSummaries();
+    if (container.querySelectorAll('.conference-tab-item').length === 0) {
+      _activeConferenceTabId = null;
+    }
+  });
+
+  tabEl.querySelector('[data-conference-tab-edit]')?.addEventListener('click', () => {
+    setActiveConferenceTab(tabId);
+    tabEl.querySelector('.conference-tab-title-input')?.focus();
+  });
+
+  cancelButton?.addEventListener('click', () => {
+    setActiveConferenceTab(null);
+  });
+
+  saveButton?.addEventListener('click', async () => {
+    await saveConferenceFromEditor(saveButton, { keepEditorOpen: true });
+  });
+
+  tabEl.querySelector('.conference-tab-title-input')?.addEventListener('input', refreshConferenceTabSummaries);
+  tabEl.querySelector('.conference-tab-content-textarea')?.addEventListener('input', refreshConferenceTabSummaries);
+
+  // Init rich editor for this tab's textarea
+  setupRichEditorToolbars();
+
+  // Focus title input if it's a new tab without title
+  if (!tabData.title) {
+    const input = tabEl.querySelector('.conference-tab-title-input');
+    if (input) input.focus();
+  }
+
+  if (_activeConferenceTabId && String(_activeConferenceTabId) !== String(tabId)) {
+    updateConferenceTabView(tabEl, false);
+  } else {
+    _activeConferenceTabId = tabId;
+    updateConferenceTabView(tabEl, true);
+  }
+
+  refreshConferenceTabSummaries();
+}
+
+function clearConferenceTabs() {
+  const container = document.querySelector('[data-conference-tabs-container]');
+  if (container) {
+    container.innerHTML = '';
+    _activeConferenceTabId = null;
+    updateConferenceTabsEmptyState();
+  }
+}
+
+function collectConferenceTabs() {
+  const container = document.querySelector('[data-conference-tabs-container]');
+  if (!container) return [];
+  const tabs = [];
+  container.querySelectorAll('.conference-tab-item').forEach((tabEl) => {
+    const tabId = tabEl.dataset.tabId || `tab-${Date.now()}`;
+    const title = (tabEl.querySelector('.conference-tab-title-input')?.value || '').trim();
+    const content = (tabEl.querySelector('.conference-tab-content-textarea')?.value || '').trim();
+    if (title || content) {
+      tabs.push({ id: tabId, title, content });
+    }
+  });
+  return tabs;
+}
+
+// ─── Conference DB Functions ──────────────────────────────────────────────────
+async function fetchConferencesFromDatabase() {
+  try {
+    const res = await fetch('/admin/api/conferences', {
+      headers: { 'Accept': 'application/json' },
+    });
+    if (!res.ok) return;
+    const result = await res.json();
+    state.conferences = (result.data || []).map((item) => ({
+      id: item.id,
+      year: item.year || '',
+      title: item.title || '',
+      theme: item.theme || '',
+      location: item.location || '',
+      dates: item.dates || '',
+      summary: item.summary || '',
+      body: item.description || '',
+      status: item.status || 'draft',
+      coverImage: item.image_url || item.image || null,
+      tabs: Array.isArray(item.tabs) ? item.tabs : (typeof item.tabs === 'string' ? (JSON.parse(item.tabs || '[]')) : []),
+    }));
+    renderConferences();
+  } catch (err) {
+    console.error('Failed to fetch conferences from database:', err);
+  }
+}
+
+async function saveConferenceFromEditor(submitter, options = {}) {
+  if (!conferenceForm) return;
+
+  const keepEditorOpen = options.keepEditorOpen ?? false;
+  const overrideStatus = submitter?.dataset.statusOverride;
+  const data = new FormData(conferenceForm);
+  const title = String(data.get('title') || '').trim();
+  if (!title) return;
+
+  const chosenStatus = overrideStatus || String(data.get('status') || 'published');
+  data.set('status', chosenStatus);
+
+  const tabs = collectConferenceTabs();
+  data.set('tabs', JSON.stringify(tabs));
+
+  if (imageState.conference && !data.get('coverImage')?.name) {
+    data.set('coverImage', imageState.conference);
+  }
+
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+  setButtonLoading(submitter, true, 'Saving...');
+
+  try {
+    let url = '/admin/api/conferences';
+    if (state.editingConferenceId) {
+      url = `/admin/api/conferences/${state.editingConferenceId}`;
+      data.append('_method', 'PUT');
+    }
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'X-CSRF-TOKEN': csrfToken || '',
+        'Accept': 'application/json',
+      },
+      body: data,
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      alert(err.message || 'Failed to save conference.');
+      return;
+    }
+
+    const result = await res.json().catch(() => ({}));
+    if (result?.data?.id) {
+      state.editingConferenceId = result.data.id;
+    }
+
+    await fetchConferencesFromDatabase();
+    if (keepEditorOpen) {
+      setActiveConferenceTab(null);
+      updateConferenceEditorUI();
+      refreshConferenceTabSummaries();
+      setConferenceView('editor');
+    } else {
+      setActiveConferenceTab(null);
+      updateConferenceEditorUI();
+      refreshConferenceTabSummaries();
+    }
+  } catch (err) {
+    console.error('Error saving conference:', err);
+    alert('Network error. Please try again.');
+  } finally {
+    setButtonLoading(submitter, false);
+  }
 }
 
 function startEditingConference(confId) {
@@ -2340,7 +2623,20 @@ function startEditingConference(confId) {
   if (conferenceForm.elements.location) conferenceForm.elements.location.value = conf.location || '';
   if (conferenceForm.elements.dates) conferenceForm.elements.dates.value = conf.dates || '';
   if (conferenceForm.elements.summary) conferenceForm.elements.summary.value = conf.summary || '';
-  if (conferenceForm.elements.body) conferenceForm.elements.body.value = conf.body || '';
+
+  // Set body / description
+  const bodyEl = conferenceForm.elements.body;
+  if (bodyEl) {
+    bodyEl.value = conf.body || '';
+    if (bodyEl._syncToVisual) bodyEl._syncToVisual();
+  }
+
+  // Load tabs
+  clearConferenceTabs();
+  if (Array.isArray(conf.tabs)) {
+    conf.tabs.forEach((tab) => addConferenceTab(tab));
+  }
+  setActiveConferenceTab(null);
 
   const confZone = document.querySelector('[data-upload-zone="conference"]');
   if (conf.coverImage && confZone?._applyImage) {
@@ -2357,54 +2653,15 @@ function startEditingConference(confId) {
 function cancelEditingConference() {
   state.editingConferenceId = null;
   conferenceForm?.reset();
+  clearConferenceTabs();
   document.querySelector('[data-upload-zone="conference"]')?._clearImage?.();
   updateConferenceEditorUI();
   setConferenceView('list');
 }
 
-function handleConferenceSubmit(event) {
+async function handleConferenceSubmit(event) {
   event.preventDefault();
-  if (!conferenceForm) return;
-
-  const overrideStatus = event.submitter?.dataset.statusOverride;
-  const data = new FormData(conferenceForm);
-  const title = String(data.get('title') || '').trim();
-  const year = String(data.get('year') || '').trim();
-  if (!title) return;
-
-  const chosenStatus = overrideStatus || String(data.get('status') || 'published');
-
-  const confData = {
-    year: year,
-    title: title,
-    theme: String(data.get('theme') || '').trim(),
-    location: String(data.get('location') || '').trim(),
-    dates: String(data.get('dates') || '').trim(),
-    summary: String(data.get('summary') || '').trim(),
-    body: String(data.get('body') || '').trim(),
-    status: chosenStatus,
-    coverImage: imageState.conference || null,
-  };
-
-  if (state.editingConferenceId) {
-    const idx = state.conferences.findIndex((c) => String(c.id) === String(state.editingConferenceId));
-    if (idx >= 0) {
-      state.conferences[idx] = { ...state.conferences[idx], ...confData };
-    }
-    state.editingConferenceId = null;
-  } else {
-    const newConf = {
-      id: `conf-${Date.now()}`,
-      ...confData,
-    };
-    state.conferences = [newConf, ...state.conferences];
-  }
-
-  saveConferences();
-  conferenceForm.reset();
-  document.querySelector('[data-upload-zone="conference"]')?._clearImage?.();
-  renderConferences();
-  setConferenceView('list');
+  await saveConferenceFromEditor(event.submitter, { keepEditorOpen: false });
 }
 
 async function handleConferenceAction(event) {
@@ -2422,24 +2679,58 @@ async function handleConferenceAction(event) {
     return;
   }
 
-  const idx = state.conferences.findIndex((c) => String(c.id) === String(confId));
-  if (idx < 0) return;
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
   if (action === 'delete') {
-    const confirmed = await showConfirmModal('Delete Conference', 'Are you sure you want to delete this conference entry? This action cannot be undone.');
+    const confirmed = await showConfirmModal('Delete Conference', 'Are you sure you want to delete this conference? This action cannot be undone.');
     if (!confirmed) return;
-    if (String(state.editingConferenceId) === String(confId)) state.editingConferenceId = null;
-    state.conferences.splice(idx, 1);
-  } else if (action === 'publish') {
-    state.conferences[idx].status = 'published';
-  } else if (action === 'archive') {
-    state.conferences[idx].status = 'archived';
-  } else if (action === 'draft') {
-    state.conferences[idx].status = 'draft';
+    setButtonLoading(target, true, 'Deleting...');
+    try {
+      const res = await fetch(`/admin/api/conferences/${confId}`, {
+        method: 'DELETE',
+        headers: { 'X-CSRF-TOKEN': csrfToken || '', 'Accept': 'application/json' },
+      });
+      if (res.ok) {
+        if (String(state.editingConferenceId) === String(confId)) state.editingConferenceId = null;
+        await fetchConferencesFromDatabase();
+      } else {
+        alert('Failed to delete conference.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error deleting conference.');
+    } finally {
+      setButtonLoading(target, false);
+    }
+    return;
   }
 
-  saveConferences();
-  renderConferences();
+  const nextStatusMap = { publish: 'published', archive: 'archived', draft: 'draft' };
+  const nextStatus = nextStatusMap[action];
+  if (!nextStatus) return;
+
+  setButtonLoading(target, true, 'Updating...');
+  try {
+    const res = await fetch(`/admin/api/conferences/${confId}/status`, {
+      method: 'PATCH',
+      headers: {
+        'X-CSRF-TOKEN': csrfToken || '',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({ status: nextStatus }),
+    });
+    if (res.ok) {
+      await fetchConferencesFromDatabase();
+    } else {
+      alert('Failed to update conference status.');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Error updating conference status.');
+  } finally {
+    setButtonLoading(target, false);
+  }
 }
 
 function bindEvents() {
@@ -2529,10 +2820,38 @@ function bindEvents() {
   conferenceForm?.addEventListener('submit', handleConferenceSubmit);
   conferenceForm?.addEventListener('reset', () => {
     state.editingConferenceId = null;
+    clearConferenceTabs();
     window.setTimeout(updateConferenceEditorUI, 0);
   });
   conferenceCancelEdit?.addEventListener('click', cancelEditingConference);
   conferenceList?.addEventListener('click', handleConferenceAction);
+
+  document.querySelector('[data-add-conference-tab]')?.addEventListener('click', () => {
+    addConferenceTab();
+  });
+
+  // Auto-sync year & title inputs if empty
+  const confYearInput = conferenceForm?.elements.year;
+  const confTitleInput = conferenceForm?.elements.title;
+  if (confYearInput && confTitleInput) {
+    confYearInput.addEventListener('input', () => {
+      if (!state.editingConferenceId && (!confTitleInput.value || /^SPP\d{4}$/i.test(confTitleInput.value.trim()))) {
+        const val = confYearInput.value.trim();
+        if (/^\d{4}$/.test(val)) {
+          confTitleInput.value = `SPP${val}`;
+        }
+      }
+    });
+    confTitleInput.addEventListener('input', () => {
+      if (!state.editingConferenceId && !confYearInput.value) {
+        const val = confTitleInput.value.trim();
+        const m = val.match(/\b(20\d{2})\b/);
+        if (m) {
+          confYearInput.value = m[1];
+        }
+      }
+    });
+  }
 
   document.querySelectorAll('[data-news-filter]').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -2628,6 +2947,8 @@ setupRichEditorToolbars();
 updateActiveNavLink();
 fetchNewsFromDatabase();
 fetchActivitiesFromDatabase();
+fetchConferencesFromDatabase();
+updateConferenceTabsEmptyState();
 checkNewsDraft(null);
 
 setupImageUpload('news');

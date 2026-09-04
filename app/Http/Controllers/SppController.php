@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SppEvent;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,7 +14,29 @@ class SppController extends Controller
      */
     public function show(Request $request): View
     {
-        return view('spp');
+        $year = $request->query('year');
+        $slug = $request->query('slug');
+
+        $conferences = SppEvent::published()
+            ->orderBy('year', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $conference = null;
+
+        if ($year) {
+            $conference = $conferences->firstWhere('year', $year);
+        } elseif ($slug) {
+            $conference = $conferences->firstWhere('slug', $slug);
+        }
+
+        if (! $conference && $conferences->isNotEmpty()) {
+            $conference = $conferences->first();
+        }
+
+        $activeYear = $conference?->year ?: ($year ?: '2026');
+
+        return view('spp', compact('conference', 'conferences', 'activeYear'));
     }
 
     /**

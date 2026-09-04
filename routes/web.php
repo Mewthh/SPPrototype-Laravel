@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\Admin\ActivityController as AdminActivityController;
+use App\Http\Controllers\Admin\ConferenceController as AdminConferenceController;
 use App\Http\Controllers\Admin\HeroBannerController as AdminHeroBannerController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
@@ -58,6 +59,16 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::match(['put', 'patch'], '{activity}', [AdminActivityController::class, 'update'])->name('update');
         Route::delete('{activity}', [AdminActivityController::class, 'destroy'])->name('destroy');
         Route::patch('{activity}/status', [AdminActivityController::class, 'updateStatus'])->name('status');
+    });
+
+    Route::prefix('admin/api/conferences')->name('admin.api.conferences.')->group(function () {
+        Route::get('/', [AdminConferenceController::class, 'index'])->name('index');
+        Route::post('/', [AdminConferenceController::class, 'store'])->name('store');
+        Route::get('{conference}', [AdminConferenceController::class, 'show'])->name('show');
+        Route::post('{conference}', [AdminConferenceController::class, 'update'])->name('update.post');
+        Route::match(['put', 'patch'], '{conference}', [AdminConferenceController::class, 'update'])->name('update');
+        Route::delete('{conference}', [AdminConferenceController::class, 'destroy'])->name('destroy');
+        Route::patch('{conference}/status', [AdminConferenceController::class, 'updateStatus'])->name('status');
     });
 });
 
