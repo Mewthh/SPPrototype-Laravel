@@ -48,7 +48,7 @@
                 </button>
             </form>
 
-            <a class="btn-login-header" href="javascript:void(0)" aria-label="Log in">Log In</a>
+            <a class="btn-login-header" href="{{ route('login') }}" aria-label="Log in">Log In</a>
             <a class="btn-join-spp" href="#about">Join SPP</a>
 
             <details class="mobile-nav">
@@ -84,7 +84,7 @@
                         <a href="{{ route('spp.show', ['year' => '2026']) }}" id="mob-year-btn-2026"
                             class="year-menu-link">SPP2026</a>
                     </div>
-                    <a class="btn-login-header mobile" href="javascript:void(0)">Log In</a>
+                    <a class="btn-login-header mobile" href="{{ route('login') }}">Log In</a>
                     <a class="btn-join-spp mobile" href="#about">Join SPP</a>
 
                 </nav>

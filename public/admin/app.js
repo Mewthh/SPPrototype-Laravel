@@ -1828,7 +1828,7 @@ function showTableModal() {
   });
 }
 
-function showConfirmModal(title = 'Confirm Deletion', message = 'Are you sure you want to delete this item? This action cannot be undone.') {
+function showConfirmModal(title = 'Confirm Deletion', message = 'Are you sure you want to delete this item? This action cannot be undone.', confirmText = 'Delete', confirmButtonClass = 'button-danger') {
   return new Promise((resolve) => {
     let modal = document.getElementById('custom-confirm-modal');
     if (!modal) {
@@ -1860,6 +1860,10 @@ function showConfirmModal(title = 'Confirm Deletion', message = 'Are you sure yo
 
     if (titleEl) titleEl.textContent = title;
     if (messageEl) messageEl.textContent = message;
+    if (btnProceed) {
+      btnProceed.textContent = confirmText;
+      btnProceed.className = `button ${confirmButtonClass}`;
+    }
 
     const cleanup = (result) => {
       modal.classList.add('is-hidden');
@@ -2936,3 +2940,20 @@ conferenceForm?.addEventListener('reset', () => {
     document.querySelector('[data-upload-zone="conference"]')?._clearImage?.();
   }, 0);
 });
+
+// ─── Logout Confirmation ─────────────────────────────────────────────────────
+document.querySelectorAll('form[action*="logout"]').forEach((form) => {
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const confirmed = await showConfirmModal(
+      'Confirm Logout',
+      'Are you sure you want to log out of your session?',
+      'Log Out',
+      'button-danger'
+    );
+    if (confirmed) {
+      form.submit();
+    }
+  });
+});
+
