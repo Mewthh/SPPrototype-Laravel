@@ -2835,20 +2835,23 @@ html[data-theme="dark"] .theme-label-light {
 .conference-hero-banner {
     position: relative;
     min-height: 240px;
-    max-height: 400px;
-    background: var(--surface-soft);
+    max-height: 480px;
+    background: var(--surface-soft, rgba(0, 0, 0, 0.04));
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    padding: 12px;
 }
 
 .conference-hero-banner img {
-    width: 100%;
-    height: 100%;
-    max-height: 400px;
-    object-fit: cover;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    max-height: 460px;
+    object-fit: contain;
     object-position: center;
+    border-radius: calc(var(--radius-lg, 20px) - 6px);
 }
 
 .conference-hero-content {
@@ -2965,14 +2968,35 @@ html[data-theme="dark"] .theme-label-light {
 }
 
 .conference-tab-btn:hover {
-    background: var(--surface-soft);
+    background: var(--surface-soft, rgba(0, 0, 0, 0.05));
     color: var(--text);
 }
 
 .conference-tab-btn.active {
-    background: var(--accent);
+    background: #2563eb;
     color: #ffffff;
-    border-color: var(--accent);
+    border-color: #2563eb;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.conference-tab-btn.active span {
+    color: #ffffff;
+}
+
+html[data-theme="dark"] .conference-tab-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+}
+
+html[data-theme="dark"] .conference-tab-btn.active {
+    background: #3b82f6;
+    color: #ffffff;
+    border-color: #3b82f6;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+}
+
+html[data-theme="dark"] .conference-tab-btn.active span {
+    color: #ffffff;
 }
 
 .conference-main-panel {
@@ -3020,4 +3044,13 @@ html[data-theme="dark"] .theme-label-light {
     padding-left: 24px;
     display: grid;
     gap: 8px;
+}
+
+.conference-body-text img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: var(--radius-md, 12px);
+    box-shadow: var(--shadow);
+    margin: 12px 0;
 }
