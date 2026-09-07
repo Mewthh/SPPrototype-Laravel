@@ -43,6 +43,18 @@
 
 	<a class="skip-link" href="#main-content">Skip to content</a>
 
+	<!-- Global Floating Toast Notification (Center Top) -->
+	<div id="admin-floating-toast" class="floating-toast-container is-hidden" role="status" aria-live="polite">
+		<div class="floating-toast-card">
+			<span class="floating-toast-icon" aria-hidden="true">&#x2714;</span>
+			<div class="floating-toast-content">
+				<strong class="floating-toast-title">Success</strong>
+				<span class="floating-toast-message" id="admin-floating-toast-message">Saved successfully.</span>
+			</div>
+			<button type="button" class="floating-toast-close" id="admin-floating-toast-close" aria-label="Dismiss notification">&times;</button>
+		</div>
+	</div>
+
 	<div class="dashboard-shell">
 		<header class="mobile-topbar" data-mobile-header>
 			<div class="topbar-inner" style="justify-content: space-between;">
@@ -55,7 +67,9 @@
 				@auth
 					<form method="POST" action="{{ route('logout') }}" style="margin: 0;">
 						@csrf
-						<button type="submit" class="ghost-button" style="padding: 6px 12px; height: 36px; min-height: 36px; font-size: 0.8rem; color: var(--danger); border-color: rgba(220, 53, 69, 0.25);" aria-label="Log out">
+						<button type="submit" class="ghost-button"
+							style="padding: 6px 12px; height: 36px; min-height: 36px; font-size: 0.8rem; color: var(--danger); border-color: rgba(220, 53, 69, 0.25);"
+							aria-label="Log out">
 							<span>Log Out</span>
 						</button>
 					</form>
@@ -128,12 +142,16 @@
 
 			<div class="sidebar-footer">
 				@auth
-					<div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--surface-soft); border-radius: var(--radius-md); border: 1px solid var(--border); font-size: 0.85rem;">
+					<div
+						style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--surface-soft); border-radius: var(--radius-md); border: 1px solid var(--border); font-size: 0.85rem;">
 						<div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-							<div style="font-weight: 700; color: var(--accent-strong); font-size: 0.88rem;">{{ auth()->user()->name }}</div>
+							<div style="font-weight: 700; color: var(--accent-strong); font-size: 0.88rem;">
+								{{ auth()->user()->name }}
+							</div>
 							<div style="color: var(--muted); font-size: 0.78rem;">{{ auth()->user()->email }}</div>
 						</div>
-						<span style="background: #1b7a4c; color: #fff; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 2px 7px; border-radius: var(--radius-pill); letter-spacing: 0.04em;">Admin</span>
+						<span
+							style="background: #1b7a4c; color: #fff; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 2px 7px; border-radius: var(--radius-pill); letter-spacing: 0.04em;">Admin</span>
 					</div>
 				@endauth
 
@@ -145,8 +163,11 @@
 				@auth
 					<form method="POST" action="{{ route('logout') }}" style="margin: 0;">
 						@csrf
-						<button type="submit" class="ghost-button" style="color: var(--danger); border-color: rgba(220, 53, 69, 0.25);" aria-label="Log out of admin session">
-							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<button type="submit" class="ghost-button"
+							style="color: var(--danger); border-color: rgba(220, 53, 69, 0.25);"
+							aria-label="Log out of admin session">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+								stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 								<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
 								<polyline points="16 17 21 12 16 7"></polyline>
 								<line x1="21" y1="12" x2="9" y2="12"></line>
@@ -666,8 +687,8 @@
 						</label>
 
 						<label class="field-row">
-							<span>Conference Year</span>
-							<input type="text" name="year" placeholder="e.g. 2026" required />
+							<span>Conference Name / Year <small style="font-weight: 400; opacity: 0.6;">(e.g. 2027 or SPP2027)</small></span>
+							<input type="text" name="year" placeholder="e.g. 2027 or SPP2027" required />
 						</label>
 
 						<label class="field-row">
@@ -679,12 +700,12 @@
 
 						<label class="field-row">
 							<span>Theme / Subtitle</span>
-							<input type="text" name="theme" placeholder="e.g. Physics for Sustainable Development" />
+							<input type="text" name="theme" placeholder="e.g. Physics Conference" />
 						</label>
 
 						<label class="field-row">
 							<span>Location</span>
-							<input type="text" name="location" placeholder="e.g. Bohol, Philippines" />
+							<input type="text" name="location" placeholder="e.g. Los Banos, Laguna" />
 						</label>
 
 						<label class="field-row">
@@ -785,8 +806,7 @@
 									<button type="button" class="toolbar-btn" data-format="sup"
 										title="Superscript (^text^)" aria-label="Superscript">X<sup>2</sup></button>
 								</div>
-								<textarea name="body" rows="6"
-									placeholder="Detailed information about submission deadlines, registration, topics, and venue..."></textarea>
+								<textarea name="body" rows="6" placeholder="Type conference details here..."></textarea>
 							</div>
 						</div>
 
@@ -794,12 +814,21 @@
 						<div class="field-row field-row-wide conference-tabs-manager-wrap">
 							<div class="conference-tabs-header-bar">
 								<div>
-									<span class="field-label" style="font-size: 0.95rem; font-weight: 700; display: block;">Conference Sidebar Tabs</span>
-									<p style="font-size: 0.82rem; color: var(--muted); margin: 2px 0 0 0;">Add custom tab sections (e.g. Important Dates, Registration, Program, Venue) displayed on the public conference page sidebar.</p>
+									<span class="field-label"
+										style="font-size: 0.95rem; font-weight: 700; display: block;">Conference Sidebar
+										Tabs</span>
+									<p style="font-size: 0.82rem; color: var(--muted); margin: 2px 0 0 0;">Add custom
+										tab sections (e.g. Important Dates, Registration, Program, Venue) displayed on
+										the public conference page sidebar.</p>
 								</div>
 								<div class="conference-tabs-actions-bar">
 									<button type="button" class="btn-add-tab-primary" data-add-conference-tab>
-										<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+										<svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+											stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+											stroke-linejoin="round" aria-hidden="true">
+											<line x1="12" y1="5" x2="12" y2="19"></line>
+											<line x1="5" y1="12" x2="19" y2="12"></line>
+										</svg>
 										Add New Tab
 									</button>
 								</div>
@@ -807,6 +836,15 @@
 
 							<div class="conference-tabs-container" data-conference-tabs-container>
 								<!-- Tab items will be dynamically injected here -->
+							</div>
+
+							<div class="conference-tabs-toggle-wrap is-hidden" data-conference-tabs-toggle-wrap>
+								<button type="button" class="conference-tabs-toggle-btn" data-conference-tabs-toggle aria-expanded="false">
+									<span class="conference-tabs-toggle-text" data-conference-tabs-toggle-text>Show More Tabs</span>
+									<svg class="conference-tabs-toggle-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+										<polyline points="6 9 12 15 18 9"></polyline>
+									</svg>
+								</button>
 							</div>
 						</div>
 
@@ -987,8 +1025,8 @@
 	</div>
 
 	<!-- Floating Theme Toggle Button -->
-	<button class="theme-toggle floating-theme-toggle" type="button" data-theme-toggle
-		aria-label="Toggle theme mode" title="Toggle theme mode">
+	<button class="theme-toggle floating-theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme mode"
+		title="Toggle theme mode">
 		<span class="theme-icon theme-icon-moon" aria-hidden="true">&#x263E;</span>
 		<span class="theme-icon theme-icon-sun" aria-hidden="true">&#x2600;</span>
 		<span class="floating-theme-tooltip">

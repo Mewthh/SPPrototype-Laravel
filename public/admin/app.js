@@ -1881,6 +1881,7 @@ async function handleNewsSubmit(event) {
     clearNewsDraft(savedId);
     await fetchNewsFromDatabase();
     setNewsView('posts');
+    showFloatingToast(savedId ? `News post "${title}" updated successfully.` : `News post "${title}" published successfully.`);
   } catch (err) {
     console.error('Error saving news:', err);
     alert('An error occurred while saving the news post.');
@@ -2060,11 +2061,13 @@ async function handleActivitySubmit(event) {
       return;
     }
 
+    const savedActivityId = state.editingActivityId;
     state.editingActivityId = null;
     activityForm.reset();
     document.querySelector('[data-upload-zone="activity"]')?._clearImage?.();
     await fetchActivitiesFromDatabase();
     setActivityView('posts');
+    showFloatingToast(savedActivityId ? `Activity "${title}" updated successfully.` : `Activity "${title}" published successfully.`);
   } catch (err) {
     console.error('Error saving activity:', err);
     alert('An error occurred while saving the activity.');
@@ -2153,6 +2156,30 @@ async function handleActivityAction(event) {
     }
   }
 }
+
+// ─── Global Floating Center-Top Toast Notification ─────────────────────────
+let _floatingToastTimer = null;
+function showFloatingToast(message, title = 'Success') {
+  const toast = document.getElementById('admin-floating-toast');
+  const toastMsg = document.getElementById('admin-floating-toast-message');
+  const toastTitle = toast?.querySelector('.floating-toast-title');
+  if (!toast || !toastMsg) return;
+
+  if (toastTitle) toastTitle.textContent = title;
+  toastMsg.textContent = message;
+  toast.classList.remove('is-hidden');
+
+  if (_floatingToastTimer) window.clearTimeout(_floatingToastTimer);
+  _floatingToastTimer = window.setTimeout(() => {
+    toast.classList.add('is-hidden');
+  }, 4000);
+}
+
+document.getElementById('admin-floating-toast-close')?.addEventListener('click', () => {
+  const toast = document.getElementById('admin-floating-toast');
+  if (toast) toast.classList.add('is-hidden');
+  if (_floatingToastTimer) window.clearTimeout(_floatingToastTimer);
+});
 
 function setConferenceView(view) {
   if (conferenceViews.editor && conferenceViews.list) {
@@ -2292,11 +2319,53 @@ function renderConferences() {
 // ─── Conference Tabs Manager ──────────────────────────────────────────────────
 let _conferenceTabCounter = 0;
 let _activeConferenceTabId = null;
+let _conferenceTabsExpanded = false;
 
 function getConferenceTabExcerpt(content) {
   const plainText = String(content || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
   if (!plainText) return 'No content yet';
   return plainText.length > 110 ? `${plainText.slice(0, 110)}…` : plainText;
+}
+
+function updateConferenceTabsVisibility() {
+  const container = document.querySelector('[data-conference-tabs-container]');
+  const toggleWrap = document.querySelector('[data-conference-tabs-toggle-wrap]');
+  const toggleBtn = document.querySelector('[data-conference-tabs-toggle]');
+  const toggleText = document.querySelector('[data-conference-tabs-toggle-text]');
+  if (!container) return;
+
+  const items = Array.from(container.querySelectorAll('.conference-tab-item'));
+  const totalTabs = items.length;
+
+  // When editing a specific tab, that tab is visible and other tabs are hidden
+  if (_activeConferenceTabId !== null) {
+    if (toggleWrap) toggleWrap.classList.add('is-hidden');
+    return;
+  }
+
+  // When not editing a tab, show only 2 at a time unless expanded
+  const limit = 2;
+  items.forEach((tabEl, index) => {
+    if (!_conferenceTabsExpanded && index >= limit) {
+      tabEl.classList.add('is-hidden');
+    } else {
+      tabEl.classList.remove('is-hidden');
+    }
+  });
+
+  if (toggleWrap && toggleBtn && toggleText) {
+    if (totalTabs > limit) {
+      toggleWrap.classList.remove('is-hidden');
+      toggleBtn.classList.toggle('is-expanded', _conferenceTabsExpanded);
+      toggleBtn.setAttribute('aria-expanded', _conferenceTabsExpanded ? 'true' : 'false');
+      const hiddenCount = totalTabs - limit;
+      toggleText.textContent = _conferenceTabsExpanded
+        ? 'Show Less'
+        : `Show More (${hiddenCount} more)`;
+    } else {
+      toggleWrap.classList.add('is-hidden');
+    }
+  }
 }
 
 function updateConferenceTabView(tabEl, isActive) {
@@ -2337,6 +2406,8 @@ function refreshConferenceTabSummaries() {
   } else {
     items.forEach((tabEl) => updateConferenceTabView(tabEl, false));
   }
+
+  updateConferenceTabsVisibility();
 }
 
 function setActiveConferenceTab(tabId = null) {
@@ -2346,10 +2417,12 @@ function setActiveConferenceTab(tabId = null) {
 
 function updateConferenceTabsEmptyState() {
   const container = document.querySelector('[data-conference-tabs-container]');
+  const toggleWrap = document.querySelector('[data-conference-tabs-toggle-wrap]');
   if (!container) return;
   const items = container.querySelectorAll('.conference-tab-item');
   const existingEmpty = container.querySelector('.conference-tabs-empty');
   if (items.length === 0) {
+    if (toggleWrap) toggleWrap.classList.add('is-hidden');
     if (!existingEmpty) {
       const emptyDiv = document.createElement('div');
       emptyDiv.className = 'conference-tabs-empty';
@@ -2371,6 +2444,7 @@ function updateConferenceTabsEmptyState() {
       const badge = item.querySelector('.conference-tab-badge');
       if (badge) badge.textContent = `Tab ${index + 1}`;
     });
+    updateConferenceTabsVisibility();
   }
 }
 
@@ -2497,6 +2571,7 @@ function clearConferenceTabs() {
   if (container) {
     container.innerHTML = '';
     _activeConferenceTabId = null;
+    _conferenceTabsExpanded = false;
     updateConferenceTabsEmptyState();
   }
 }
@@ -2598,10 +2673,18 @@ async function saveConferenceFromEditor(submitter, options = {}) {
       updateConferenceEditorUI();
       refreshConferenceTabSummaries();
       setConferenceView('editor');
+      showFloatingToast(`Tab in "${title}" saved successfully.`);
     } else {
-      setActiveConferenceTab(null);
+      const wasEditing = Boolean(state.editingConferenceId);
+      state.editingConferenceId = null;
+      conferenceForm.reset();
+      clearConferenceTabs();
+      document.querySelector('[data-upload-zone="conference"]')?._clearImage?.();
       updateConferenceEditorUI();
-      refreshConferenceTabSummaries();
+      setConferenceView('list');
+
+      showFloatingToast(wasEditing ? `Conference "${title}" updated successfully.` : `Conference "${title}" created successfully.`);
+      document.querySelector('#conferences-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   } catch (err) {
     console.error('Error saving conference:', err);
@@ -2827,7 +2910,13 @@ function bindEvents() {
   conferenceList?.addEventListener('click', handleConferenceAction);
 
   document.querySelector('[data-add-conference-tab]')?.addEventListener('click', () => {
+    _conferenceTabsExpanded = true;
     addConferenceTab();
+  });
+
+  document.querySelector('[data-conference-tabs-toggle]')?.addEventListener('click', () => {
+    _conferenceTabsExpanded = !_conferenceTabsExpanded;
+    updateConferenceTabsVisibility();
   });
 
   // Auto-sync year & title inputs if empty
@@ -3135,7 +3224,7 @@ document.querySelector('[data-hero-banner-form]')?.addEventListener('submit', as
       if (userHeroBannerTitle) {
         userHeroBannerTitle.style.display = 'none';
       }
-      alert('Hero Banner and link destination saved successfully!');
+      showFloatingToast('Hero Banner and link destination saved successfully!');
     } else {
       alert(data.message || 'Failed to save hero banner.');
     }
@@ -3179,7 +3268,7 @@ document.querySelector('[data-hero-banner-reset]')?.addEventListener('click', as
       if (bannerNewTabCheckbox) bannerNewTabCheckbox.checked = false;
       updateBannerLinkVisibility();
 
-      alert('Hero Banner removed. Website title will be displayed.');
+      showFloatingToast('Hero Banner removed. Website title will be displayed.');
     } else {
       alert('Failed to reset hero banner.');
     }

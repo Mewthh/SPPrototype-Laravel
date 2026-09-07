@@ -1,5 +1,8 @@
 @php
-    $confTitle = $conference ? "SPP{$conference->year}: {$conference->title} | Samahang Pisika ng Pilipinas" : 'SPP | Samahang Pisika ng Pilipinas';
+    $confYear = trim($conference->year ?? '');
+    $formattedBadge = preg_match('/^spp/i', $confYear) ? strtoupper($confYear) : ($confYear ? "SPP {$confYear}" : 'SPP');
+    $formattedHeaderCode = preg_match('/^spp/i', $confYear) ? strtoupper($confYear) : ($confYear ? "SPP{$confYear}" : 'SPP');
+    $confTitle = $conference ? "{$formattedHeaderCode}: {$conference->title} | Samahang Pisika ng Pilipinas" : 'SPP | Samahang Pisika ng Pilipinas';
     $confDesc = $conference ? ($conference->summary ?: Str::limit(strip_tags($conference->description), 150)) : "Samahang Pisika ng Pilipinas (SPP) Conference {$activeYear}";
     $tabs = $conference && is_array($conference->tabs) ? $conference->tabs : [];
 @endphp
@@ -15,7 +18,7 @@
                 @endif
                 <div class="conference-hero-content">
                     <div class="conference-meta-row">
-                        <span class="conference-badge">SPP {{ $conference->year }}</span>
+                        <span class="conference-badge">{{ $formattedBadge }}</span>
                         @if($conference->location)
                             <span class="card-meta-line">&#x1F4CD; {{ $conference->location }}</span>
                         @endif
@@ -123,8 +126,19 @@
                     <a href="{{ route('home') }}" class="button button-primary">&larr; Back to Home</a>
                     @if(isset($conferences) && $conferences->isNotEmpty())
                         @foreach($conferences->take(3) as $c)
+                            @php
+                                $cYear = trim($c->year ?? '');
+                                $cTitle = trim($c->title ?? '');
+                                if (preg_match('/^spp\s*(\d{4}|\w+)/i', $cTitle, $m)) {
+                                    $cBtnLabel = 'SPP' . $m[1];
+                                } elseif (!empty($cYear)) {
+                                    $cBtnLabel = preg_match('/^spp/i', $cYear) ? strtoupper($cYear) : 'SPP' . $cYear;
+                                } else {
+                                    $cBtnLabel = preg_match('/^spp/i', $cTitle) ? $cTitle : 'SPP ' . $cTitle;
+                                }
+                            @endphp
                             <a href="{{ route('spp.show', ['year' => $c->year ?? $c->title]) }}" class="button button-secondary">
-                                SPP{{ $c->year ?? $c->title }}
+                                {{ $cBtnLabel }}
                             </a>
                         @endforeach
                     @endif
