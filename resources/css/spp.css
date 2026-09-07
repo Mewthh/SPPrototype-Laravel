@@ -2620,7 +2620,7 @@ html[data-theme="dark"] .mobile-nav-years button.active {
 }
 
 .article-body img {
-    max-width: 100%;
+    max-width: 65%;
     height: auto;
     object-fit: contain;
     display: block;
@@ -3047,10 +3047,21 @@ html[data-theme="dark"] .conference-tab-btn.active span {
 }
 
 .conference-body-text img {
-    max-width: 100%;
+    max-width: 65%;
     height: auto;
     object-fit: contain;
     border-radius: var(--radius-md, 12px);
     box-shadow: var(--shadow);
-    margin: 12px 0;
+    margin: 12px auto;
+    display: block;
+}
+
+.conference-body-text a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.conference-body-text a:hover {
+    color: var(--accent-strong);
 }

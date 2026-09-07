@@ -1402,6 +1402,98 @@ html[data-theme="dark"] .image-upload-zone.is-drag-over {
   pointer-events: none;
 }
 
+/* Upload in-progress placeholder */
+.rich-editor-img-placeholder {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px 6px 10px;
+  background: var(--surface-strong);
+  border: 1px dashed var(--border);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  vertical-align: middle;
+  margin: 4px 2px;
+  user-select: none;
+  cursor: default;
+}
+
+.rich-editor-img-spinner {
+  width: 13px;
+  height: 13px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent, #3b82f6);
+  border-radius: 50%;
+  animation: rte-spin 0.65s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes rte-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Image toolbar button loading state */
+.toolbar-btn.is-loading {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* Images — constrained column with hover-reveal remove button */
+.rich-editor-img-wrap {
+  display: inline-block;
+  position: relative;
+  max-width: 25%;
+  margin: 6px 6px 6px 0;
+  vertical-align: top;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.rich-editor-img-wrap img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.rich-editor-img-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(15, 15, 15, 0.72);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease;
+  backdrop-filter: blur(2px);
+}
+
+.rich-editor-img-wrap:hover .rich-editor-img-remove {
+  opacity: 1;
+}
+
+.rich-editor-img-remove:hover {
+  background: rgba(220, 38, 38, 0.9);
+}
+
+/* Links in the visual editor */
+.rich-editor-visual a {
+  color: var(--accent-strong, #3b82f6);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 /* Table inserted via the toolbar */
 .rich-editor-visual .rich-editor-table,
 .rich-editor-visual table {

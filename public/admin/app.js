@@ -789,14 +789,39 @@ function handleEditorImageUpload(textarea, visualEditor = null) {
     const file = fileInput.files[0];
     fileInput.remove();
 
+    const alt = file.name.replace(/\.[^/.]+$/, '');
+    const isVisual = visualEditor && visualEditor.style.display !== 'none';
+
+    // Disable the image button for the duration of the upload
+    const wrap = (textarea.closest('[data-rich-editor]') || visualEditor?.closest('[data-rich-editor]'));
+    const imgBtn = wrap?.querySelector('[data-format="image"]');
+    if (imgBtn) { imgBtn.disabled = true; imgBtn.classList.add('is-loading'); }
+
+    // In visual mode: insert a spinner placeholder immediately at the cursor
+    let placeholderId = null;
+    if (isVisual) {
+      visualEditor.focus();
+      placeholderId = `img-ph-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      const placeholderHtml = `<span class="rich-editor-img-placeholder" id="${placeholderId}" contenteditable="false"><span class="rich-editor-img-spinner" aria-hidden="true"></span>Uploading image…</span>`;
+      document.execCommand('insertHTML', false, placeholderHtml);
+    }
+
     try {
       const data = await uploadMediaAsset(file);
-      const alt = file.name.replace(/\.[^/.]+$/, '');
       const markdownSnippet = `![${alt}](${data.url})`;
 
-      if (visualEditor && visualEditor.style.display !== 'none') {
-        visualEditor.focus();
-        document.execCommand('insertImage', false, data.url);
+      if (isVisual) {
+        // Swap the placeholder out for the real image wrap
+        const placeholder = document.getElementById(placeholderId);
+        if (placeholder) {
+          const safeAlt = alt.replace(/"/g, '&quot;');
+          const imgWrap = document.createElement('span');
+          imgWrap.className = 'rich-editor-img-wrap';
+          imgWrap.setAttribute('contenteditable', 'false');
+          imgWrap.innerHTML = `<img src="${data.url}" alt="${safeAlt}"><button class="rich-editor-img-remove" type="button" title="Remove image" aria-label="Remove image">&#x2715;</button>`;
+          placeholder.replaceWith(imgWrap);
+        }
+        visualEditor.dispatchEvent(new Event('input', { bubbles: true }));
       } else {
         const start = textarea.selectionStart ?? textarea.value.length;
         const end = textarea.selectionEnd ?? textarea.value.length;
@@ -805,7 +830,13 @@ function handleEditorImageUpload(textarea, visualEditor = null) {
         textarea.dispatchEvent(new Event('input', { bubbles: true }));
       }
     } catch (err) {
+      // Remove placeholder on failure so the editor stays clean
+      if (isVisual && placeholderId) {
+        document.getElementById(placeholderId)?.remove();
+      }
       alert('Failed to upload image: ' + err.message);
+    } finally {
+      if (imgBtn) { imgBtn.disabled = false; imgBtn.classList.remove('is-loading'); }
     }
   });
 
@@ -936,10 +967,19 @@ function applyMarkdownFormat(inputOrTextarea, format) {
     const newline = start > 0 && val[start - 1] !== '\n' ? '\n' : '';
     insertAtCursor(`${newline}\n---\n\n`, newline.length + 1, 3);
   } else if (format === 'link') {
-    const text = selected || 'link text';
-    const snippet = `[${text}](https://example.com)`;
-    el.value = val.substring(0, start) + snippet + val.substring(end);
-    const urlStart = start + text.length + 3;
+    showLinkModal(selected || '', '').then((result) => {
+      if (!result) return;
+      const { text, url } = result;
+      const snippet = `[${text}](${url})`;
+      const freshVal = el.value;
+      const freshStart = el.selectionStart ?? start;
+      const freshEnd = el.selectionEnd ?? end;
+      el.value = freshVal.substring(0, freshStart) + snippet + freshVal.substring(freshEnd);
+      el.setSelectionRange(freshStart, freshStart + snippet.length);
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+      el.focus();
+    });
+    return;
   } else if (format === 'image') {
     handleEditorImageUpload(el);
     return;
@@ -1116,12 +1156,34 @@ function setupRichEditorToolbars() {
       isSyncing = true;
       try {
         let raw = textarea.value || '';
-        let html = raw
+        // Convert markdown images and links BEFORE HTML-escaping so URLs stay intact.
+        // Store placeholders to survive the escaping pass, then restore them as real HTML.
+        const insertions = [];
+        let prep = raw
+          // ![alt](url) → placeholder (wrapped with remove button)
+          .replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, (_, alt, src) => {
+            const i = insertions.length;
+            const safeAlt = alt.replace(/"/g,'&quot;');
+            const safeSrc = src.replace(/"/g,'&quot;');
+            insertions.push(`<span class="rich-editor-img-wrap" contenteditable="false"><img src="${safeSrc}" alt="${safeAlt}"><button class="rich-editor-img-remove" type="button" title="Remove image" aria-label="Remove image">&#x2715;</button></span>`);
+            return `\x00img${i}\x00`;
+          })
+          // [text](url) → placeholder
+          .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, text, href) => {
+            const i = insertions.length;
+            insertions.push(`<a href="${href.replace(/"/g,'&quot;')}" target="_blank" rel="noopener noreferrer" style="color:var(--accent-strong,#3b82f6);text-decoration:underline;">${text}</a>`);
+            return `\x00a${i}\x00`;
+          });
+        // Now HTML-escape the remaining text safely
+        let html = prep
           .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          // Restore image/link placeholders as real HTML
+          .replace(/\x00(img|a)(\d+)\x00/g, (_, _tag, idx) => insertions[+idx] || '')
           .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
           .replace(/_([^_]+)_/g, '<em>$1</em>')
           .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-          .replace(/<u>([^<]+)<\/u>/g, '<u>$1</u>')
+          // <u>text</u> — after escaping becomes &lt;u&gt;text&lt;/u&gt;
+          .replace(/&lt;u&gt;([^&]+(?:&(?!lt;\/u&gt;)[^&]*)*?)&lt;\/u&gt;/gi, '<u>$1</u>')
           .replace(/==([^=]+)==/g, '<mark>$1</mark>')
           .replace(/~([^~]+)~/g, '<sub>$1</sub>')
           .replace(/\^([^^]+)\^/g, '<sup>$1</sup>')
@@ -1154,12 +1216,9 @@ function setupRichEditorToolbars() {
           return '\n' + [toRow(header), toRow(sep), ...body.map(toRow)].join('\n') + '\n';
         }
 
-        // Clone editor DOM so we can manipulate it safely
         const clone = visualEditor.cloneNode(true);
 
-        // Replace each <table> with its markdown equivalent as a text node
         clone.querySelectorAll('table').forEach((tbl) => {
-          // Find matching original table to extract text from live DOM
           const idx = Array.from(visualEditor.querySelectorAll('table'))
             .findIndex((t) => t.isEqualNode(tbl));
           const liveTable = visualEditor.querySelectorAll('table')[idx] || tbl;
@@ -1169,6 +1228,8 @@ function setupRichEditorToolbars() {
         });
 
         let html = clone.innerHTML;
+        // Strip upload placeholders entirely so they never bleed into saved markdown
+        html = html.replace(/<span[^>]*class="[^"]*rich-editor-img-placeholder[^"]*"[^>]*>[\s\S]*?<\/span>/gi, '');
         let raw = html
           .replace(/<div><br><\/div>/gi, '\n')
           .replace(/<div>/gi, '\n').replace(/<\/div>/gi, '')
@@ -1189,6 +1250,15 @@ function setupRichEditorToolbars() {
           .replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi, (_, inner) => '\n> ' + inner.trim() + '\n')
           .replace(/<li[^>]*>(.*?)<\/li>/gi, '\n- $1')
           .replace(/<\/?(ul|ol|p)[^>]*>/gi, '\n')
+          .replace(/<img\b[^>]*>/gi, (match) => {
+            const srcM = match.match(/src="([^"]*)"/i);
+            const altM = match.match(/alt="([^"]*)"/i);
+            const src = srcM ? srcM[1] : '';
+            const alt = altM ? altM[1] : '';
+            return `![${alt}](${src})`;
+          })
+          // Strip remove-button content before generic tag stripping (avoids ✕ leaking into markdown)
+          .replace(/<button[^>]*class="[^"]*rich-editor-img-remove[^"]*"[^>]*>[\s\S]*?<\/button>/gi, '')
           .replace(/<a[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi, '[$2]($1)')
           .replace(/<[^>]+>/g, '')
           .replace(/&nbsp;/gi, ' ')
@@ -1287,6 +1357,17 @@ function setupRichEditorToolbars() {
     visualEditor.addEventListener('input', () => {
       syncToTextarea();
       updateFormatIndicators();
+    });
+
+    // Remove-image button (delegated — images are wrapped in .rich-editor-img-wrap)
+    visualEditor.addEventListener('click', (e) => {
+      if (e.target.closest('.rich-editor-img-remove')) {
+        const wrapper = e.target.closest('.rich-editor-img-wrap');
+        if (wrapper) {
+          wrapper.remove();
+          syncToTextarea();
+        }
+      }
     });
 
     ['keyup', 'mouseup', 'focus', 'click'].forEach((evt) => {
@@ -1425,11 +1506,30 @@ function setupRichEditorToolbars() {
           }
           case 'link': {
             const sel = window.getSelection();
-            const linkText = (sel && !sel.isCollapsed) ? sel.toString() : 'link text';
-            const linkHtml = `<a href="https://example.com">${linkText}</a>`;
-            document.execCommand('insertHTML', false, linkHtml);
-            break;
+            const selectedText = (sel && !sel.isCollapsed) ? sel.toString() : '';
+            // Save caret/selection before the modal opens (it loses focus)
+            const savedRange = (sel && sel.rangeCount) ? sel.getRangeAt(0).cloneRange() : null;
+            showLinkModal(selectedText, '').then((result) => {
+              if (!result) return;
+              const { text, url } = result;
+              visualEditor.focus();
+              if (savedRange) {
+                const s = window.getSelection();
+                s.removeAllRanges();
+                s.addRange(savedRange);
+              }
+              const safeUrl = url.replace(/"/g, '&quot;');
+              const safeText = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+              const linkHtml = `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" style="color:var(--accent-strong,#3b82f6);text-decoration:underline;">${safeText}</a>`;
+              document.execCommand('insertHTML', false, linkHtml);
+              syncToTextarea();
+              updateFormatIndicators();
+            });
+            return; // async modal — skip the syncToTextarea below
           }
+          case 'image':
+            handleEditorImageUpload(textarea, visualEditor);
+            return; // async upload, skip the syncToTextarea below
           case 'footnote': {
             const existingFns = visualEditor.querySelectorAll('sup.footnote-ref');
             const nextFn = existingFns.length + 1;
@@ -1650,6 +1750,84 @@ function setButtonLoading(button, isLoading, text = 'Saving...') {
       delete button._origHtml;
     }
   }
+}
+
+/* ─── Link Insertion Modal ──────────────────────────────────────────────── */
+function showLinkModal(prefillText = '', prefillUrl = '') {
+  return new Promise((resolve) => {
+    let modal = document.getElementById('spp-link-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'spp-link-modal';
+      modal.className = 'confirm-modal-overlay is-hidden';
+      modal.setAttribute('role', 'dialog');
+      modal.setAttribute('aria-modal', 'true');
+      modal.setAttribute('aria-labelledby', 'link-modal-title');
+      modal.innerHTML = `
+        <div class="confirm-modal-card table-modal-card">
+          <div class="confirm-modal-icon" style="background:rgba(59,130,246,0.12);color:#3b82f6;" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </div>
+          <h3 class="confirm-modal-title" id="link-modal-title">Insert Link</h3>
+          <p class="confirm-modal-message">Enter the link text and URL below.</p>
+          <div style="display:flex;flex-direction:column;gap:12px;margin:0 0 20px;">
+            <label style="display:flex;flex-direction:column;gap:5px;text-align:left;">
+              <span style="font-size:0.8rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">Link Text</span>
+              <input id="link-modal-text" type="text" placeholder="e.g. Click here" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-strong);color:var(--text);font-size:0.9rem;outline:none;" />
+            </label>
+            <label style="display:flex;flex-direction:column;gap:5px;text-align:left;">
+              <span style="font-size:0.8rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">URL</span>
+              <input id="link-modal-url" type="url" placeholder="https://example.com" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-strong);color:var(--text);font-size:0.9rem;outline:none;" />
+            </label>
+          </div>
+          <div class="confirm-modal-actions">
+            <button type="button" class="button button-quiet" id="link-modal-cancel">Cancel</button>
+            <button type="button" class="button button-primary" id="link-modal-insert">Insert Link</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    const textInput = modal.querySelector('#link-modal-text');
+    const urlInput = modal.querySelector('#link-modal-url');
+    const btnCancel = modal.querySelector('#link-modal-cancel');
+    const btnInsert = modal.querySelector('#link-modal-insert');
+
+    textInput.value = prefillText;
+    urlInput.value = prefillUrl || 'https://';
+
+    function close(result) {
+      modal.classList.add('is-hidden');
+      btnCancel.replaceWith(btnCancel.cloneNode(true));
+      btnInsert.replaceWith(btnInsert.cloneNode(true));
+      urlInput.removeEventListener('keydown', onKeydown);
+      textInput.removeEventListener('keydown', onKeydown);
+      resolve(result);
+    }
+
+    function submit() {
+      const url = urlInput.value.trim();
+      const text = textInput.value.trim() || url;
+      if (!url || url === 'https://') { urlInput.focus(); return; }
+      close({ text, url });
+    }
+
+    function onKeydown(e) {
+      if (e.key === 'Enter') { e.preventDefault(); submit(); }
+      if (e.key === 'Escape') { e.preventDefault(); close(null); }
+    }
+
+    modal.querySelector('#link-modal-cancel').addEventListener('click', () => close(null));
+    modal.querySelector('#link-modal-insert').addEventListener('click', submit);
+    textInput.addEventListener('keydown', onKeydown);
+    urlInput.addEventListener('keydown', onKeydown);
+
+    modal.classList.remove('is-hidden');
+    // Focus appropriate field
+    if (prefillText) { urlInput.focus(); urlInput.select(); }
+    else { textInput.focus(); }
+  });
 }
 
 function showTableModal() {
