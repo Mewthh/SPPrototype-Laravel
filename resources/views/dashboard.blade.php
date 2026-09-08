@@ -1021,21 +1021,21 @@
 			<section class="panel editor-panel" id="downloads-section">
 				<!-- 1. Categories List View -->
 				<div class="panel-view" data-download-view="categories">
-					<div class="section-panel-head">
+					<div class="section-panel-head" style="align-items: center; margin-bottom: 16px;">
 						<div>
 							<p class="panel-kicker">Content & Documents</p>
-							<h2>Downloads Manager</h2>
+							<h2 style="margin: 0;">Downloads Manager</h2>
 						</div>
-						<div style="display: flex; gap: 10px; flex-wrap: wrap;">
-							<button type="button" class="button button-primary" data-download-add-category style="gap: 6px;">
+						<div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+							<button type="button" class="button button-primary" data-download-add-category style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
 								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-								Add Category
+								<span>Add Category</span>
 							</button>
 						</div>
 					</div>
 
 					<!-- Categories List View -->
-					<div class="downloads-admin-overview" style="margin-top: 24px; display: grid; gap: 20px;">
+					<div class="downloads-admin-overview" style="margin-top: 14px; display: grid; gap: 20px;">
 						<!-- Vertical Categories List (Without inner documents) -->
 						<div class="downloads-cat-list" data-download-categories-list style="display: grid; gap: 12px;">
 							<!-- Dynamically rendered via JS -->
@@ -1054,24 +1054,24 @@
 
 				<!-- 2. Solo Category Editor View (Opened when clicking Edit on a category) -->
 				<div class="panel-view is-hidden" data-download-view="category-editor">
-					<div class="section-panel-head">
+					<div class="section-panel-head" style="align-items: center; margin-bottom: 16px;">
 						<div>
 							<p class="panel-kicker">Downloads Category</p>
-							<h2 data-download-editing-cat-name>Edit Category</h2>
+							<h2 data-download-editing-cat-name style="margin: 0;">Edit Category</h2>
 						</div>
-						<div style="display: flex; gap: 10px; flex-wrap: wrap;">
-							<button type="button" class="button button-secondary" data-download-back-to-categories style="gap: 6px;">
+						<div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+							<button type="button" class="button button-secondary" data-download-back-to-categories style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
 								&larr; Back to All Categories
 							</button>
-							<button type="button" class="button button-primary" data-download-add-doc style="gap: 6px;">
+							<button type="button" class="button button-primary" data-download-add-doc style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
 								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-								Add Document
+								<span>Add Document</span>
 							</button>
 						</div>
 					</div>
 
 					<!-- The Solo Card for this Category -->
-					<div class="downloads-solo-card" style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow); margin-top: 20px;">
+					<div class="downloads-solo-card" style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow); margin-top: 14px;">
 						<div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
 							<div>
 								<span class="badge" style="background: rgba(37, 99, 235, 0.12); color: #2563eb; font-weight: 700; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px; display: inline-block; margin-bottom: 6px;">Category</span>
@@ -1150,7 +1150,7 @@
 							<span class="field-label">Document File Attachment</span>
 							<div class="image-upload-zone" id="download-doc-upload-zone" tabindex="0" role="button" aria-label="Click or drag a file to upload">
 								<div class="image-upload-placeholder">
-									<span class="upload-icon" aria-hidden="true">&#x1F4C1;</span>
+									<span class="upload-icon" aria-hidden="true" style="display: inline-flex; align-items: center; justify-content: center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><path d="M12 11v6"></path><path d="M9 14l3-3 3 3"></path></svg></span>
 									<span data-download-upload-hint>Click to upload document or drag &amp; drop</span>
 									<small>PDF, DOC, DOCX, ZIP, PNG &mdash; max 25 MB</small>
 								</div>

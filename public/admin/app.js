@@ -3663,7 +3663,7 @@ function renderDownloadCategoriesList() {
       row.className = 'downloads-cat-row';
       row.innerHTML = `
         <div class="downloads-cat-info">
-          <div class="downloads-cat-folder-icon" aria-hidden="true">&#x1F4C1;</div>
+          <div class="downloads-cat-folder-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg></div>
           <div class="downloads-cat-title-wrap">
             <span class="downloads-cat-name">${escapeHtml(cat.name)}</span>
             <span class="downloads-cat-meta">${docCount} ${docCount === 1 ? 'document' : 'documents'}</span>

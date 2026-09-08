@@ -716,21 +716,21 @@ main {
     justify-content: center;
     width: 100%;
     padding: 10px 16px;
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    background: #2563eb;
     color: #ffffff !important;
     font-size: 0.95rem;
     font-weight: 700;
     border-radius: 8px;
     text-decoration: none;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: none;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
 }
 
 .downloads-year-pill:hover {
-    transform: translateY(-2px);
-    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
-    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.45);
+    transform: translateY(-1px);
+    background: #1d4ed8;
+    box-shadow: none;
     color: #ffffff !important;
 }
 
@@ -745,13 +745,13 @@ html[data-theme="dark"] .downloads-directory-container {
 }
 
 html[data-theme="dark"] .downloads-year-pill {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+    background: #2563eb;
+    box-shadow: none;
 }
 
 html[data-theme="dark"] .downloads-year-pill:hover {
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.55);
+    background: #1d4ed8;
+    box-shadow: none;
 }
 
 /* ─── Downloads Header Button ─────────────────────────────────────────── */
