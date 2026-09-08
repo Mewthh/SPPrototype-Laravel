@@ -754,6 +754,178 @@ html[data-theme="dark"] .downloads-year-pill:hover {
     box-shadow: 0 6px 20px rgba(37, 99, 235, 0.55);
 }
 
+/* ─── Downloads Header Button ─────────────────────────────────────────── */
+.nav-link-btn,
+.mobile-nav-link-btn {
+    appearance: none;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.94rem;
+    font-weight: 600;
+    color: var(--text);
+    padding: 10px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease, transform 160ms ease;
+    text-align: left;
+}
+
+.desktop-nav .nav-link-btn {
+    min-height: 42px;
+}
+
+.nav-link-btn:hover,
+.nav-link-btn:focus-visible,
+.mobile-nav-link-btn:hover,
+.mobile-nav-link-btn:focus-visible {
+    background: var(--surface-soft);
+    outline: none;
+}
+
+html[data-theme="dark"] .nav-link-btn,
+html[data-theme="dark"] .mobile-nav-link-btn {
+    background: var(--surface);
+    color: var(--text);
+}
+
+/* ─── Downloads Modal Dialog ──────────────────────────────────────────── */
+.downloads-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    overflow-y: auto;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.22s ease, visibility 0.22s ease;
+}
+
+.downloads-modal-overlay.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.downloads-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.downloads-modal-card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 960px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl, 20px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+    transform: scale(1);
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.downloads-modal-overlay.is-hidden .downloads-modal-card {
+    transform: scale(0.96);
+}
+
+.downloads-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 24px 28px 18px;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+    background: var(--surface);
+}
+
+.downloads-modal-badge {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #2563eb;
+    background: rgba(37, 99, 235, 0.1);
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+}
+
+.downloads-modal-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+}
+
+.downloads-modal-subtitle {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.downloads-modal-close {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface-soft);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.downloads-modal-close:hover {
+    color: var(--text);
+    background: rgba(0, 0, 0, 0.08);
+    transform: scale(1.05);
+}
+
+html[data-theme="dark"] .downloads-modal-close:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.downloads-modal-body {
+    padding: 24px 28px;
+    overflow-y: auto;
+    flex: 1 1 auto;
+}
+
+.downloads-directory-container.modal-version {
+    background: transparent;
+    border: none;
+    padding: 0;
+    box-shadow: none;
+}
+
+.downloads-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 16px 28px;
+    border-top: 1px solid var(--border);
+    background: var(--surface-soft);
+}
+
+
 .about-layout {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -2750,13 +2922,16 @@ html[data-theme="dark"] .mobile-nav-years button.active {
 }
 
 .article-body img {
-    max-width: 65%;
+    max-width: 48%;
+    max-height: 380px;
+    width: auto;
     height: auto;
     object-fit: contain;
     display: block;
     margin: 16px auto;
     border-radius: var(--radius-md);
     border: 1px solid var(--border);
+    box-shadow: var(--shadow);
 }
 
 .article-body .footnotes {
@@ -3177,7 +3352,9 @@ html[data-theme="dark"] .conference-tab-btn.active span {
 }
 
 .conference-body-text img {
-    max-width: 65%;
+    max-width: 48%;
+    max-height: 380px;
+    width: auto;
     height: auto;
     object-fit: contain;
     border-radius: var(--radius-md, 12px);

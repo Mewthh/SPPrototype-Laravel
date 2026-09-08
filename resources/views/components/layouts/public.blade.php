@@ -49,6 +49,9 @@
 
     <x-public-footer />
     
+    <!-- Downloads Modal Dialog -->
+    <x-downloads-modal />
+
     <!-- Floating Theme Toggle Button -->
     <button class="theme-toggle floating-theme-toggle" type="button" data-theme-toggle
         aria-label="Toggle theme mode" title="Toggle theme mode">

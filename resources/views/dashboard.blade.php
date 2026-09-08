@@ -1019,221 +1019,154 @@
 			</section>
 
 			<section class="panel editor-panel" id="downloads-section">
-				<div class="panel-view">
+				<!-- 1. Categories List View -->
+				<div class="panel-view" data-download-view="categories">
 					<div class="section-panel-head">
 						<div>
 							<p class="panel-kicker">Content & Documents</p>
 							<h2>Downloads Manager</h2>
-							<p>Manage document categories, downloadable handbooks, advisories, and endorsements displayed on the user side.</p>
 						</div>
 						<div style="display: flex; gap: 10px; flex-wrap: wrap;">
-							<button type="button" class="button button-secondary" style="gap: 6px;">
+							<button type="button" class="button button-primary" data-download-add-category style="gap: 6px;">
 								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
 								Add Category
 							</button>
-							<button type="button" class="button button-primary" style="gap: 6px;">
+						</div>
+					</div>
+
+					<!-- Categories List View -->
+					<div class="downloads-admin-overview" style="margin-top: 24px; display: grid; gap: 20px;">
+						<!-- Vertical Categories List (Without inner documents) -->
+						<div class="downloads-cat-list" data-download-categories-list style="display: grid; gap: 12px;">
+							<!-- Dynamically rendered via JS -->
+						</div>
+
+						<!-- Categories Pagination / Show More / Show Less -->
+						<div class="queue-pagination" data-download-cat-pagination style="display: none;">
+							<span class="pagination-info" data-download-cat-pagination-info>Showing 3 categories</span>
+							<div class="queue-pagination-actions" style="display: flex; gap: 10px; align-items: center;">
+								<button type="button" class="button button-secondary" data-download-cat-load-more>Show More</button>
+								<button type="button" class="button button-secondary" data-download-cat-show-less style="display: none;">Show Less</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- 2. Solo Category Editor View (Opened when clicking Edit on a category) -->
+				<div class="panel-view is-hidden" data-download-view="category-editor">
+					<div class="section-panel-head">
+						<div>
+							<p class="panel-kicker">Downloads Category</p>
+							<h2 data-download-editing-cat-name>Edit Category</h2>
+						</div>
+						<div style="display: flex; gap: 10px; flex-wrap: wrap;">
+							<button type="button" class="button button-secondary" data-download-back-to-categories style="gap: 6px;">
+								&larr; Back to All Categories
+							</button>
+							<button type="button" class="button button-primary" data-download-add-doc style="gap: 6px;">
 								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
 								Add Document
 							</button>
 						</div>
 					</div>
 
-					<!-- Downloads Management Overview -->
-					<div class="downloads-admin-overview" style="margin-top: 24px; display: grid; gap: 24px;">
-						<!-- Directory Status Bar -->
-						<div style="display: flex; align-items: center; justify-content: space-between; background: var(--surface-soft); padding: 14px 18px; border-radius: var(--radius-md); border: 1px solid var(--border); flex-wrap: wrap; gap: 12px;">
-							<div style="display: flex; align-items: center; gap: 12px;">
-								<span style="display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; background: rgba(37, 99, 235, 0.12); color: #2563eb; font-weight: 700;">
-									<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-								</span>
-								<div>
-									<h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--text);">Active Downloads Directory</h4>
-									<p style="margin: 2px 0 0 0; font-size: 0.82rem; color: var(--muted);">5 document categories &bull; 19 document files configured for user downloads tab</p>
-								</div>
+					<!-- The Solo Card for this Category -->
+					<div class="downloads-solo-card" style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow); margin-top: 20px;">
+						<div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+							<div>
+								<span class="badge" style="background: rgba(37, 99, 235, 0.12); color: #2563eb; font-weight: 700; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px; display: inline-block; margin-bottom: 6px;">Category</span>
+								<h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--text);" data-download-solo-cat-title>Category Title</h3>
+								<p style="margin: 4px 0 0; font-size: 0.85rem; color: var(--muted);"><span data-download-solo-cat-count>0</span> documents attached</p>
 							</div>
 							<div style="display: flex; gap: 8px;">
-								<span class="badge" style="background: rgba(34, 197, 94, 0.15); color: #16a34a; font-weight: 600; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem;">User Tab Controls Ready</span>
+								<button type="button" class="button button-secondary" data-download-rename-cat style="font-size: 0.84rem; padding: 6px 14px; min-height: 38px;">
+									Rename Category
+								</button>
+								<button type="button" class="button button-danger" data-download-delete-cat style="font-size: 0.84rem; padding: 6px 14px; min-height: 38px;">
+									Delete Category
+								</button>
 							</div>
 						</div>
 
-						<!-- Admin Categories & Download Items Grid (3 Columns matching reference photo) -->
-						<div class="admin-downloads-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-							<!-- Category Column 1: Conference Handbooks -->
-							<div class="admin-download-cat-card" style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; box-shadow: var(--shadow-sm);">
-								<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
-									<div>
-										<h3 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text);">Conference Handbooks</h3>
-										<span style="font-size: 0.78rem; color: var(--muted);">12 document files</span>
-									</div>
-									<div style="display: flex; gap: 4px;">
-										<button type="button" class="item-action" title="Edit Category Title" style="padding: 4px 8px; font-size: 0.75rem;">Edit</button>
-										<button type="button" class="item-action danger" title="Delete Category" style="padding: 4px 8px; font-size: 0.75rem;">Delete</button>
-									</div>
-								</div>
-
-								<!-- Year Pills List -->
-								<div style="display: flex; flex-direction: column; gap: 8px; max-height: 360px; overflow-y: auto; padding-right: 4px;">
-									@foreach(['2026', '2025', '2024', '2023', '2022', '2021', '2020', '2019', '2018', '2017', '2016', '2015'] as $year)
-										<div class="admin-pill-item" style="display: flex; align-items: center; justify-content: space-between; background: var(--surface-soft); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border);">
-											<div style="display: flex; align-items: center; gap: 10px;">
-												<span style="background: #2563eb; color: #fff; font-weight: 700; font-size: 0.85rem; padding: 4px 14px; border-radius: 6px; display: inline-block;">{{ $year }}</span>
-												<span style="font-size: 0.82rem; color: var(--text-muted);">Handbook_{{ $year }}.pdf</span>
-											</div>
-											<div style="display: flex; gap: 6px;">
-												<button type="button" class="item-action" style="padding: 2px 6px; font-size: 0.72rem;">Edit</button>
-												<button type="button" class="item-action danger" style="padding: 2px 6px; font-size: 0.72rem;">&times;</button>
-											</div>
-										</div>
-									@endforeach
-								</div>
-								<button type="button" class="button button-quiet" style="width: 100%; margin-top: 14px; font-size: 0.82rem; padding: 8px; border: 1px dashed var(--border);">+ Add Handbook Year</button>
-							</div>
-
-							<!-- Category Column 2: Backdrops for Online Talks -->
-							<div class="admin-download-cat-card" style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; box-shadow: var(--shadow-sm);">
-								<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
-									<div>
-										<h3 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text);">Backdrops for Online Talks</h3>
-										<span style="font-size: 0.78rem; color: var(--muted);">2 document files</span>
-									</div>
-									<div style="display: flex; gap: 4px;">
-										<button type="button" class="item-action" style="padding: 4px 8px; font-size: 0.75rem;">Edit</button>
-										<button type="button" class="item-action danger" style="padding: 4px 8px; font-size: 0.75rem;">Delete</button>
-									</div>
-								</div>
-
-								<div style="display: flex; flex-direction: column; gap: 8px;">
-									@foreach(['2021', '2020'] as $year)
-										<div class="admin-pill-item" style="display: flex; align-items: center; justify-content: space-between; background: var(--surface-soft); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border);">
-											<div style="display: flex; align-items: center; gap: 10px;">
-												<span style="background: #2563eb; color: #fff; font-weight: 700; font-size: 0.85rem; padding: 4px 14px; border-radius: 6px; display: inline-block;">{{ $year }}</span>
-												<span style="font-size: 0.82rem; color: var(--text-muted);">Backdrop_{{ $year }}.png</span>
-											</div>
-											<div style="display: flex; gap: 6px;">
-												<button type="button" class="item-action" style="padding: 2px 6px; font-size: 0.72rem;">Edit</button>
-												<button type="button" class="item-action danger" style="padding: 2px 6px; font-size: 0.72rem;">&times;</button>
-											</div>
-										</div>
-									@endforeach
-								</div>
-								<button type="button" class="button button-quiet" style="width: 100%; margin-top: 14px; font-size: 0.82rem; padding: 8px; border: 1px dashed var(--border);">+ Add Backdrop File</button>
-							</div>
-
-							<!-- Category Column 3: Endorsements & Advisories -->
-							<div class="admin-download-cat-card" style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; box-shadow: var(--shadow-sm);">
-								<!-- Sub-Category: PASUC Endorsement -->
-								<div style="margin-bottom: 16px;">
-									<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-										<h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--text);">PASUC Endorsement</h4>
-										<button type="button" class="item-action" style="padding: 2px 6px; font-size: 0.72rem;">Edit</button>
-									</div>
-									<div class="admin-pill-item" style="display: flex; align-items: center; justify-content: space-between; background: var(--surface-soft); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border);">
-										<div style="display: flex; align-items: center; gap: 10px;">
-											<span style="background: #2563eb; color: #fff; font-weight: 700; font-size: 0.85rem; padding: 4px 14px; border-radius: 6px; display: inline-block;">2024</span>
-											<span style="font-size: 0.82rem; color: var(--text-muted);">PASUC_2024.pdf</span>
-										</div>
-										<button type="button" class="item-action danger" style="padding: 2px 6px; font-size: 0.72rem;">&times;</button>
-									</div>
-								</div>
-
-								<hr style="border: none; border-top: 1px dashed var(--border); margin: 14px 0;" />
-
-								<!-- Sub-Category: DepEd Advisory -->
-								<div style="margin-bottom: 16px;">
-									<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-										<h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--text);">DepEd Advisory</h4>
-										<button type="button" class="item-action" style="padding: 2px 6px; font-size: 0.72rem;">Edit</button>
-									</div>
-									<div style="display: flex; flex-direction: column; gap: 8px;">
-										@foreach(['2021', '2020'] as $year)
-											<div class="admin-pill-item" style="display: flex; align-items: center; justify-content: space-between; background: var(--surface-soft); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border);">
-												<div style="display: flex; align-items: center; gap: 10px;">
-													<span style="background: #2563eb; color: #fff; font-weight: 700; font-size: 0.85rem; padding: 4px 14px; border-radius: 6px; display: inline-block;">{{ $year }}</span>
-													<span style="font-size: 0.82rem; color: var(--text-muted);">DepEd_{{ $year }}.pdf</span>
-												</div>
-												<button type="button" class="item-action danger" style="padding: 2px 6px; font-size: 0.72rem;">&times;</button>
-											</div>
-										@endforeach
-									</div>
-								</div>
-
-								<hr style="border: none; border-top: 1px dashed var(--border); margin: 14px 0;" />
-
-								<!-- Sub-Category: CHEd Endorsement -->
-								<div>
-									<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-										<h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--text);">CHEd Endorsement</h4>
-										<button type="button" class="item-action" style="padding: 2px 6px; font-size: 0.72rem;">Edit</button>
-									</div>
-									<div style="display: flex; flex-direction: column; gap: 8px;">
-										@foreach(['2019', '2018'] as $year)
-											<div class="admin-pill-item" style="display: flex; align-items: center; justify-content: space-between; background: var(--surface-soft); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border);">
-												<div style="display: flex; align-items: center; gap: 10px;">
-													<span style="background: #2563eb; color: #fff; font-weight: 700; font-size: 0.85rem; padding: 4px 14px; border-radius: 6px; display: inline-block;">{{ $year }}</span>
-													<span style="font-size: 0.82rem; color: var(--text-muted);">CHEd_{{ $year }}.pdf</span>
-												</div>
-												<button type="button" class="item-action danger" style="padding: 2px 6px; font-size: 0.72rem;">&times;</button>
-											</div>
-										@endforeach
-									</div>
-								</div>
-							</div>
+						<!-- Vertical Documents List Inside This Category -->
+						<div class="downloads-doc-list" data-download-docs-list style="display: grid; gap: 10px;">
+							<!-- Dynamically populated documents -->
 						</div>
 
-						<!-- Document Upload & Form Control UI Box -->
-						<div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 24px; margin-top: 10px;">
-							<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
-								<div>
-									<h3 style="margin: 0; font-size: 1.1rem; font-weight: 700;">Add / Edit Download Document</h3>
-									<p style="margin: 2px 0 0 0; font-size: 0.85rem; color: var(--muted);">Upload a new file or configure download settings.</p>
-								</div>
-								<span class="badge" style="background: rgba(59, 130, 246, 0.12); color: #2563eb; font-weight: 600; font-size: 0.78rem; padding: 4px 10px; border-radius: 12px;">Document Form UI</span>
+						<!-- Documents Pagination / Show More / Show Less (Minimum 3 visible) -->
+						<div class="queue-pagination" data-download-doc-pagination style="display: none; margin-top: 18px;">
+							<span class="pagination-info" data-download-doc-pagination-info>Showing 3 of 12 documents</span>
+							<div class="queue-pagination-actions" style="display: flex; gap: 10px; align-items: center;">
+								<button type="button" class="button button-secondary" data-download-doc-load-more>Show More</button>
+								<button type="button" class="button button-secondary" data-download-doc-show-less style="display: none;">Show Less</button>
 							</div>
-
-							<form class="compose-form" onsubmit="return false;">
-								<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-									<label class="field-row">
-										<span>Target Category</span>
-										<select name="download_category">
-											<option value="1">Conference Handbooks</option>
-											<option value="2">Backdrops for Online Talks</option>
-											<option value="3">PASUC Endorsement</option>
-											<option value="4">DepEd Advisory</option>
-											<option value="5">CHEd Endorsement</option>
-											<option value="new">+ Add New Category...</option>
-										</select>
-									</label>
-
-									<label class="field-row">
-										<span>Year / Label Tag <small style="font-weight: 400; opacity: 0.6;">(e.g., 2026)</small></span>
-										<input type="text" name="download_year" placeholder="2026" />
-									</label>
-								</div>
-
-								<label class="field-row" style="margin-top: 12px;">
-									<span>Document Title / Display Name</span>
-									<input type="text" name="download_title" placeholder="e.g. SPP2026 Conference Handbook & Program" />
-								</label>
-
-								<div class="field-row field-row-wide" style="margin-top: 12px;">
-									<span class="field-label">Document File Attachment (PDF, DOCX, ZIP, PNG)</span>
-									<div class="image-upload-zone" tabindex="0" role="button" aria-label="Click or drag a file to upload">
-										<div class="image-upload-placeholder">
-											<span class="upload-icon" aria-hidden="true">&#x1F4C1;</span>
-											<span>Click to upload document file or drag &amp; drop</span>
-											<small>PDF, DOC, DOCX, ZIP, PNG &mdash; max 25 MB</small>
-										</div>
-									</div>
-								</div>
-
-								<div style="display: flex; gap: 12px; margin-top: 20px;">
-									<button type="button" class="button button-primary">Save Document</button>
-									<button type="button" class="button button-secondary">Save as Draft</button>
-									<button type="button" class="button button-quiet">Cancel</button>
-								</div>
-							</form>
 						</div>
 					</div>
+				</div>
+
+				<!-- 3. Document Editor View (Activated when editing or adding a document) -->
+				<div class="panel-view is-hidden" data-download-view="doc-editor">
+					<div class="section-panel-head">
+						<div>
+							<p class="panel-kicker">Document Editor</p>
+							<h2 data-download-doc-editor-heading>Edit Document</h2>
+							<p>Update title, year tag, category destination, or file attachment.</p>
+						</div>
+						<div>
+							<button type="button" class="button button-secondary" data-download-doc-cancel-btn style="gap: 6px;">
+								Cancel
+							</button>
+						</div>
+					</div>
+
+					<form class="compose-form" data-download-doc-form onsubmit="return false;" style="margin-top: 20px;">
+						<div class="editor-status-banner" data-download-doc-banner>
+							<span data-download-doc-banner-text>Edit Document</span>
+						</div>
+
+						<input type="hidden" name="docId" value="" />
+						<input type="hidden" name="catId" value="" />
+
+						<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+							<label class="field-row">
+								<span>Target Category</span>
+								<select name="download_category" data-download-doc-cat-select required>
+									<!-- Populated from categories list -->
+								</select>
+							</label>
+
+							<label class="field-row">
+								<span>Year / Label Tag <small style="font-weight: 400; opacity: 0.6;">(e.g., 2026)</small></span>
+								<input type="text" name="download_year" data-download-doc-year placeholder="2026" required />
+							</label>
+						</div>
+
+						<label class="field-row">
+							<span>Document Title / Display Name</span>
+							<input type="text" name="download_title" data-download-doc-title placeholder="e.g. SPP2026 Conference Handbook & Program" required />
+						</label>
+
+						<div class="field-row field-row-wide">
+							<span class="field-label">Document File Attachment</span>
+							<div class="image-upload-zone" id="download-doc-upload-zone" tabindex="0" role="button" aria-label="Click or drag a file to upload">
+								<div class="image-upload-placeholder">
+									<span class="upload-icon" aria-hidden="true">&#x1F4C1;</span>
+									<span data-download-upload-hint>Click to upload document or drag &amp; drop</span>
+									<small>PDF, DOC, DOCX, ZIP, PNG &mdash; max 25 MB</small>
+								</div>
+								<input type="file" name="downloadFile" class="image-upload-input" data-download-doc-file-input aria-label="Upload document file" />
+							</div>
+							<div class="image-upload-actions is-hidden" data-download-file-actions style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding: 6px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px;">
+								<span data-download-attached-filename style="font-size: 0.85rem; font-weight: 600; color: var(--text);"></span>
+								<button type="button" class="item-action danger" data-download-clear-file style="font-size: 0.75rem; padding: 2px 8px;">Remove file</button>
+							</div>
+						</div>
+
+						<div class="form-actions">
+							<button type="button" class="button button-primary" data-download-doc-save-btn>Save Document</button>
+							<button type="button" class="button button-quiet" data-download-doc-cancel-btn>Cancel</button>
+						</div>
+					</form>
 				</div>
 			</section>
 

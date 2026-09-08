@@ -1924,23 +1924,24 @@ html[data-theme="dark"] .image-upload-zone.is-drag-over {
   font-weight: 600;
   color: var(--text);
   background: var(--surface, #ffffff);
-.btn-save-conference-tabs {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 6px 12px;
   outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  width: 32px;
-  height: 32px;
-  padding: 0;
+}
+
+.conference-tab-title-input:focus {
   border-color: var(--accent-strong, #0284c7);
   box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
 }
-  justify-content: center;
+
+.btn-save-conference-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .conference-tab-remove {
   background: transparent;
   border: 1px solid transparent;
@@ -1948,9 +1949,6 @@ html[data-theme="dark"] .image-upload-zone.is-drag-over {
   color: var(--danger, #ef4444);
   padding: 5px 8px;
   font-size: 0.82rem;
-.conference-tab-remove svg {
-  flex-shrink: 0;
-}
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
@@ -3140,5 +3138,95 @@ html[data-theme="dark"] .button-danger:hover {
 [data-add-conference-tab]:hover {
   transform: translateY(-1px);
 }
+
+/* ─── Downloads Admin Manager ─────────────────────────────────────────── */
+.downloads-cat-row,
+.downloads-doc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  gap: 16px;
+  transition: var(--transition);
+}
+
+.downloads-cat-row:hover,
+.downloads-doc-row:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+}
+
+.downloads-cat-info,
+.downloads-doc-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  flex: 1;
+}
+
+.downloads-doc-pill {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 4px 14px;
+  border-radius: 6px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.downloads-cat-folder-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.downloads-cat-title-wrap,
+.downloads-doc-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.downloads-cat-name,
+.downloads-doc-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--accent-strong);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.downloads-cat-meta,
+.downloads-doc-meta {
+  font-size: 0.82rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.downloads-cat-actions,
+.downloads-doc-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 
 

@@ -549,6 +549,47 @@ document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('spp-conference-main')) {
     initSppConference();
   }
+
+  // ─── Downloads Modal Handling ───────────────────────────────────────────────
+  const downloadsModal = document.getElementById('downloads-modal');
+  function openDownloadsModal() {
+    if (downloadsModal) {
+      downloadsModal.classList.remove('is-hidden');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeDownloadsModal() {
+    if (downloadsModal) {
+      downloadsModal.classList.add('is-hidden');
+      document.body.style.overflow = '';
+    }
+  }
+
+  document.addEventListener('click', (e) => {
+    const openBtn = e.target.closest('[data-open-downloads-modal]');
+    if (openBtn) {
+      e.preventDefault();
+      openDownloadsModal();
+      return;
+    }
+
+    const closeBtn = e.target.closest('[data-close-downloads-modal]');
+    if (closeBtn) {
+      e.preventDefault();
+      closeDownloadsModal();
+      return;
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && downloadsModal && !downloadsModal.classList.contains('is-hidden')) {
+      closeDownloadsModal();
+    }
+  });
+
+  window.openDownloadsModal = openDownloadsModal;
+  window.closeDownloadsModal = closeDownloadsModal;
 });
 
 // Export functions to global scope for backward-compatibility

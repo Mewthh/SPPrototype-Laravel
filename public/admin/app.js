@@ -3529,6 +3529,558 @@ conferenceForm?.addEventListener('reset', () => {
   }, 0);
 });
 
+// ─── Downloads Manager: Dynamic Categories & Solo Category Editor ────────────
+const DOWNLOADS_STORAGE_KEY = 'spp-admin-downloads-v1';
+
+const defaultDownloadCategories = [
+  {
+    id: 'cat-1',
+    name: 'Conference Handbooks',
+    docs: [
+      { id: 'doc-1', year: '2026', title: 'SPP2026 Conference Handbook', filename: 'Handbook_2026.pdf' },
+      { id: 'doc-2', year: '2025', title: 'SPP2025 Conference Handbook', filename: 'Handbook_2025.pdf' },
+      { id: 'doc-3', year: '2024', title: 'SPP2024 Conference Handbook', filename: 'Handbook_2024.pdf' },
+      { id: 'doc-4', year: '2023', title: 'SPP2023 Conference Handbook', filename: 'Handbook_2023.pdf' },
+      { id: 'doc-5', year: '2022', title: 'SPP2022 Conference Handbook', filename: 'Handbook_2022.pdf' },
+      { id: 'doc-6', year: '2021', title: 'SPP2021 Conference Handbook', filename: 'Handbook_2021.pdf' },
+      { id: 'doc-7', year: '2020', title: 'SPP2020 Conference Handbook', filename: 'Handbook_2020.pdf' },
+      { id: 'doc-8', year: '2019', title: 'SPP2019 Conference Handbook', filename: 'Handbook_2019.pdf' },
+      { id: 'doc-9', year: '2018', title: 'SPP2018 Conference Handbook', filename: 'Handbook_2018.pdf' },
+      { id: 'doc-10', year: '2017', title: 'SPP2017 Conference Handbook', filename: 'Handbook_2017.pdf' },
+      { id: 'doc-11', year: '2016', title: 'SPP2016 Conference Handbook', filename: 'Handbook_2016.pdf' },
+      { id: 'doc-12', year: '2015', title: 'SPP2015 Conference Handbook', filename: 'Handbook_2015.pdf' },
+    ],
+  },
+  {
+    id: 'cat-2',
+    name: 'Backdrops for Online Talks',
+    docs: [
+      { id: 'doc-13', year: '2021', title: 'SPP2021 Virtual Conference Backdrop', filename: 'Backdrop_2021.png' },
+      { id: 'doc-14', year: '2020', title: 'SPP2020 Virtual Conference Backdrop', filename: 'Backdrop_2020.png' },
+    ],
+  },
+  {
+    id: 'cat-3',
+    name: 'PASUC Endorsement',
+    docs: [
+      { id: 'doc-15', year: '2024', title: 'PASUC Advisory Endorsement 2024', filename: 'PASUC_2024.pdf' },
+    ],
+  },
+  {
+    id: 'cat-4',
+    name: 'DepEd Advisory',
+    docs: [
+      { id: 'doc-16', year: '2021', title: 'DepEd Advisory No. 042 s. 2021', filename: 'DepEd_2021.pdf' },
+      { id: 'doc-17', year: '2020', title: 'DepEd Advisory No. 018 s. 2020', filename: 'DepEd_2020.pdf' },
+    ],
+  },
+  {
+    id: 'cat-5',
+    name: 'CHEd Endorsement',
+    docs: [
+      { id: 'doc-18', year: '2019', title: 'CHEd Endorsement Letter 2019', filename: 'CHEd_2019.pdf' },
+      { id: 'doc-19', year: '2018', title: 'CHEd Endorsement Letter 2018', filename: 'CHEd_2018.pdf' },
+    ],
+  },
+];
+
+function loadDownloadData() {
+  try {
+    const raw = localStorage.getItem(DOWNLOADS_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) {
+    console.error('Failed to load downloads from storage', e);
+  }
+  return JSON.parse(JSON.stringify(defaultDownloadCategories));
+}
+
+function saveDownloadData(data) {
+  try {
+    localStorage.setItem(DOWNLOADS_STORAGE_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.error('Failed to save downloads to storage', e);
+  }
+}
+
+let downloadCategories = loadDownloadData();
+let downloadEditingCatId = null;
+let downloadCatVisibleCount = 3;
+let downloadDocVisibleCount = 3;
+
+const downloadViews = {
+  categories: document.querySelector('[data-download-view="categories"]'),
+  categoryEditor: document.querySelector('[data-download-view="category-editor"]'),
+  docEditor: document.querySelector('[data-download-view="doc-editor"]'),
+};
+
+const downloadCatListEl = document.querySelector('[data-download-categories-list]');
+const downloadDocsListEl = document.querySelector('[data-download-docs-list]');
+const downloadCatPaginationEl = document.querySelector('[data-download-cat-pagination]');
+const downloadCatPaginationInfo = document.querySelector('[data-download-cat-pagination-info]');
+const downloadCatLoadMoreBtn = document.querySelector('[data-download-cat-load-more]');
+const downloadCatShowLessBtn = document.querySelector('[data-download-cat-show-less]');
+
+const downloadDocPaginationEl = document.querySelector('[data-download-doc-pagination]');
+const downloadDocPaginationInfo = document.querySelector('[data-download-doc-pagination-info]');
+const downloadDocLoadMoreBtn = document.querySelector('[data-download-doc-load-more]');
+const downloadDocShowLessBtn = document.querySelector('[data-download-doc-show-less]');
+
+function setDownloadView(viewName) {
+  if (downloadViews.categories) downloadViews.categories.classList.toggle('is-hidden', viewName !== 'categories');
+  if (downloadViews.categoryEditor) downloadViews.categoryEditor.classList.toggle('is-hidden', viewName !== 'category-editor');
+  if (downloadViews.docEditor) downloadViews.docEditor.classList.toggle('is-hidden', viewName !== 'doc-editor');
+}
+
+function updateDownloadBadges() {
+  const totalCats = downloadCategories.length;
+  const totalDocs = downloadCategories.reduce((sum, cat) => sum + (cat.docs ? cat.docs.length : 0), 0);
+
+  document.querySelectorAll('[data-download-total-cats]').forEach((el) => (el.textContent = String(totalCats)));
+  document.querySelectorAll('[data-download-total-docs]').forEach((el) => (el.textContent = String(totalDocs)));
+  document.querySelectorAll('[data-downloads-count-badge]').forEach((el) => (el.textContent = String(totalDocs)));
+}
+
+function renderDownloadCategoriesList() {
+  if (!downloadCatListEl) return;
+  downloadCatListEl.innerHTML = '';
+
+  const total = downloadCategories.length;
+  const visible = downloadCategories.slice(0, downloadCatVisibleCount);
+
+  if (visible.length === 0) {
+    downloadCatListEl.innerHTML = `
+      <div style="text-align: center; padding: 36px 16px; background: var(--surface-soft); border-radius: var(--radius-md); border: 1px dashed var(--border); color: var(--muted);">
+        <p style="margin: 0;">No document categories found. Click "Add Category" to create one.</p>
+      </div>
+    `;
+  } else {
+    visible.forEach((cat) => {
+      const docCount = cat.docs ? cat.docs.length : 0;
+      const row = document.createElement('div');
+      row.className = 'downloads-cat-row';
+      row.innerHTML = `
+        <div class="downloads-cat-info">
+          <div class="downloads-cat-folder-icon" aria-hidden="true">&#x1F4C1;</div>
+          <div class="downloads-cat-title-wrap">
+            <span class="downloads-cat-name">${escapeHtml(cat.name)}</span>
+            <span class="downloads-cat-meta">${docCount} ${docCount === 1 ? 'document' : 'documents'}</span>
+          </div>
+        </div>
+        <div class="downloads-cat-actions">
+          <button type="button" class="item-action" data-download-open-cat="${cat.id}">Edit</button>
+          <button type="button" class="item-action danger" data-download-delete-cat-id="${cat.id}">Delete</button>
+        </div>
+      `;
+      downloadCatListEl.appendChild(row);
+    });
+  }
+
+  // Categories Pagination
+  if (downloadCatPaginationEl) {
+    if (total > 3) {
+      downloadCatPaginationEl.style.display = 'flex';
+      if (downloadCatPaginationInfo) {
+        downloadCatPaginationInfo.textContent = `Showing ${Math.min(downloadCatVisibleCount, total)} of ${total} categories`;
+      }
+      if (downloadCatLoadMoreBtn) {
+        downloadCatLoadMoreBtn.style.display = downloadCatVisibleCount < total ? '' : 'none';
+      }
+      if (downloadCatShowLessBtn) {
+        downloadCatShowLessBtn.style.display = downloadCatVisibleCount > 3 ? '' : 'none';
+      }
+    } else {
+      downloadCatPaginationEl.style.display = 'none';
+    }
+  }
+
+  updateDownloadBadges();
+}
+
+function openCategoryEditor(catId) {
+  const cat = downloadCategories.find((c) => c.id === catId);
+  if (!cat) return;
+
+  downloadEditingCatId = catId;
+  downloadDocVisibleCount = 3;
+
+  const headingEl = document.querySelector('[data-download-editing-cat-name]');
+  const soloTitleEl = document.querySelector('[data-download-solo-cat-title]');
+  if (headingEl) headingEl.textContent = `Edit Category: ${cat.name}`;
+  if (soloTitleEl) soloTitleEl.textContent = cat.name;
+
+  renderCategoryDocs();
+  setDownloadView('category-editor');
+}
+
+function renderCategoryDocs() {
+  if (!downloadDocsListEl) return;
+  downloadDocsListEl.innerHTML = '';
+
+  const cat = downloadCategories.find((c) => c.id === downloadEditingCatId);
+  if (!cat) return;
+
+  const docs = cat.docs || [];
+  const total = docs.length;
+
+  const countEl = document.querySelector('[data-download-solo-cat-count]');
+  if (countEl) countEl.textContent = String(total);
+
+  const visible = docs.slice(0, downloadDocVisibleCount);
+
+  if (visible.length === 0) {
+    downloadDocsListEl.innerHTML = `
+      <div style="text-align: center; padding: 32px 16px; background: var(--surface-soft); border-radius: var(--radius-md); border: 1px dashed var(--border); color: var(--muted);">
+        <p style="margin: 0 0 12px;">No documents in this category yet.</p>
+        <button type="button" class="button button-primary" data-download-add-doc>+ Add First Document</button>
+      </div>
+    `;
+  } else {
+    visible.forEach((doc) => {
+      const row = document.createElement('div');
+      row.className = 'downloads-doc-row';
+      row.innerHTML = `
+        <div class="downloads-doc-info">
+          <span class="downloads-doc-pill">${escapeHtml(doc.year || 'File')}</span>
+          <div class="downloads-doc-title-wrap">
+            <span class="downloads-doc-name">${escapeHtml(doc.title || doc.filename || 'Untitled Document')}</span>
+            <span class="downloads-doc-meta">${escapeHtml(doc.filename || 'Document File')}</span>
+          </div>
+        </div>
+        <div class="downloads-doc-actions">
+          <button type="button" class="item-action" data-download-edit-doc-id="${doc.id}">Edit</button>
+          <button type="button" class="item-action danger" data-download-delete-doc-id="${doc.id}">&times;</button>
+        </div>
+      `;
+      downloadDocsListEl.appendChild(row);
+    });
+  }
+
+  // Documents Pagination (Minimum 3, show more / show less)
+  if (downloadDocPaginationEl) {
+    if (total > 3) {
+      downloadDocPaginationEl.style.display = 'flex';
+      if (downloadDocPaginationInfo) {
+        downloadDocPaginationInfo.textContent = `Showing ${Math.min(downloadDocVisibleCount, total)} of ${total} documents`;
+      }
+      if (downloadDocLoadMoreBtn) {
+        downloadDocLoadMoreBtn.style.display = downloadDocVisibleCount < total ? '' : 'none';
+      }
+      if (downloadDocShowLessBtn) {
+        downloadDocShowLessBtn.style.display = downloadDocVisibleCount > 3 ? '' : 'none';
+      }
+    } else {
+      downloadDocPaginationEl.style.display = 'none';
+    }
+  }
+
+  updateDownloadBadges();
+}
+
+function openDocEditor(docId = null, preselectedCatId = null) {
+  const form = document.querySelector('[data-download-doc-form]');
+  if (!form) return;
+
+  const selectEl = form.querySelector('[data-download-doc-cat-select]');
+  if (selectEl) {
+    selectEl.innerHTML = '';
+    downloadCategories.forEach((cat) => {
+      const opt = document.createElement('option');
+      opt.value = cat.id;
+      opt.textContent = cat.name;
+      selectEl.appendChild(opt);
+    });
+  }
+
+  const headingEl = document.querySelector('[data-download-doc-editor-heading]');
+  const bannerTextEl = document.querySelector('[data-download-doc-banner-text]');
+  const docIdInput = form.querySelector('input[name="docId"]');
+  const catIdInput = form.querySelector('input[name="catId"]');
+  const yearInput = form.querySelector('[data-download-doc-year]');
+  const titleInput = form.querySelector('[data-download-doc-title]');
+  const fileActions = document.querySelector('[data-download-file-actions]');
+  const filenameLabel = document.querySelector('[data-download-attached-filename]');
+
+  const targetCatId = preselectedCatId || downloadEditingCatId || (downloadCategories[0] ? downloadCategories[0].id : '');
+
+  if (docId) {
+    // Edit existing doc
+    let foundDoc = null;
+    let foundCat = null;
+    for (const cat of downloadCategories) {
+      const d = (cat.docs || []).find((item) => item.id === docId);
+      if (d) {
+        foundDoc = d;
+        foundCat = cat;
+        break;
+      }
+    }
+
+    if (foundDoc && foundCat) {
+      if (headingEl) headingEl.textContent = `Edit Document: ${foundDoc.title || foundDoc.filename}`;
+      if (bannerTextEl) bannerTextEl.textContent = 'Editing Document';
+      if (docIdInput) docIdInput.value = foundDoc.id;
+      if (catIdInput) catIdInput.value = foundCat.id;
+      if (selectEl) selectEl.value = foundCat.id;
+      if (yearInput) yearInput.value = foundDoc.year || '';
+      if (titleInput) titleInput.value = foundDoc.title || '';
+
+      if (fileActions && filenameLabel) {
+        if (foundDoc.filename) {
+          filenameLabel.textContent = `Attached: ${foundDoc.filename}`;
+          fileActions.classList.remove('is-hidden');
+        } else {
+          fileActions.classList.add('is-hidden');
+        }
+      }
+    }
+  } else {
+    // Create new document
+    if (headingEl) headingEl.textContent = 'Add Download Document';
+    if (bannerTextEl) bannerTextEl.textContent = 'Add Document to Directory';
+    if (docIdInput) docIdInput.value = '';
+    if (catIdInput) catIdInput.value = targetCatId;
+    if (selectEl) selectEl.value = targetCatId;
+    if (yearInput) yearInput.value = new Date().getFullYear().toString();
+    if (titleInput) titleInput.value = '';
+    if (fileActions) fileActions.classList.add('is-hidden');
+  }
+
+  setDownloadView('doc-editor');
+}
+
+function saveDocFromForm() {
+  const form = document.querySelector('[data-download-doc-form]');
+  if (!form) return;
+
+  const docIdInput = form.querySelector('input[name="docId"]');
+  const selectEl = form.querySelector('[data-download-doc-cat-select]');
+  const yearInput = form.querySelector('[data-download-doc-year]');
+  const titleInput = form.querySelector('[data-download-doc-title]');
+  const fileInput = form.querySelector('[data-download-doc-file-input]');
+  const filenameLabel = document.querySelector('[data-download-attached-filename]');
+
+  const docId = docIdInput ? docIdInput.value : '';
+  const newCatId = selectEl ? selectEl.value : '';
+  const year = yearInput ? yearInput.value.trim() : '';
+  const title = titleInput ? titleInput.value.trim() : '';
+
+  if (!title) {
+    alert('Please enter a document title.');
+    titleInput?.focus();
+    return;
+  }
+
+  let filename = '';
+  if (fileInput && fileInput.files && fileInput.files[0]) {
+    filename = fileInput.files[0].name;
+  } else if (filenameLabel && filenameLabel.textContent.includes('Attached: ')) {
+    filename = filenameLabel.textContent.replace('Attached: ', '').trim();
+  } else {
+    filename = `${title.replace(/\s+/g, '_')}.pdf`;
+  }
+
+  if (docId) {
+    // Remove from old category if category changed
+    for (const cat of downloadCategories) {
+      const idx = (cat.docs || []).findIndex((d) => d.id === docId);
+      if (idx !== -1) {
+        cat.docs.splice(idx, 1);
+        break;
+      }
+    }
+  }
+
+  const targetCat = downloadCategories.find((c) => c.id === newCatId);
+  if (targetCat) {
+    if (!targetCat.docs) targetCat.docs = [];
+    const newDoc = {
+      id: docId || `doc-${Date.now()}`,
+      year: year || new Date().getFullYear().toString(),
+      title,
+      filename,
+    };
+    targetCat.docs.unshift(newDoc);
+  }
+
+  saveDownloadData(downloadCategories);
+
+  // Return to the category editor
+  downloadEditingCatId = newCatId;
+  openCategoryEditor(newCatId);
+}
+
+function initDownloadsManager() {
+  renderDownloadCategoriesList();
+
+  // Categories Pagination clicks
+  downloadCatLoadMoreBtn?.addEventListener('click', () => {
+    downloadCatVisibleCount += 3;
+    renderDownloadCategoriesList();
+  });
+  downloadCatShowLessBtn?.addEventListener('click', () => {
+    downloadCatVisibleCount = 3;
+    renderDownloadCategoriesList();
+    document.getElementById('downloads-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  // Docs Pagination clicks
+  downloadDocLoadMoreBtn?.addEventListener('click', () => {
+    downloadDocVisibleCount += 3;
+    renderCategoryDocs();
+  });
+  downloadDocShowLessBtn?.addEventListener('click', () => {
+    downloadDocVisibleCount = 3;
+    renderCategoryDocs();
+    document.getElementById('downloads-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  // Back button
+  document.querySelector('[data-download-back-to-categories]')?.addEventListener('click', () => {
+    downloadEditingCatId = null;
+    renderDownloadCategoriesList();
+    setDownloadView('categories');
+  });
+
+  // Add Category button
+  document.querySelector('[data-download-add-category]')?.addEventListener('click', () => {
+    const name = prompt('Enter name for the new category:');
+    if (name && name.trim()) {
+      const newCat = {
+        id: `cat-${Date.now()}`,
+        name: name.trim(),
+        docs: [],
+      };
+      downloadCategories.push(newCat);
+      saveDownloadData(downloadCategories);
+      renderDownloadCategoriesList();
+      openCategoryEditor(newCat.id);
+    }
+  });
+
+  // Rename category
+  document.querySelector('[data-download-rename-cat]')?.addEventListener('click', () => {
+    const cat = downloadCategories.find((c) => c.id === downloadEditingCatId);
+    if (!cat) return;
+    const newName = prompt('Enter new category name:', cat.name);
+    if (newName && newName.trim()) {
+      cat.name = newName.trim();
+      saveDownloadData(downloadCategories);
+      openCategoryEditor(cat.id);
+    }
+  });
+
+  // Delete category from solo view
+  document.querySelector('[data-download-delete-cat]')?.addEventListener('click', () => {
+    const cat = downloadCategories.find((c) => c.id === downloadEditingCatId);
+    if (!cat) return;
+    if (confirm(`Are you sure you want to delete the category "${cat.name}" and all its documents?`)) {
+      downloadCategories = downloadCategories.filter((c) => c.id !== cat.id);
+      saveDownloadData(downloadCategories);
+      downloadEditingCatId = null;
+      renderDownloadCategoriesList();
+      setDownloadView('categories');
+    }
+  });
+
+  // Open Document Editor (Add button)
+  document.querySelectorAll('[data-download-add-doc]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      openDocEditor(null, downloadEditingCatId);
+    });
+  });
+
+  // Document Editor Actions
+  document.querySelector('[data-download-doc-save-btn]')?.addEventListener('click', saveDocFromForm);
+  document.querySelectorAll('[data-download-doc-cancel-btn]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (downloadEditingCatId) {
+        setDownloadView('category-editor');
+      } else {
+        setDownloadView('categories');
+      }
+    });
+  });
+
+  // File upload input change
+  const fileInput = document.querySelector('[data-download-doc-file-input]');
+  const uploadZone = document.getElementById('download-doc-upload-zone');
+  const fileActions = document.querySelector('[data-download-file-actions]');
+  const filenameLabel = document.querySelector('[data-download-attached-filename]');
+  const clearFileBtn = document.querySelector('[data-download-clear-file]');
+
+  uploadZone?.addEventListener('click', () => fileInput?.click());
+  fileInput?.addEventListener('change', () => {
+    if (fileInput.files && fileInput.files[0]) {
+      const name = fileInput.files[0].name;
+      if (filenameLabel) filenameLabel.textContent = `Attached: ${name}`;
+      fileActions?.classList.remove('is-hidden');
+    }
+  });
+
+  clearFileBtn?.addEventListener('click', () => {
+    if (fileInput) fileInput.value = '';
+    if (filenameLabel) filenameLabel.textContent = '';
+    fileActions?.classList.add('is-hidden');
+  });
+
+  // Delegated clicks for Category and Document rows
+  document.addEventListener('click', (e) => {
+    // Open category edit
+    const openCatBtn = e.target.closest('[data-download-open-cat]');
+    if (openCatBtn) {
+      e.preventDefault();
+      const catId = openCatBtn.getAttribute('data-download-open-cat');
+      openCategoryEditor(catId);
+      return;
+    }
+
+    // Delete category from list
+    const delCatBtn = e.target.closest('[data-download-delete-cat-id]');
+    if (delCatBtn) {
+      e.preventDefault();
+      const catId = delCatBtn.getAttribute('data-download-delete-cat-id');
+      const cat = downloadCategories.find((c) => c.id === catId);
+      if (cat && confirm(`Are you sure you want to delete "${cat.name}"?`)) {
+        downloadCategories = downloadCategories.filter((c) => c.id !== catId);
+        saveDownloadData(downloadCategories);
+        renderDownloadCategoriesList();
+      }
+      return;
+    }
+
+    // Edit doc
+    const editDocBtn = e.target.closest('[data-download-edit-doc-id]');
+    if (editDocBtn) {
+      e.preventDefault();
+      const docId = editDocBtn.getAttribute('data-download-edit-doc-id');
+      openDocEditor(docId);
+      return;
+    }
+
+    // Delete doc
+    const delDocBtn = e.target.closest('[data-download-delete-doc-id]');
+    if (delDocBtn) {
+      e.preventDefault();
+      const docId = delDocBtn.getAttribute('data-download-delete-doc-id');
+      const cat = downloadCategories.find((c) => c.id === downloadEditingCatId);
+      if (cat) {
+        const doc = (cat.docs || []).find((d) => d.id === docId);
+        if (doc && confirm(`Delete document "${doc.title || doc.filename}"?`)) {
+          cat.docs = cat.docs.filter((d) => d.id !== docId);
+          saveDownloadData(downloadCategories);
+          renderCategoryDocs();
+        }
+      }
+      return;
+    }
+  });
+}
+
+initDownloadsManager();
+
 // ─── Logout Confirmation ─────────────────────────────────────────────────────
 document.querySelectorAll('form[action*="logout"]').forEach((form) => {
   form.addEventListener('submit', async (e) => {
@@ -3544,4 +4096,5 @@ document.querySelectorAll('form[action*="logout"]').forEach((form) => {
     }
   });
 });
+
 

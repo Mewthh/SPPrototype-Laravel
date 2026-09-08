@@ -24,7 +24,7 @@
                             Journal</a>
                     </div>
                 </div>
-                <a href="#downloads">Downloads</a>
+                <button type="button" class="nav-link-btn" data-open-downloads-modal aria-haspopup="dialog" aria-label="Open downloads directory">Downloads</button>
                 <a href="#about">About SPP</a>
                 <details class="year-menu">
                     <summary aria-label="Open conference year choices">&#x22EF;</summary>
@@ -120,7 +120,7 @@
                                 Journal</a>
                         </div>
                     </details>
-                    <a href="#downloads">Downloads</a>
+                    <button type="button" class="mobile-nav-link-btn" data-open-downloads-modal aria-haspopup="dialog" aria-label="Open downloads directory">Downloads</button>
                     <a href="#about">About SPP</a>
                     <div class="mobile-nav-years" aria-label="Conference year choices">
                         @foreach($topConfs as $c)
