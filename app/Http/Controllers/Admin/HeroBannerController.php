@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\News;
 use App\Models\Page;
+use App\Models\SppEvent;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -48,6 +49,23 @@ class HeroBannerController extends Controller
                     'date' => $item->event_date ? $item->event_date->format('M d, Y') : $item->created_at->format('M d, Y'),
                 ];
             });
+        $conferencePosts = SppEvent::query()
+            ->orderBy('event_date', 'desc')
+            ->orderBy('id', 'desc')
+            ->get(['id', 'year', 'title', 'slug', 'status', 'event_date', 'created_at'])
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'type' => 'conference',
+                    'title' => $item->title ?: ('SPP' . ($item->year ?? '')),
+                    'slug' => $item->slug,
+                    'year' => $item->year,
+                    'status' => $item->status,
+                    'date' => $item->event_date
+                        ? $item->event_date->format('M d, Y')
+                        : $item->created_at->format('M d, Y'),
+                ];
+            });
 
         return response()->json([
             'image_url' => $page ? $page->image_url : null,
@@ -61,6 +79,7 @@ class HeroBannerController extends Controller
             'available_posts' => [
                 'news' => $newsPosts,
                 'activities' => $activityPosts,
+                'conferences' => $conferencePosts,
             ],
         ]);
     }

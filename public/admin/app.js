@@ -1163,15 +1163,15 @@ function setupRichEditorToolbars() {
           // ![alt](url) → placeholder (wrapped with remove button)
           .replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, (_, alt, src) => {
             const i = insertions.length;
-            const safeAlt = alt.replace(/"/g,'&quot;');
-            const safeSrc = src.replace(/"/g,'&quot;');
+            const safeAlt = alt.replace(/"/g, '&quot;');
+            const safeSrc = src.replace(/"/g, '&quot;');
             insertions.push(`<span class="rich-editor-img-wrap" contenteditable="false"><img src="${safeSrc}" alt="${safeAlt}"><button class="rich-editor-img-remove" type="button" title="Remove image" aria-label="Remove image">&#x2715;</button></span>`);
             return `\x00img${i}\x00`;
           })
           // [text](url) → placeholder
           .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, text, href) => {
             const i = insertions.length;
-            insertions.push(`<a href="${href.replace(/"/g,'&quot;')}" target="_blank" rel="noopener noreferrer" style="color:var(--accent-strong,#3b82f6);text-decoration:underline;">${text}</a>`);
+            insertions.push(`<a href="${href.replace(/"/g, '&quot;')}" target="_blank" rel="noopener noreferrer" style="color:var(--accent-strong,#3b82f6);text-decoration:underline;">${text}</a>`);
             return `\x00a${i}\x00`;
           });
         // Now HTML-escape the remaining text safely
@@ -1494,8 +1494,8 @@ function setupRichEditorToolbars() {
 
               const tableHtml =
                 `<table class="rich-editor-table" style="border-collapse:collapse;width:100%;margin:8px 0;">` +
-                  `<thead><tr>${thCells}</tr></thead>` +
-                  `<tbody>${bodyRows}</tbody>` +
+                `<thead><tr>${thCells}</tr></thead>` +
+                `<tbody>${bodyRows}</tbody>` +
                 `</table><p><br></p>`;
 
               document.execCommand('insertHTML', false, tableHtml);
@@ -3245,37 +3245,108 @@ bannerLinkTypeSelect?.addEventListener('change', updateBannerLinkVisibility);
 
 function populateBannerPostsDropdown(selectedType, selectedId, selectedSlug) {
   if (!bannerPostSelect) return;
+
   bannerPostSelect.innerHTML = '<option value="">-- Choose a post --</option>';
 
+  // NEWS
   if (availableBannerPosts.news && availableBannerPosts.news.length > 0) {
     const newsGroup = document.createElement('optgroup');
-    newsGroup.label = 'News Articles';
+    newsGroup.label = 'News';
+
     availableBannerPosts.news.forEach((post) => {
       const opt = document.createElement('option');
+
       opt.value = `news:${post.id}`;
       opt.textContent = `${post.title} (${post.date || 'Recent'})`;
-      if (selectedType === 'news' && String(selectedId) === String(post.id)) {
+
+      if (
+        selectedType === 'news' &&
+        String(selectedId) === String(post.id)
+      ) {
         opt.selected = true;
       }
+
       newsGroup.appendChild(opt);
     });
+
     bannerPostSelect.appendChild(newsGroup);
   }
 
-  if (availableBannerPosts.activities && availableBannerPosts.activities.length > 0) {
-    const actGroup = document.createElement('optgroup');
-    actGroup.label = 'Activities & Events';
+  // ACTIVITIES
+  if (
+    availableBannerPosts.activities &&
+    availableBannerPosts.activities.length > 0
+  ) {
+    const activityGroup = document.createElement('optgroup');
+    activityGroup.label = 'Activities';
+
     availableBannerPosts.activities.forEach((post) => {
       const opt = document.createElement('option');
+
       opt.value = `activity:${post.id}`;
       opt.textContent = `${post.title} (${post.date || 'Upcoming'})`;
-      if (selectedType === 'activity' && String(selectedId) === String(post.id)) {
+
+      if (
+        selectedType === 'activity' &&
+        String(selectedId) === String(post.id)
+      ) {
         opt.selected = true;
       }
-      actGroup.appendChild(opt);
+
+      activityGroup.appendChild(opt);
     });
-    bannerPostSelect.appendChild(actGroup);
+
+    bannerPostSelect.appendChild(activityGroup);
   }
+
+  // CONFERENCE
+  if (
+    availableBannerPosts.conferences &&
+    availableBannerPosts.conferences.length > 0
+  ) {
+    const conferenceGroup = document.createElement('optgroup');
+    conferenceGroup.label = 'Conference';
+
+    availableBannerPosts.conferences.forEach((post) => {
+      const opt = document.createElement('option');
+
+      opt.value = `conference:${post.id}:${post.slug || post.year || ''}`;
+
+      opt.textContent =
+        `${post.title || `SPP${post.year || ''}`} ` +
+        `(${post.date || post.year || 'Conference'})`;
+
+      if (
+        selectedType === 'conference' &&
+        (
+          String(selectedId) === String(post.id) ||
+          String(selectedSlug) === String(post.slug) ||
+          String(selectedSlug) === String(post.year)
+        )
+      ) {
+        opt.selected = true;
+      }
+
+      conferenceGroup.appendChild(opt);
+    });
+
+    bannerPostSelect.appendChild(conferenceGroup);
+  }
+}
+
+if (availableBannerPosts.activities && availableBannerPosts.activities.length > 0) {
+  const actGroup = document.createElement('optgroup');
+  actGroup.label = 'Activities & Events';
+  availableBannerPosts.activities.forEach((post) => {
+    const opt = document.createElement('option');
+    opt.value = `activity:${post.id}`;
+    opt.textContent = `${post.title} (${post.date || 'Upcoming'})`;
+    if (selectedType === 'activity' && String(selectedId) === String(post.id)) {
+      opt.selected = true;
+    }
+    actGroup.appendChild(opt);
+  });
+  bannerPostSelect.appendChild(actGroup);
 }
 
 

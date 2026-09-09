@@ -5,7 +5,6 @@
             <div>
                 <span class="downloads-modal-badge"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: inline-block; vertical-align: -2px; margin-right: 4px;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg> Resources &amp; Documents</span>
                 <h2 class="downloads-modal-title" id="downloads-modal-title">Downloads Directory</h2>
-                <p class="downloads-modal-subtitle">Access official SPP conference handbooks, online talk backdrops, and institutional endorsements.</p>
             </div>
             <button type="button" class="downloads-modal-close" data-close-downloads-modal aria-label="Close downloads dialog">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
