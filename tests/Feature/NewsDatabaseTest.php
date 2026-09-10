@@ -162,7 +162,8 @@ test('public news page displays news detail by slug parameter or route', functio
     $responseRoute = $this->get(route('news.show', ['slug' => $news->slug]));
     $responseRoute->assertOk()
         ->assertSee('Annual Physics Assembly 2026')
-        ->assertSee('Paragraph 1 about assembly.');
+        ->assertSee('Paragraph 1 about assembly.')
+        ->assertSee('<main id="main-content" class="shell">', false);
 });
 
 test('public news page displays article not found for drafts or missing articles', function () {

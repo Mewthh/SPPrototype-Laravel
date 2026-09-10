@@ -1,11 +1,20 @@
+@props([
+    'title' => 'Samahang Pisika ng Pilipinas',
+    'description' => 'Samahang Pisika ng Pilipinas',
+])
+
+@php
+    $slot ??= '';
+@endphp
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="light">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{ $title ?? 'Samahang Pisika ng Pilipinas' }}</title>
-    <meta name="description" content="{{ $description ?? 'Samahang Pisika ng Pilipinas' }}" />
+    <title>{{ $title }}</title>
+    <meta name="description" content="{{ $description }}" />
 
     <link rel="icon" href="{{ asset('favicon.ico') }}" />
 
