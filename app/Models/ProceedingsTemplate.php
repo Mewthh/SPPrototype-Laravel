@@ -26,6 +26,7 @@ class ProceedingsTemplate extends Model
         }
 
         $disk = config('filesystems.default', 'public');
+
         return Storage::disk($disk === 'local' ? 'public' : $disk)->url($this->image);
     }
 
