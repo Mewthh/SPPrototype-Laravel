@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
@@ -20,19 +21,18 @@ class ProceedingsTemplate extends Model
         ];
     }
 
-    public function imageUrl(): ?string
+    protected function imageUrl(): Attribute
     {
-        if ($this->image === null || $this->image === '' || str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://')) {
-            return $this->image;
-        }
+        return Attribute::make(
+            get: function (): ?string {
+                if ($this->image === null || $this->image === '' || str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://')) {
+                    return $this->image;
+                }
 
-        $disk = config('filesystems.default', 'public');
+                $disk = config('filesystems.default', 'public');
 
-        return Storage::disk($disk === 'local' ? 'public' : $disk)->url($this->image);
-    }
-
-    public function getImageUrlAttribute(): ?string
-    {
-        return $this->imageUrl();
+                return Storage::disk($disk === 'local' ? 'public' : $disk)->url($this->image);
+            },
+        );
     }
 }

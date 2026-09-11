@@ -18,8 +18,8 @@
             <div class="downloads-directory-container modal-version">
                 @if($proceedingsTemplate)
                     <section class="proceedings-template-card">
-                        @if($proceedingsTemplate->imageUrl())
-                            <img src="{{ $proceedingsTemplate->imageUrl() }}" alt="{{ $proceedingsTemplate->title }}">
+                        @if($proceedingsTemplate->image_url)
+                            <img src="{{ $proceedingsTemplate->image_url }}" alt="{{ $proceedingsTemplate->title }}">
                         @endif
                         <div class="proceedings-template-content">
                             <h3>{{ $proceedingsTemplate->title }}</h3>
