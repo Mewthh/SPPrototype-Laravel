@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\SppEvent;
+use App\Models\DownloadCategory;
+use App\Models\ProceedingsTemplate;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -37,6 +39,26 @@ class AppServiceProvider extends ServiceProvider
                 ->orderBy('created_at', 'desc')
                 ->get();
             $view->with('headerConferences', $conferences);
+        });
+
+        View::composer('components.downloads-modal', function ($view) {
+            $columns = [[], [], []];
+            $columnDocumentCounts = [0, 0, 0];
+            $categories = DownloadCategory::query()
+                ->with(['downloads' => fn ($query) => $query->where('status', 'published')->latest('year')->latest('id')])
+                ->oldest('id')
+                ->get();
+
+            foreach ($categories as $category) {
+                $columnIndex = array_keys($columnDocumentCounts, min($columnDocumentCounts))[0];
+                $columns[$columnIndex][] = $category;
+                $columnDocumentCounts[$columnIndex] += $category->downloads->count();
+            }
+
+            $view->with([
+                'downloadColumns' => $columns,
+                'proceedingsTemplate' => ProceedingsTemplate::first(),
+            ]);
         });
     }
 

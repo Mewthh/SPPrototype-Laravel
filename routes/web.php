@@ -6,6 +6,9 @@ use App\Http\Controllers\Admin\ConferenceController as AdminConferenceController
 use App\Http\Controllers\Admin\HeroBannerController as AdminHeroBannerController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
+use App\Http\Controllers\Admin\DownloadController as AdminDownloadController;
+use App\Http\Controllers\Admin\DownloadCategoryController;
+use App\Http\Controllers\Admin\ProceedingsTemplateController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsController;
@@ -70,6 +73,15 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::delete('{conference}', [AdminConferenceController::class, 'destroy'])->name('destroy');
         Route::patch('{conference}/status', [AdminConferenceController::class, 'updateStatus'])->name('status');
     });
+
+    Route::apiResource('admin/api/download-categories', DownloadCategoryController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->names('admin.api.download-categories');
+    Route::apiResource('admin/api/downloads', AdminDownloadController::class)
+        ->only(['store', 'update', 'destroy'])
+        ->names('admin.api.downloads');
+    Route::get('admin/api/proceedings-template', [ProceedingsTemplateController::class, 'show'])->name('admin.api.proceedings-template.show');
+    Route::post('admin/api/proceedings-template', [ProceedingsTemplateController::class, 'update'])->name('admin.api.proceedings-template.update');
 });
 
 require __DIR__.'/settings.php';

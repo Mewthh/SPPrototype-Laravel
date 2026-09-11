@@ -6,6 +6,7 @@ use Database\Factories\DownloadFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
@@ -21,11 +22,16 @@ use Illuminate\Support\Facades\Storage;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['title', 'description', 'category', 'year', 'file_url', 'file_name', 'status'])]
+#[Fillable(['download_category_id', 'title', 'description', 'category', 'year', 'file_url', 'file_name', 'status'])]
 class Download extends Model
 {
     /** @use HasFactory<DownloadFactory> */
     use HasFactory;
+
+    public function downloadCategory(): BelongsTo
+    {
+        return $this->belongsTo(DownloadCategory::class);
+    }
 
     /**
      * Get the attributes that should be cast.

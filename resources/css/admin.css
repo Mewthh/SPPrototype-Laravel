@@ -1788,12 +1788,11 @@ html[data-theme="dark"] .image-upload-zone.is-drag-over {
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 18px 12px 14px;
-  background: var(--surface, #ffffff);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  border-left: 4px solid #10b981;
-  border-radius: var(--radius-sm, 10px);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md, 12px);
+  box-shadow: var(--shadow);
   color: var(--text, #1e293b);
   animation: toastDropIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -1813,15 +1812,15 @@ html[data-theme="dark"] .image-upload-zone.is-drag-over {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
-  background: #10b981;
+  width: 24px;
+  height: 24px;
+  background: var(--success);
   color: #ffffff;
   border-radius: 50%;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 700;
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+  box-shadow: none;
 }
 
 .floating-toast-content {
@@ -1830,19 +1829,13 @@ html[data-theme="dark"] .image-upload-zone.is-drag-over {
   gap: 1px;
 }
 
-.floating-toast-title {
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #059669;
-}
-
 .floating-toast-message {
   font-size: 0.88rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text, #0f172a);
 }
+
+.floating-toast-container.is-error .floating-toast-icon { background: var(--danger); }
 
 .floating-toast-close {
   display: inline-flex;
@@ -3140,6 +3133,102 @@ html[data-theme="dark"] .button-danger:hover {
 }
 
 /* ─── Downloads Admin Manager ─────────────────────────────────────────── */
+.downloads-proceedings-editor {
+  margin-bottom: 24px;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.downloads-proceedings-editor .section-panel-head {
+  margin-bottom: 20px;
+}
+
+.proceedings-form-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.2fr);
+  gap: 20px;
+}
+
+.proceedings-button-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.proceedings-button-fields .field-row {
+  gap: 8px;
+}
+
+.proceedings-text-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.proceedings-text-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.proceedings-attachment {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 92px;
+  padding: 16px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: var(--surface-soft);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.proceedings-attachment:hover { border-color: var(--accent); }
+.proceedings-attachment input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.proceedings-attachment strong, .proceedings-attachment small { display: block; }
+.proceedings-attachment small { margin-top: 3px; color: var(--muted); }
+.proceedings-attachment-icon { font-size: 1.5rem; color: var(--accent); }
+.proceedings-image-preview-wrap { width: 100%; height: 180px; padding: 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-soft); }
+.proceedings-image-preview { width: 100%; height: 100%; object-fit: contain; border-radius: 6px; }
+
+.proceedings-or { font-size: 0.78rem; color: var(--muted); text-align: center; font-weight: 700; }
+.proceedings-checkbox { display: inline-flex; gap: 8px; align-items: center; color: var(--muted); font-size: 0.85rem; font-weight: 400 !important; text-transform: lowercase !important; }
+
+.proceedings-file-input {
+  width: 100%;
+  padding: 6px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  background: var(--surface-soft);
+  color: var(--text);
+}
+
+.proceedings-file-input::file-selector-button {
+  margin-right: 10px;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--accent-strong);
+  color: var(--bg-page);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .proceedings-form-grid,
+  .proceedings-button-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
 .downloads-cat-row,
 .downloads-doc-row {
   display: flex;
@@ -3187,8 +3276,8 @@ html[data-theme="dark"] .button-danger:hover {
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: rgba(37, 99, 235, 0.1);
-  color: #2563eb;
+  background: var(--surface-soft);
+  color: var(--muted);
   font-size: 1.25rem;
   flex-shrink: 0;
 }
@@ -3227,6 +3316,3 @@ html[data-theme="dark"] .button-danger:hover {
   gap: 8px;
   flex-shrink: 0;
 }
-
-
-

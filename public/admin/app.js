@@ -2340,10 +2340,12 @@ let _floatingToastTimer = null;
 function showFloatingToast(message, title = 'Success') {
   const toast = document.getElementById('admin-floating-toast');
   const toastMsg = document.getElementById('admin-floating-toast-message');
-  const toastTitle = toast?.querySelector('.floating-toast-title');
+  const toastIcon = toast?.querySelector('.floating-toast-icon');
   if (!toast || !toastMsg) return;
 
-  if (toastTitle) toastTitle.textContent = title;
+  const isError = title.toLowerCase() === 'error';
+  toast.classList.toggle('is-error', isError);
+  if (toastIcon) toastIcon.textContent = isError ? '!' : '✓';
   toastMsg.textContent = message;
   toast.classList.remove('is-hidden');
 
@@ -3601,8 +3603,6 @@ conferenceForm?.addEventListener('reset', () => {
 });
 
 // ─── Downloads Manager: Dynamic Categories & Solo Category Editor ────────────
-const DOWNLOADS_STORAGE_KEY = 'spp-admin-downloads-v1';
-
 const defaultDownloadCategories = [
   {
     id: 'cat-1',
@@ -3655,28 +3655,7 @@ const defaultDownloadCategories = [
   },
 ];
 
-function loadDownloadData() {
-  try {
-    const raw = localStorage.getItem(DOWNLOADS_STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch (e) {
-    console.error('Failed to load downloads from storage', e);
-  }
-  return JSON.parse(JSON.stringify(defaultDownloadCategories));
-}
-
-function saveDownloadData(data) {
-  try {
-    localStorage.setItem(DOWNLOADS_STORAGE_KEY, JSON.stringify(data));
-  } catch (e) {
-    console.error('Failed to save downloads to storage', e);
-  }
-}
-
-let downloadCategories = loadDownloadData();
+let downloadCategories = [];
 let downloadEditingCatId = null;
 let downloadCatVisibleCount = 3;
 let downloadDocVisibleCount = 3;
@@ -3870,7 +3849,6 @@ function openDocEditor(docId = null, preselectedCatId = null) {
   const docIdInput = form.querySelector('input[name="docId"]');
   const catIdInput = form.querySelector('input[name="catId"]');
   const yearInput = form.querySelector('[data-download-doc-year]');
-  const titleInput = form.querySelector('[data-download-doc-title]');
   const fileActions = document.querySelector('[data-download-file-actions]');
   const filenameLabel = document.querySelector('[data-download-attached-filename]');
 
@@ -3896,7 +3874,6 @@ function openDocEditor(docId = null, preselectedCatId = null) {
       if (catIdInput) catIdInput.value = foundCat.id;
       if (selectEl) selectEl.value = foundCat.id;
       if (yearInput) yearInput.value = foundDoc.year || '';
-      if (titleInput) titleInput.value = foundDoc.title || '';
 
       if (fileActions && filenameLabel) {
         if (foundDoc.filename) {
@@ -3915,7 +3892,6 @@ function openDocEditor(docId = null, preselectedCatId = null) {
     if (catIdInput) catIdInput.value = targetCatId;
     if (selectEl) selectEl.value = targetCatId;
     if (yearInput) yearInput.value = new Date().getFullYear().toString();
-    if (titleInput) titleInput.value = '';
     if (fileActions) fileActions.classList.add('is-hidden');
   }
 
@@ -3929,21 +3905,12 @@ function saveDocFromForm() {
   const docIdInput = form.querySelector('input[name="docId"]');
   const selectEl = form.querySelector('[data-download-doc-cat-select]');
   const yearInput = form.querySelector('[data-download-doc-year]');
-  const titleInput = form.querySelector('[data-download-doc-title]');
   const fileInput = form.querySelector('[data-download-doc-file-input]');
   const filenameLabel = document.querySelector('[data-download-attached-filename]');
 
   const docId = docIdInput ? docIdInput.value : '';
   const newCatId = selectEl ? selectEl.value : '';
   const year = yearInput ? yearInput.value.trim() : '';
-  const title = titleInput ? titleInput.value.trim() : '';
-
-  if (!title) {
-    alert('Please enter a document title.');
-    titleInput?.focus();
-    return;
-  }
-
   let filename = '';
   if (fileInput && fileInput.files && fileInput.files[0]) {
     filename = fileInput.files[0].name;
@@ -4152,6 +4119,185 @@ function initDownloadsManager() {
 
 initDownloadsManager();
 
+// Persist download categories and documents through the admin API. This replaces
+// the retired local sample data while keeping the existing editor interface.
+async function refreshDownloadCategoriesFromServer() {
+  const response = await fetch('/admin/api/download-categories', { headers: { Accept: 'application/json' } });
+  if (!response.ok) throw new Error('Unable to load download categories.');
+  const payload = await response.json();
+  downloadCategories = payload.data.map((category) => ({
+    ...category,
+    id: String(category.id),
+    docs: (category.downloads || []).map((download) => ({ ...download, id: String(download.id), year: String(download.year || ''), filename: download.file_name })),
+  }));
+  renderDownloadCategoriesList();
+}
+
+refreshDownloadCategoriesFromServer().catch(console.error);
+
+const proceedingsTemplateForm = document.querySelector('[data-proceedings-template-form]');
+
+proceedingsTemplateForm?.querySelector('[data-proceedings-image-input]')?.addEventListener('change', (event) => {
+  const file = event.target.files?.[0];
+  const fileName = file?.name;
+  const label = proceedingsTemplateForm.querySelector('[data-proceedings-image-name]');
+  const preview = proceedingsTemplateForm.querySelector('[data-proceedings-image-preview]');
+  const previewWrap = proceedingsTemplateForm.querySelector('[data-proceedings-image-preview-wrap]');
+  const icon = proceedingsTemplateForm.querySelector('[data-proceedings-image-icon]');
+  const copy = proceedingsTemplateForm.querySelector('[data-proceedings-image-copy]');
+  if (label && fileName) label.textContent = fileName;
+  if (file && preview) {
+    preview.src = URL.createObjectURL(file);
+    previewWrap?.classList.remove('is-hidden');
+    icon?.classList.add('is-hidden');
+    copy?.classList.remove('is-hidden');
+  }
+});
+
+async function uploadProceedingsAsset(file, field) {
+  if (!file) return null;
+  const data = new FormData();
+  data.append(field, file);
+  data.append('folder', 'proceedings');
+  const token = document.querySelector('meta[name="csrf-token"]')?.content;
+  const response = await fetch('/admin/api/media/upload', { method: 'POST', headers: { 'X-CSRF-TOKEN': token || '', Accept: 'application/json' }, body: data });
+  if (!response.ok) throw new Error('Unable to upload the selected file.');
+  return (await response.json()).url;
+}
+
+async function loadProceedingsTemplate() {
+  if (!proceedingsTemplateForm) return;
+  const response = await fetch('/admin/api/proceedings-template', { headers: { Accept: 'application/json' } });
+  const template = (await response.json()).data;
+  if (!template) return;
+  ['title', 'first_label', 'first_url', 'second_label', 'second_url'].forEach((name) => {
+    proceedingsTemplateForm.elements[name].value = template[name] || '';
+  });
+  const preview = proceedingsTemplateForm.querySelector('[data-proceedings-image-preview]');
+  const previewWrap = proceedingsTemplateForm.querySelector('[data-proceedings-image-preview-wrap]');
+  if (template.image_url && preview) {
+    preview.src = template.image_url;
+    previewWrap?.classList.remove('is-hidden');
+  }
+  proceedingsTemplateForm.elements.first_opens_in_new_tab.checked = template.first_opens_in_new_tab ?? true;
+  proceedingsTemplateForm.elements.second_opens_in_new_tab.checked = template.second_opens_in_new_tab ?? true;
+}
+
+proceedingsTemplateForm?.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const saveButton = proceedingsTemplateForm.querySelector('[data-proceedings-save]');
+  saveButton.disabled = true;
+  saveButton.textContent = 'Saving…';
+  try {
+    const image = await uploadProceedingsAsset(proceedingsTemplateForm.elements.image.files[0], 'image');
+    const firstFile = await uploadProceedingsAsset(proceedingsTemplateForm.elements.first_file.files[0], 'file');
+    const secondFile = await uploadProceedingsAsset(proceedingsTemplateForm.elements.second_file.files[0], 'file');
+    const payload = Object.fromEntries(new FormData(proceedingsTemplateForm));
+    delete payload.image; delete payload.first_file; delete payload.second_file;
+    if (image) payload.image = image;
+    if (firstFile) payload.first_url = firstFile;
+    if (secondFile) payload.second_url = secondFile;
+    payload.first_opens_in_new_tab = proceedingsTemplateForm.elements.first_opens_in_new_tab.checked;
+    payload.second_opens_in_new_tab = proceedingsTemplateForm.elements.second_opens_in_new_tab.checked;
+    const token = document.querySelector('meta[name="csrf-token"]')?.content;
+    const response = await fetch('/admin/api/proceedings-template', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token || '', Accept: 'application/json' }, body: JSON.stringify(payload) });
+    if (!response.ok) throw new Error('Unable to save proceedings template.');
+    showFloatingToast('Proceedings template saved successfully.');
+  } catch (error) {
+    console.error(error);
+    showFloatingToast(error.message || 'Unable to save proceedings template.', 'Error');
+  } finally {
+    saveButton.disabled = false;
+    saveButton.textContent = 'Save Template';
+  }
+});
+
+loadProceedingsTemplate().catch(console.error);
+
+document.addEventListener('click', async (event) => {
+  const button = event.target.closest('[data-download-add-category], [data-download-rename-cat], [data-download-delete-cat], [data-download-delete-cat-id], [data-download-add-doc], [data-download-doc-save-btn], [data-download-delete-doc-id]');
+  if (!button) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  const token = document.querySelector('meta[name="csrf-token"]')?.content;
+  const headers = { 'X-CSRF-TOKEN': token || '', Accept: 'application/json' };
+
+  if (button.matches('[data-download-add-category]')) {
+    const name = prompt('Enter name for the new category:');
+    if (!name?.trim()) return;
+    const response = await fetch('/admin/api/download-categories', { method: 'POST', headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name.trim() }) });
+    if (!response.ok) { alert('Unable to create the category.'); return; }
+    const category = (await response.json()).data;
+    await refreshDownloadCategoriesFromServer();
+    openCategoryEditor(String(category.id));
+    return;
+  }
+
+  if (button.matches('[data-download-rename-cat]')) {
+    const category = downloadCategories.find((item) => item.id === downloadEditingCatId);
+    const name = category && prompt('Enter new category name:', category.name);
+    if (!name?.trim()) return;
+    await fetch(`/admin/api/download-categories/${category.id}`, { method: 'PATCH', headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name.trim() }) });
+    await refreshDownloadCategoriesFromServer();
+    openCategoryEditor(category.id);
+    return;
+  }
+
+  if (button.matches('[data-download-add-doc]')) { openDocEditor(null, downloadEditingCatId); return; }
+
+  if (button.matches('[data-download-doc-save-btn]')) {
+    const form = document.querySelector('[data-download-doc-form]');
+    const docId = form.elements.docId.value;
+    const file = form.querySelector('[data-download-doc-file-input]').files[0];
+    if (!docId && !file) { alert('Please attach a document file.'); return; }
+    const data = new FormData();
+    data.append('download_category_id', form.querySelector('[data-download-doc-cat-select]').value);
+    data.append('year', form.querySelector('[data-download-doc-year]').value);
+    data.append('status', 'published');
+    if (file) data.append('file', file);
+    const saveLabel = button.querySelector('[data-download-save-label]');
+    const saveSpinner = button.querySelector('[data-download-save-spinner]');
+    button.disabled = true;
+    button.classList.add('is-loading');
+    if (saveLabel) saveLabel.textContent = 'Saving document…';
+    saveSpinner?.classList.remove('is-hidden');
+    form.setAttribute('aria-busy', 'true');
+    try {
+      const response = await fetch(docId ? `/admin/api/downloads/${docId}` : '/admin/api/downloads', { method: docId ? 'PATCH' : 'POST', headers, body: data });
+      if (!response.ok) { alert((await response.json().catch(() => ({}))).message || 'Unable to post the document.'); return; }
+      const categoryId = form.querySelector('[data-download-doc-cat-select]').value;
+      await refreshDownloadCategoriesFromServer();
+      openCategoryEditor(categoryId);
+    } catch (error) {
+      console.error(error);
+      alert('Unable to save the document. Please try again.');
+    } finally {
+      form.removeAttribute('aria-busy');
+      button.disabled = false;
+      button.classList.remove('is-loading');
+      if (saveLabel) saveLabel.textContent = 'Save Document';
+      saveSpinner?.classList.add('is-hidden');
+    }
+    return;
+  }
+
+  const categoryId = button.getAttribute('data-download-delete-cat-id') || downloadEditingCatId;
+  const documentId = button.getAttribute('data-download-delete-doc-id');
+  if (documentId) {
+    if (!confirm('Delete this document?')) return;
+    await fetch(`/admin/api/downloads/${documentId}`, { method: 'DELETE', headers });
+    await refreshDownloadCategoriesFromServer();
+    renderCategoryDocs();
+    return;
+  }
+  if (categoryId && confirm('Delete this category and its documents?')) {
+    await fetch(`/admin/api/download-categories/${categoryId}`, { method: 'DELETE', headers });
+    await refreshDownloadCategoriesFromServer();
+    downloadEditingCatId = null;
+    setDownloadView('categories');
+  }
+}, true);
+
 // ─── Logout Confirmation ─────────────────────────────────────────────────────
 document.querySelectorAll('form[action*="logout"]').forEach((form) => {
   form.addEventListener('submit', async (e) => {
@@ -4167,5 +4313,3 @@ document.querySelectorAll('form[action*="logout"]').forEach((form) => {
     }
   });
 });
-
-

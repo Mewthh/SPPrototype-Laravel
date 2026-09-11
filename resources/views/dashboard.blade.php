@@ -48,7 +48,6 @@
 		<div class="floating-toast-card">
 			<span class="floating-toast-icon" aria-hidden="true">&#x2714;</span>
 			<div class="floating-toast-content">
-				<strong class="floating-toast-title">Success</strong>
 				<span class="floating-toast-message" id="admin-floating-toast-message">Saved successfully.</span>
 			</div>
 			<button type="button" class="floating-toast-close" id="admin-floating-toast-close" aria-label="Dismiss notification">&times;</button>
@@ -1019,6 +1018,27 @@
 			</section>
 
 			<section class="panel editor-panel" id="downloads-section">
+				<div class="downloads-proceedings-editor">
+					<div class="section-panel-head">
+						<div>
+							<p class="panel-kicker">Public Downloads</p>
+							<h2>Proceedings Template</h2>
+							<p>Configure the featured image and up to two download or link buttons.</p>
+						</div>
+					</div>
+					<form class="compose-form" data-proceedings-template-form>
+						<label class="field-row field-row-wide"><span>Title</span><input class="proceedings-text-input" name="title" required value="Proceedings Template" placeholder="e.g. Proceedings Template"></label>
+						<div class="proceedings-form-grid">
+							<div class="field-row"><span>Featured image</span><label class="proceedings-attachment"><input type="file" name="image" accept="image/*" data-proceedings-image-input><span class="proceedings-attachment-icon" data-proceedings-image-icon>↑</span><span data-proceedings-image-copy><strong>Choose image</strong><small data-proceedings-image-name>PNG, JPG, or WEBP</small></span></label><div class="proceedings-image-preview-wrap is-hidden" data-proceedings-image-preview-wrap><img class="proceedings-image-preview" data-proceedings-image-preview alt="Selected proceedings image"></div><small>Shown on the left side of the public template.</small></div>
+							<div class="proceedings-button-fields">
+								<label class="field-row"><span>First button</span><input class="proceedings-text-input" name="first_label" placeholder="Button name"><input class="proceedings-text-input" name="first_url" type="url" placeholder="Paste link: https://example.com/file.pdf"><span class="proceedings-or">— OR —</span><input class="proceedings-file-input" name="first_file" type="file"><span class="proceedings-checkbox"><input name="first_opens_in_new_tab" type="checkbox" value="1" checked> open in a new tab</span></label>
+								<label class="field-row"><span>Second button</span><input class="proceedings-text-input" name="second_label" placeholder="Button name"><input class="proceedings-text-input" name="second_url" type="url" placeholder="Paste link: https://example.com/file.pdf"><span class="proceedings-or">— OR —</span><input class="proceedings-file-input" name="second_file" type="file"><span class="proceedings-checkbox"><input name="second_opens_in_new_tab" type="checkbox" value="1" checked> open in a new tab</span></label>
+							</div>
+						</div>
+						<div class="form-actions"><button type="submit" class="button button-primary" data-proceedings-save>Save Template</button></div>
+					</form>
+				</div>
+
 				<!-- 1. Categories List View -->
 				<div class="panel-view" data-download-view="categories">
 					<div class="section-panel-head" style="align-items: center; margin-bottom: 16px;">
@@ -1026,7 +1046,7 @@
 							<p class="panel-kicker">Content & Documents</p>
 							<h2 style="margin: 0;">Downloads Manager</h2>
 						</div>
-						<div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+						<div style="display: flex; gap: 10px; flex-wrap: nowrap; align-items: center;">
 							<button type="button" class="button button-primary" data-download-add-category style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
 								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
 								<span>Add Category</span>
@@ -1059,7 +1079,7 @@
 							<p class="panel-kicker">Downloads Category</p>
 							<h2 data-download-editing-cat-name style="margin: 0;">Edit Category</h2>
 						</div>
-						<div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+						<div style="display: flex; gap: 10px; flex-wrap: nowrap; align-items: center; white-space: nowrap;">
 							<button type="button" class="button button-secondary" data-download-back-to-categories style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
 								&larr; Back to All Categories
 							</button>
@@ -1141,11 +1161,6 @@
 							</label>
 						</div>
 
-						<label class="field-row">
-							<span>Document Title / Display Name</span>
-							<input type="text" name="download_title" data-download-doc-title placeholder="e.g. SPP2026 Conference Handbook & Program" required />
-						</label>
-
 						<div class="field-row field-row-wide">
 							<span class="field-label">Document File Attachment</span>
 							<div class="image-upload-zone" id="download-doc-upload-zone" tabindex="0" role="button" aria-label="Click or drag a file to upload">
@@ -1163,7 +1178,10 @@
 						</div>
 
 						<div class="form-actions">
-							<button type="button" class="button button-primary" data-download-doc-save-btn>Save Document</button>
+							<button type="button" class="button button-primary" data-download-doc-save-btn>
+								<span class="btn-spinner is-hidden" data-download-save-spinner aria-hidden="true"></span>
+								<span data-download-save-label>Save Document</span>
+							</button>
 							<button type="button" class="button button-quiet" data-download-doc-cancel-btn>Cancel</button>
 						</div>
 					</form>

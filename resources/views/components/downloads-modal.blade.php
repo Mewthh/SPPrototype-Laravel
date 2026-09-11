@@ -16,70 +16,43 @@
 
         <div class="downloads-modal-body">
             <div class="downloads-directory-container modal-version">
+                @if($proceedingsTemplate)
+                    <section class="proceedings-template-card">
+                        @if($proceedingsTemplate->imageUrl())
+                            <img src="{{ $proceedingsTemplate->imageUrl() }}" alt="{{ $proceedingsTemplate->title }}">
+                        @endif
+                        <div class="proceedings-template-content">
+                            <h3>{{ $proceedingsTemplate->title }}</h3>
+                            <div class="proceedings-template-actions">
+                                @if($proceedingsTemplate->first_label && $proceedingsTemplate->first_url)
+                                    <a href="{{ $proceedingsTemplate->first_url }}" class="downloads-year-pill" @if($proceedingsTemplate->first_opens_in_new_tab) target="_blank" rel="noopener noreferrer" @endif>{{ $proceedingsTemplate->first_label }}</a>
+                                @endif
+                                @if($proceedingsTemplate->second_label && $proceedingsTemplate->second_url)
+                                    <a href="{{ $proceedingsTemplate->second_url }}" class="downloads-year-pill" @if($proceedingsTemplate->second_opens_in_new_tab) target="_blank" rel="noopener noreferrer" @endif>{{ $proceedingsTemplate->second_label }}</a>
+                                @endif
+                            </div>
+                        </div>
+                    </section>
+                @endif
                 <div class="downloads-directory-grid">
-                    <!-- Column 1: Conference Handbooks -->
-                    <div class="downloads-cat-card">
-                        <h3 class="downloads-cat-title">Conference Handbooks</h3>
-                        <div class="downloads-pill-stack">
-                            @foreach(['2026', '2025', '2024', '2023', '2022', '2021', '2020', '2019', '2018', '2017', '2016', '2015'] as $year)
-                                <a href="#download-handbook-{{ $year }}" class="downloads-year-pill" title="Download {{ $year }} Conference Handbook">
-                                    <span>{{ $year }}</span>
-                                </a>
+                    @foreach($downloadColumns as $column)
+                        <div style="display: grid; gap: 36px;">
+                            @foreach($column as $category)
+                                <div class="downloads-cat-card">
+                                    <h3 class="downloads-cat-title">{{ $category->name }}</h3>
+                                    <div class="downloads-pill-stack">
+                                        @forelse($category->downloads as $download)
+                                            <a href="{{ route('downloads.download', $download) }}" class="downloads-year-pill" title="Download {{ $download->title }}">
+                                                <span>{{ $download->year }}</span>
+                                            </a>
+                                        @empty
+                                            <span class="downloads-empty-state">No documents yet</span>
+                                        @endforelse
+                                    </div>
+                                </div>
                             @endforeach
                         </div>
-                    </div>
-
-                    <!-- Column 2: Backdrops for Online Talks -->
-                    <div class="downloads-cat-card">
-                        <h3 class="downloads-cat-title">Backdrops for Online Talks</h3>
-                        <div class="downloads-pill-stack">
-                            @foreach(['2021', '2020'] as $year)
-                                <a href="#download-backdrop-{{ $year }}" class="downloads-year-pill" title="Download {{ $year }} Backdrop">
-                                    <span>{{ $year }}</span>
-                                </a>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <!-- Column 3: PASUC / DepEd / CHEd Endorsements -->
-                    <div class="downloads-cat-card">
-                        <!-- PASUC Endorsement -->
-                        <div class="downloads-subcat-group">
-                            <h3 class="downloads-cat-title">PASUC Endorsement</h3>
-                            <div class="downloads-pill-stack">
-                                <a href="#download-pasuc-2024" class="downloads-year-pill" title="Download 2024 PASUC Endorsement">
-                                    <span>2024</span>
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="downloads-divider"></div>
-
-                        <!-- DepEd Advisory -->
-                        <div class="downloads-subcat-group">
-                            <h3 class="downloads-cat-title">DepEd Advisory</h3>
-                            <div class="downloads-pill-stack">
-                                @foreach(['2021', '2020'] as $year)
-                                    <a href="#download-deped-{{ $year }}" class="downloads-year-pill" title="Download {{ $year }} DepEd Advisory">
-                                        <span>{{ $year }}</span>
-                                    </a>
-                                @endforeach
-                            </div>
-                        </div>
-
-                        <div class="downloads-divider"></div>
-
-                        <!-- CHEd Endorsement -->
-                        <div class="downloads-subcat-group">
-                            <h3 class="downloads-cat-title">CHEd Endorsement</h3>
-                            <div class="downloads-pill-stack">
-                                @foreach(['2019', '2018'] as $year)
-                                    <a href="#download-ched-{{ $year }}" class="downloads-year-pill" title="Download {{ $year }} CHEd Endorsement">
-                                        <span>{{ $year }}</span>
-                                    </a>
-                                @endforeach
-                            </div>
-                        </div>
+                    @endforeach
                     </div>
                 </div>
             </div>
