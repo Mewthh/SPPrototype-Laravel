@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\DownloadCategory;
-use App\Models\ProceedingsTemplate;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;

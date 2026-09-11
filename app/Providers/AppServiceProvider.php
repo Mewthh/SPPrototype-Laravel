@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use App\Models\SppEvent;
 use App\Models\DownloadCategory;
 use App\Models\ProceedingsTemplate;
+use App\Models\SppEvent;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;

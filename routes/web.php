@@ -3,11 +3,11 @@
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\Admin\ActivityController as AdminActivityController;
 use App\Http\Controllers\Admin\ConferenceController as AdminConferenceController;
+use App\Http\Controllers\Admin\DownloadCategoryController;
+use App\Http\Controllers\Admin\DownloadController as AdminDownloadController;
 use App\Http\Controllers\Admin\HeroBannerController as AdminHeroBannerController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
-use App\Http\Controllers\Admin\DownloadController as AdminDownloadController;
-use App\Http\Controllers\Admin\DownloadCategoryController;
 use App\Http\Controllers\Admin\ProceedingsTemplateController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\HomeController;
