@@ -15,7 +15,7 @@ beforeEach(function () {
 });
 
 test('admin can create a category and post a published download', function () {
-    $category = DownloadCategory::create(['name' => 'Conference Handbooks']);
+    $category = DownloadCategory::firstOrCreate(['name' => 'Conference Handbooks']);
 
     $response = $this->post(route('admin.api.downloads.store'), [
         'download_category_id' => $category->id,
