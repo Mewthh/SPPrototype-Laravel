@@ -57,7 +57,7 @@ class HeroBannerController extends Controller
                 return [
                     'id' => $item->id,
                     'type' => 'conference',
-                    'title' => $item->title ?: ('SPP' . ($item->year ?? '')),
+                    'title' => $item->title ?: ('SPP'.($item->year ?? '')),
                     'slug' => $item->slug,
                     'year' => $item->year,
                     'status' => $item->status,
@@ -109,7 +109,7 @@ class HeroBannerController extends Controller
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $extension = $file->getClientOriginalExtension();
-            $safeName = Str::random(40) . ($extension ? '.' . $extension : '');
+            $safeName = Str::random(40).($extension ? '.'.$extension : '');
             $storedPath = $file->storeAs('banners', $safeName, $disk);
 
             if ($storedPath === false) {
