@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 #[Fillable(['title', 'image', 'first_label', 'first_url', 'first_opens_in_new_tab', 'second_label', 'second_url', 'second_opens_in_new_tab'])]
+/** @property-read string|null $image_url */
 class ProceedingsTemplate extends Model
 {
     protected $appends = ['image_url'];

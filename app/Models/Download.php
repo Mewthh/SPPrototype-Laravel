@@ -28,6 +28,9 @@ class Download extends Model
     /** @use HasFactory<DownloadFactory> */
     use HasFactory;
 
+    /**
+     * @return BelongsTo<DownloadCategory, $this>
+     */
     public function downloadCategory(): BelongsTo
     {
         return $this->belongsTo(DownloadCategory::class);

@@ -14,7 +14,7 @@ class DownloadController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $this->validated($request, true);
-        $category = DownloadCategory::findOrFail($validated['download_category_id']);
+        $category = DownloadCategory::query()->findOrFail($validated['download_category_id']);
         $file = $request->file('file');
         $disk = config('filesystems.private', 'r2-private');
         $path = $file->store('downloads', $disk);
@@ -35,7 +35,7 @@ class DownloadController extends Controller
     public function update(Request $request, Download $download): JsonResponse
     {
         $validated = $this->validated($request, false);
-        $category = DownloadCategory::findOrFail($validated['download_category_id']);
+        $category = DownloadCategory::query()->findOrFail($validated['download_category_id']);
         $attributes = [
             'download_category_id' => $category->id,
             'category' => $category->name,
@@ -65,6 +65,9 @@ class DownloadController extends Controller
         return response()->json(['message' => 'Document deleted successfully.']);
     }
 
+    /**
+     * @return array{download_category_id: int, year: int, status: 'draft'|'published'|'archived', file?: \Illuminate\Http\UploadedFile}
+     */
     private function validated(Request $request, bool $fileRequired): array
     {
         return $request->validate([
