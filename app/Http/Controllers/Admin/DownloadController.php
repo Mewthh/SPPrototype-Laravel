@@ -16,7 +16,7 @@ class DownloadController extends Controller
     {
         $validated = $this->validated($request, true);
         $category = DownloadCategory::query()->findOrFail($validated['download_category_id']);
-        $file = $request->file('file');
+        $file = $this->uploadedFile($request);
         $disk = config('filesystems.private', 'r2-private');
         $path = $file->store('downloads', $disk);
 
@@ -47,7 +47,7 @@ class DownloadController extends Controller
         if ($request->hasFile('file')) {
             $disk = config('filesystems.private', 'r2-private');
             Storage::disk($disk)->delete($download->file_url);
-            $file = $request->file('file');
+            $file = $this->uploadedFile($request);
             $attributes['file_url'] = $file->store('downloads', $disk);
             $attributes['file_name'] = $file->getClientOriginalName();
             $attributes['title'] = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) ?: 'Document';
@@ -77,5 +77,16 @@ class DownloadController extends Controller
             'status' => ['required', 'in:draft,published,archived'],
             'file' => [$fileRequired ? 'required' : 'nullable', 'file', 'mimes:pdf,doc,docx,zip,png', 'max:25600'],
         ]);
+    }
+
+    private function uploadedFile(Request $request): UploadedFile
+    {
+        $file = $request->file('file');
+
+        if (! $file instanceof UploadedFile) {
+            abort(422, 'A valid document file is required.');
+        }
+
+        return $file;
     }
 }

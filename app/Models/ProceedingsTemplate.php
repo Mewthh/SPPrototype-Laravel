@@ -7,11 +7,19 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * @property string|null $image
+ * @property-read string|null $image_url
+ */
 #[Fillable(['title', 'image', 'first_label', 'first_url', 'first_opens_in_new_tab', 'second_label', 'second_url', 'second_opens_in_new_tab'])]
-/** @property-read string|null $image_url */
 class ProceedingsTemplate extends Model
 {
-    protected $appends = ['image_url'];
+    /**
+     * @var list<string>
+     */
+    protected $appends = [
+        'image_url',
+    ];
 
     protected function casts(): array
     {
@@ -21,6 +29,9 @@ class ProceedingsTemplate extends Model
         ];
     }
 
+    /**
+     * @return Attribute<string|null, void>
+     */
     protected function imageUrl(): Attribute
     {
         return Attribute::make(
