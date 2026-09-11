@@ -21,7 +21,7 @@ class ProceedingsTemplate extends Model
 
     public function imageUrl(): ?string
     {
-        if (!$this->image || str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://')) {
+        if (! $this->image || str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://')) {
             return $this->image;
         }
 
