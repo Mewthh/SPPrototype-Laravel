@@ -7,6 +7,7 @@ use App\Models\Download;
 use App\Models\DownloadCategory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 class DownloadController extends Controller
@@ -66,7 +67,7 @@ class DownloadController extends Controller
     }
 
     /**
-     * @return array{download_category_id: int, year: int, status: 'draft'|'published'|'archived', file?: \Illuminate\Http\UploadedFile}
+     * @return array{download_category_id: int, year: int, status: 'draft'|'published'|'archived', file?: UploadedFile}
      */
     private function validated(Request $request, bool $fileRequired): array
     {
