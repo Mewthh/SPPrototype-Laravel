@@ -109,7 +109,7 @@ class HeroBannerController extends Controller
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $extension = $file->getClientOriginalExtension();
-            $safeName = Str::random(40).($extension ? '.'.$extension : '');
+            $safeName = Str::random(40) . ($extension ? '.' . $extension : '');
             $storedPath = $file->storeAs('banners', $safeName, $disk);
 
             if ($storedPath === false) {

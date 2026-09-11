@@ -3281,7 +3281,6 @@ html[data-theme="dark"] .theme-label-light {
     background: #2563eb;
     color: #ffffff;
     border-color: #2563eb;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
 }
 
 .conference-tab-btn.active span {
@@ -3297,7 +3296,6 @@ html[data-theme="dark"] .conference-tab-btn.active {
     background: #3b82f6;
     color: #ffffff;
     border-color: #3b82f6;
-    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
 }
 
 html[data-theme="dark"] .conference-tab-btn.active span {
