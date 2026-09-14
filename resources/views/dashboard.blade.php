@@ -44,7 +44,7 @@
 	<a class="skip-link" href="#main-content">Skip to content</a>
 
 	<!-- Global Floating Toast Notification (Center Top) -->
-	<div id="admin-floating-toast" class="floating-toast-container is-hidden" role="status" aria-live="polite">
+	<div id="admin-floating-toast" class="floating-toast-container is-hidden" role="status" aria-live="polite" data-success-message="{{ session('status') }}">
 		<div class="floating-toast-card">
 			<span class="floating-toast-icon" aria-hidden="true">&#x2714;</span>
 			<div class="floating-toast-content">
@@ -138,6 +138,10 @@
 					<span class="nav-badge" data-downloads-count-badge>19</span>
 				</a>
 				<div class="nav-section-label" style="margin-top: 1.25rem;">Site Settings</div>
+				<a href="#about-section" class="nav-item" data-nav-link>
+					<span class="nav-icon" aria-hidden="true">ⓘ</span>
+					<span class="nav-text">About SPP</span>
+				</a>
 				<a href="#hero-banner-section" class="nav-item" data-nav-link>
 					<span class="nav-icon" aria-hidden="true">
 						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -1013,6 +1017,82 @@
 							<button type="button" class="button button-quiet" data-hero-banner-reset>Reset
 								Banner</button>
 						</div>
+					</form>
+				</div>
+			</section>
+
+			<section class="panel editor-panel" id="about-section">
+				<div class="panel-view">
+					<div class="section-panel-head">
+						<div>
+							<p class="panel-kicker">Site Settings</p>
+							<h2>About SPP</h2>
+							<p>Update the public organization profile, council, contact information, and title image.</p>
+						</div>
+					</div>
+
+					<form class="compose-form admin-about-form" method="POST" action="{{ route('admin.about.update') }}" enctype="multipart/form-data">
+						@csrf
+						@method('PUT')
+						<section class="admin-about-section">
+							<h2>Introduction</h2>
+							<label class="field-row field-row-wide"><span>Page title</span><input type="text" name="title" value="{{ old('title', $aboutPage->title) }}" required />@error('title') <small class="field-error">{{ $message }}</small> @enderror</label>
+							<label class="field-row field-row-wide"><span>Organization description</span><textarea name="introduction" rows="6" required>{{ old('introduction', $aboutPage->introduction) }}</textarea>@error('introduction') <small class="field-error">{{ $message }}</small> @enderror</label>
+							<label class="field-row field-row-wide">
+								<span>Image beside the title</span>
+								@if ($aboutPage->image_url)<img class="admin-about-image-preview" src="{{ $aboutPage->image_url }}" alt="Current About SPP image" />@endif
+								<input type="file" name="image" accept="image/*" />
+								<small>Optional. JPG, PNG, WEBP, or GIF up to 10 MB.</small>
+								@error('image') <small class="field-error">{{ $message }}</small> @enderror
+							</label>
+							<input type="hidden" name="remove_image" value="0" data-about-remove-image-input />
+							@if ($aboutPage->image_url)<button type="button" class="item-action danger admin-about-remove-image" data-about-remove-image>Remove image</button>@endif
+						</section>
+
+						<section class="admin-about-section">
+							<div class="admin-about-section-heading">
+								<label class="field-row admin-about-heading-field"><span>National council heading</span><input type="text" name="council_heading" value="{{ old('council_heading', $aboutPage->council_heading) }}" required /></label>
+								<button type="button" class="button button-primary admin-about-add-button" data-about-add-officer><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add</button>
+							</div>
+							<div class="admin-about-member-list" data-about-member-list="officers">
+							@foreach (old('officers', $aboutPage->officers ?? []) as $index => $officer)
+								<div class="admin-about-person-grid" data-about-member>
+									<div class="admin-about-person-card-head"><strong>National Council Member</strong><button type="button" class="button button-danger" data-about-delete-officer>Delete</button></div>
+									<label class="field-row"><span>Name</span><input type="text" name="officers[{{ $index }}][name]" value="{{ $officer['name'] }}" required /></label>
+									<label class="field-row"><span>Role</span><input type="text" name="officers[{{ $index }}][role]" value="{{ $officer['role'] }}" required /></label>
+									<label class="field-row field-row-wide"><span>Institution</span><input type="text" name="officers[{{ $index }}][institution]" value="{{ $officer['institution'] }}" required /></label>
+								</div>
+							@endforeach
+							</div>
+							<div class="admin-about-list-actions" data-about-list-actions="officers">
+								<button type="button" class="button button-secondary" data-about-show-more>Show More</button>
+								<button type="button" class="button button-secondary is-hidden" data-about-show-less>Show Less</button>
+							</div>
+						</section>
+
+						<section class="admin-about-section">
+							<div class="admin-about-section-heading"><h2>Councilors</h2><button type="button" class="button button-primary admin-about-add-button" data-about-add-councilor><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add</button></div>
+							<div class="admin-about-member-list" data-about-member-list="councilors">
+							@foreach (old('councilors', $aboutPage->councilors ?? []) as $index => $councilor)
+								<div class="admin-about-person-grid admin-about-councilor-grid" data-about-member data-about-councilor-index="{{ $index }}">
+									<div class="admin-about-person-card-head"><strong>Councilor</strong><button type="button" class="button button-danger" data-about-delete-councilor>Delete</button></div>
+									<label class="field-row"><span>Name</span><input type="text" name="councilors[{{ $index }}][name]" value="{{ $councilor['name'] }}" required /></label>
+									<label class="field-row"><span>Institution</span><input type="text" name="councilors[{{ $index }}][institution]" value="{{ $councilor['institution'] }}" required /></label>
+								</div>
+							@endforeach
+							</div>
+							<div class="admin-about-list-actions" data-about-list-actions="councilors">
+								<button type="button" class="button button-secondary" data-about-show-more>Show More</button>
+								<button type="button" class="button button-secondary is-hidden" data-about-show-less>Show Less</button>
+							</div>
+						</section>
+
+						<section class="admin-about-section">
+							<h2>Contact</h2>
+							<label class="field-row field-row-wide"><span>Address</span><textarea name="address" rows="3" required>{{ old('address', $aboutPage->address) }}</textarea></label>
+							<label class="field-row field-row-wide"><span>Email</span><input type="email" name="email" value="{{ old('email', $aboutPage->email) }}" required /></label>
+						</section>
+						<div class="form-actions"><button class="button button-primary" type="submit">Save About SPP</button></div>
 					</form>
 				</div>
 			</section>

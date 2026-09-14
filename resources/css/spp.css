@@ -2171,6 +2171,315 @@ main {
     padding: 18px 0 56px;
 }
 
+.about-page {
+    display: grid;
+    gap: 28px;
+    margin-top: 34px;
+}
+
+.about-page-intro,
+.about-page-section,
+.about-contact-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow);
+    padding: clamp(24px, 5vw, 48px);
+}
+
+.about-page-intro.has-image {
+    align-items: center;
+    display: grid;
+    gap: clamp(24px, 5vw, 48px);
+    grid-template-columns: minmax(0, 1.35fr) minmax(220px, 0.65fr);
+}
+
+.about-page-image {
+    display: block;
+    border-radius: var(--radius-lg);
+    height: auto;
+    max-height: 360px;
+    object-fit: contain;
+    background: var(--surface-soft);
+    width: 100%;
+}
+
+.about-page-intro h1,
+.about-contact-card h2 {
+    margin: 8px 0 16px;
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    letter-spacing: -0.04em;
+}
+
+.about-page-intro > p:last-child,
+.about-contact-card address {
+    max-width: 75ch;
+    color: var(--muted);
+    font-size: 1.05rem;
+    line-height: 1.8;
+}
+
+.about-contact-card address {
+    font-style: normal;
+    margin: 0 0 12px;
+}
+
+.about-contact-card a {
+    color: var(--accent-strong);
+    font-weight: 700;
+}
+
+.about-officers-grid,
+.about-councilors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.about-person-card,
+.about-councilors article {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface-soft);
+    padding: 22px;
+}
+
+.about-person-role {
+    color: var(--accent-strong);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    margin: 0 0 12px;
+    text-transform: uppercase;
+}
+
+.about-person-card h3,
+.about-councilors h3 {
+    margin: 0 0 8px;
+}
+
+.about-person-card p:last-child,
+.about-councilors span {
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+.about-councilors {
+    margin-top: 28px;
+}
+
+.about-councilors article {
+    display: grid;
+    gap: 6px;
+}
+
+.admin-about-shell {
+    margin: 0 auto;
+    max-width: 1100px;
+    padding: 48px 24px 72px;
+}
+
+.admin-about-heading,
+.admin-about-actions,
+.admin-about-person-grid {
+    display: flex;
+    gap: 16px;
+}
+
+.admin-about-heading {
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+
+.admin-about-heading h1,
+.admin-about-section h2 {
+    margin: 4px 0 8px;
+}
+
+.admin-about-heading > div > p:last-child {
+    color: var(--muted);
+    margin: 0;
+}
+
+.admin-about-actions {
+    flex-wrap: wrap;
+}
+
+.admin-about-form {
+    display: grid;
+    gap: 20px;
+}
+
+.admin-about-section,
+.admin-about-notice {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 28px;
+}
+
+.admin-about-section {
+    display: grid;
+    gap: 20px;
+}
+
+.admin-about-section > h2 {
+    border-bottom: 1px solid var(--border);
+    font-size: 1.2rem;
+    padding-bottom: 12px;
+}
+
+.admin-about-section-heading,
+.admin-about-person-card-head,
+.admin-about-list-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.admin-about-section-heading {
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+}
+
+.admin-about-section-heading h2 {
+    border: 0;
+    padding: 0;
+}
+
+.admin-about-heading-field {
+    flex: 1;
+}
+
+.admin-about-section-heading:has(.button:only-child) {
+    justify-content: flex-end;
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.admin-about-member-list {
+    display: grid;
+    gap: 16px;
+}
+
+.admin-about-person-card-head {
+    grid-column: 1 / -1;
+    justify-content: space-between;
+}
+
+.admin-about-person-card-head strong {
+    color: var(--accent-strong);
+    font-size: 0.9rem;
+}
+
+.admin-about-person-card-head .button {
+    min-height: 34px;
+    padding: 6px 12px;
+    font-size: 0.82rem;
+}
+
+.admin-about-list-actions {
+    justify-content: center;
+}
+
+.admin-about-notice {
+    border-color: color-mix(in srgb, var(--success) 40%, var(--border));
+    color: var(--success);
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.admin-about-image-preview {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    display: block;
+    max-height: 240px;
+    max-width: 360px;
+    object-fit: cover;
+}
+
+.admin-about-remove-image {
+    margin-top: 12px;
+}
+
+.admin-about-add-button {
+    align-items: center;
+    display: inline-flex;
+    gap: 6px;
+}
+
+.admin-about-person-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 0;
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface-soft);
+}
+
+.admin-about-person-grid .field-row-wide {
+    grid-column: 1 / -1;
+}
+
+.admin-about-councilor-grid {
+    grid-template-columns: 1fr 1fr;
+}
+
+.admin-about-form input[type="email"],
+.admin-about-form input[type="file"] {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+}
+
+.admin-about-form input[type="file"] {
+    cursor: pointer;
+    padding: 8px;
+}
+
+.admin-about-form input[type="file"]::file-selector-button {
+    margin-right: 12px;
+    padding: 7px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--accent-soft);
+    color: var(--text);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.field-error {
+    color: var(--danger);
+    font-size: 0.85rem;
+}
+
+@media (max-width: 720px) {
+    .admin-about-heading {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .admin-about-person-grid,
+    .admin-about-councilor-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .about-page-intro.has-image {
+        grid-template-columns: 1fr;
+    }
+}
+
 .section.shell {
     margin-top: 34px;
     padding: 28px;

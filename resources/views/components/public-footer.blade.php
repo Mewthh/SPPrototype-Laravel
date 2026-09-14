@@ -8,7 +8,7 @@
 
         <div>
             <h3>SPP</h3>
-            <a href="{{ route('home') }}#about">About</a>
+            <a href="{{ route('about.show') }}">About</a>
             <a href="{{ route('home') }}#activities">Activities</a>
             <a href="{{ route('home') }}#events">Events</a>
             <a href="{{ route('home') }}#news">News</a>

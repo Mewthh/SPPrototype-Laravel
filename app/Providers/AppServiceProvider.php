@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\AboutPage;
 use App\Models\DownloadCategory;
 use App\Models\ProceedingsTemplate;
 use App\Models\SppEvent;
@@ -39,6 +40,13 @@ class AppServiceProvider extends ServiceProvider
                 ->orderBy('created_at', 'desc')
                 ->get();
             $view->with('headerConferences', $conferences);
+        });
+
+        View::composer('dashboard', function ($view) {
+            $view->with('aboutPage', AboutPage::query()->firstOrCreate(
+                ['id' => 1],
+                AboutPage::defaultAttributes(),
+            ));
         });
 
         View::composer('components.downloads-modal', function ($view) {

@@ -25,7 +25,7 @@
                     </div>
                 </div>
                 <button type="button" class="nav-link-btn" data-open-downloads-modal aria-haspopup="dialog" aria-label="Open downloads directory">Downloads</button>
-                <a href="#about">About SPP</a>
+                <a href="{{ route('about.show') }}">About SPP</a>
                 <details class="year-menu">
                     <summary aria-label="Open conference year choices">&#x22EF;</summary>
                     <div class="year-menu-panel" aria-label="Conference year choices">
@@ -95,7 +95,7 @@
             </form>
 
             <a class="btn-login-header" href="{{ route('login') }}" aria-label="Log in">Log In</a>
-            <a class="btn-join-spp" href="#about">Join SPP</a>
+            <a class="btn-join-spp" href="{{ route('about.show') }}">About SPP</a>
 
             <details class="mobile-nav">
                 <summary class="mobile-nav-toggle" aria-label="Open menu">
@@ -121,7 +121,7 @@
                         </div>
                     </details>
                     <button type="button" class="mobile-nav-link-btn" data-open-downloads-modal aria-haspopup="dialog" aria-label="Open downloads directory">Downloads</button>
-                    <a href="#about">About SPP</a>
+                    <a href="{{ route('about.show') }}">About SPP</a>
                     <div class="mobile-nav-years" aria-label="Conference year choices">
                         @foreach($topConfs as $c)
                             <a href="{{ route('spp.show', ['year' => $getConfTarget($c)]) }}"
@@ -143,7 +143,7 @@
                         @endif
                     </div>
                     <a class="btn-login-header mobile" href="{{ route('login') }}">Log In</a>
-                    <a class="btn-join-spp mobile" href="#about">Join SPP</a>
+                    <a class="btn-join-spp mobile" href="{{ route('about.show') }}">About SPP</a>
 
                 </nav>
             </details>

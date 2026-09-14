@@ -2361,6 +2361,11 @@ document.getElementById('admin-floating-toast-close')?.addEventListener('click',
   if (_floatingToastTimer) window.clearTimeout(_floatingToastTimer);
 });
 
+const savedDashboardMessage = document.getElementById('admin-floating-toast')?.dataset.successMessage;
+if (savedDashboardMessage) {
+  showFloatingToast(savedDashboardMessage);
+}
+
 function setConferenceView(view) {
   if (conferenceViews.editor && conferenceViews.list) {
     conferenceViews.editor.classList.toggle('is-hidden', view !== 'editor');
@@ -3187,7 +3192,7 @@ navLinks.forEach((link) => {
 
 function updateActiveNavLink() {
   let currentHash = window.location.hash || '#news-section';
-  if (!['#news-section', '#activities-section', '#conferences-section', '#downloads-section', '#hero-banner-section'].includes(currentHash)) {
+  if (!['#news-section', '#activities-section', '#conferences-section', '#downloads-section', '#hero-banner-section', '#about-section'].includes(currentHash)) {
     currentHash = '#news-section';
   }
   navLinks.forEach((link) => {
@@ -3195,7 +3200,7 @@ function updateActiveNavLink() {
     link.classList.toggle('active', isActive);
   });
 
-  const sections = ['news-section', 'activities-section', 'conferences-section', 'downloads-section', 'hero-banner-section'];
+  const sections = ['news-section', 'activities-section', 'conferences-section', 'downloads-section', 'hero-banner-section', 'about-section'];
   sections.forEach((secId) => {
     const secEl = document.getElementById(secId);
     if (secEl) {
@@ -3206,6 +3211,88 @@ function updateActiveNavLink() {
 }
 window.addEventListener('hashchange', updateActiveNavLink);
 window.addEventListener('load', updateActiveNavLink);
+
+function updateAboutMemberVisibility(list, visibleCount = 2) {
+  const members = Array.from(list.querySelectorAll('[data-about-member]'));
+  const visible = Math.min(Math.max(visibleCount, 2), members.length);
+  members.forEach((member, index) => member.classList.toggle('is-hidden', index >= visible));
+  list.dataset.visibleCount = String(visible);
+
+  const actions = list.parentElement?.querySelector('[data-about-list-actions]');
+  actions?.querySelector('[data-about-show-more]')?.classList.toggle('is-hidden', visible >= members.length);
+  actions?.querySelector('[data-about-show-less]')?.classList.toggle('is-hidden', visible <= 2);
+}
+
+document.querySelectorAll('[data-about-member-list]').forEach((list) => updateAboutMemberVisibility(list, false));
+
+document.addEventListener('click', (event) => {
+  const target = event.target.closest('[data-about-show-more], [data-about-show-less], [data-about-add-councilor], [data-about-delete-councilor], [data-about-add-officer], [data-about-delete-officer], [data-about-remove-image]');
+  if (!target) return;
+
+  if (target.matches('[data-about-remove-image]')) {
+    const removeInput = document.querySelector('[data-about-remove-image-input]');
+    if (removeInput) removeInput.value = '1';
+    document.querySelector('.admin-about-image-preview')?.remove();
+    target.remove();
+    return;
+  }
+
+  if (target.matches('[data-about-show-more], [data-about-show-less]')) {
+    const list = target.closest('.admin-about-section')?.querySelector('[data-about-member-list]');
+    if (list) {
+      const visibleCount = Number(list.dataset.visibleCount || 2);
+      updateAboutMemberVisibility(list, visibleCount + (target.matches('[data-about-show-more]') ? 2 : -2));
+    }
+    return;
+  }
+
+  const officerList = document.querySelector('[data-about-member-list="officers"]');
+  const councilorList = document.querySelector('[data-about-member-list="councilors"]');
+
+  if (target.matches('[data-about-add-officer]') && officerList) {
+    const indexes = Array.from(officerList.querySelectorAll('input[name^="officers["]'))
+      .map((input) => Number(input.name.match(/^officers\[(\d+)]/)?.[1]))
+      .filter(Number.isInteger);
+    const nextIndex = (indexes.length ? Math.max(...indexes) : -1) + 1;
+    const member = document.createElement('div');
+    member.className = 'admin-about-person-grid';
+    member.dataset.aboutMember = '';
+    member.innerHTML = `<div class="admin-about-person-card-head"><strong>National Council Member</strong><button type="button" class="button button-danger" data-about-delete-officer>Delete</button></div><label class="field-row"><span>Name</span><input type="text" name="officers[${nextIndex}][name]" required /></label><label class="field-row"><span>Role</span><input type="text" name="officers[${nextIndex}][role]" required /></label><label class="field-row field-row-wide"><span>Institution</span><input type="text" name="officers[${nextIndex}][institution]" required /></label>`;
+    officerList.append(member);
+    updateAboutMemberVisibility(officerList, officerList.querySelectorAll('[data-about-member]').length);
+    member.querySelector('input')?.focus();
+    return;
+  }
+
+  if (target.matches('[data-about-delete-officer]') && officerList) {
+    if (officerList.querySelectorAll('[data-about-member]').length > 1) {
+      target.closest('[data-about-member]')?.remove();
+      updateAboutMemberVisibility(officerList, Number(officerList.dataset.visibleCount || 2));
+    }
+    return;
+  }
+
+  if (!councilorList) return;
+
+  if (target.matches('[data-about-add-councilor]')) {
+    const indexes = Array.from(councilorList.querySelectorAll('[data-about-councilor-index]'))
+      .map((member) => Number(member.dataset.aboutCouncilorIndex))
+      .filter(Number.isInteger);
+    const nextIndex = (indexes.length ? Math.max(...indexes) : -1) + 1;
+    const member = document.createElement('div');
+    member.className = 'admin-about-person-grid admin-about-councilor-grid';
+    member.dataset.aboutMember = '';
+    member.dataset.aboutCouncilorIndex = String(nextIndex);
+    member.innerHTML = `<div class="admin-about-person-card-head"><strong>Councilor</strong><button type="button" class="button button-danger" data-about-delete-councilor>Delete</button></div><label class="field-row"><span>Name</span><input type="text" name="councilors[${nextIndex}][name]" required /></label><label class="field-row"><span>Institution</span><input type="text" name="councilors[${nextIndex}][institution]" required /></label>`;
+    councilorList.append(member);
+    updateAboutMemberVisibility(councilorList, councilorList.querySelectorAll('[data-about-member]').length);
+    member.querySelector('input')?.focus();
+    return;
+  }
+
+  target.closest('[data-about-member]')?.remove();
+  updateAboutMemberVisibility(councilorList, Number(councilorList.dataset.visibleCount || 2));
+});
 
 renderAll();
 if (!state.editingId) setNewsView('posts');

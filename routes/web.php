@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\AboutController;
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\Admin\AboutController as AdminAboutController;
 use App\Http\Controllers\Admin\ActivityController as AdminActivityController;
 use App\Http\Controllers\Admin\ConferenceController as AdminConferenceController;
 use App\Http\Controllers\Admin\DownloadCategoryController;
@@ -17,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 
 // ─── Public Routes ──────────────────────────────────────────────────────────
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('about', [AboutController::class, 'show'])->name('about.show');
 Route::get('news', [NewsController::class, 'index'])->name('news.index');
 Route::get('news/{slug}', [NewsController::class, 'show'])->name('news.show');
 Route::get('activities', [ActivityController::class, 'index'])->name('activities.index');
@@ -35,6 +38,8 @@ Route::redirect('AdminDashboard.html', '/admin', 301);
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::view('admin', 'dashboard')->name('admin');
     Route::view('dashboard', 'dashboard')->name('dashboard');
+    Route::get('admin/about', [AdminAboutController::class, 'edit'])->name('admin.about.edit');
+    Route::put('admin/about', [AdminAboutController::class, 'update'])->name('admin.about.update');
 
     Route::post('admin/api/media/upload', [AdminMediaController::class, 'upload'])->name('admin.api.media.upload');
 
