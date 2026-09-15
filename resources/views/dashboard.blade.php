@@ -939,7 +939,6 @@
 						<div>
 							<p class="panel-kicker">Site Settings</p>
 							<h2>Banner Image</h2>
-							<p>Upload and manage the homepage hero banner displayed at the top of the site.</p>
 						</div>
 					</div>
 
