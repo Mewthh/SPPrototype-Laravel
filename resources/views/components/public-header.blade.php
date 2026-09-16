@@ -19,7 +19,7 @@
                         <a href="#membership-faq">Membership FAQ</a>
                         <a href="https://proceedings.spp-online.org/" target="_blank"
                             rel="noopener noreferrer">Proceedings of the SPP</a>
-                        <a href="#videos-webinars">Videos and Webinars</a>
+                        <a href="{{ route('videos.index') }}">Videos and Webinars</a>
                         <a href="https://paperview.spp-online.org/" target="_blank" rel="noopener noreferrer">Pisika
                             Journal</a>
                     </div>
@@ -115,7 +115,7 @@
                             <a href="#membership-faq">Membership FAQ</a>
                             <a href="https://proceedings.spp-online.org/" target="_blank"
                                 rel="noopener noreferrer">Proceedings of the SPP</a>
-                            <a href="#videos-webinars">Videos and Webinars</a>
+                            <a href="{{ route('videos.index') }}">Videos and Webinars</a>
                             <a href="https://paperview.spp-online.org/" target="_blank" rel="noopener noreferrer">Pisika
                                 Journal</a>
                         </div>

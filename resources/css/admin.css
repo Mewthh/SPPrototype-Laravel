@@ -3316,3 +3316,23 @@ html[data-theme="dark"] .button-danger:hover {
   gap: 8px;
   flex-shrink: 0;
 }
+
+/* Videos and webinars manager (static UI preview) */
+.video-admin-preview-badge { padding: 6px 10px; border-radius: var(--radius-pill); background: var(--surface-soft); color: var(--muted); border: 1px solid var(--border); font-size: .75rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.video-admin-layout { display: grid; grid-template-columns: minmax(0, .9fr) minmax(300px, 1.1fr); gap: 24px; }
+.video-admin-form { align-content: start; }
+.video-admin-form input:disabled, .video-admin-form button:disabled { cursor: not-allowed; opacity: .62; }
+.video-admin-help { margin: -4px 0 0; color: var(--muted); font-size: .82rem; line-height: 1.5; }
+.video-admin-list { padding: 20px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-soft); }
+.video-admin-list-head, .video-admin-list-item { display: flex; align-items: center; gap: 12px; }
+.video-admin-list-head { justify-content: space-between; margin-bottom: 12px; }
+.video-admin-list-head h3 { margin: 0; color: var(--accent-strong); font-size: 1rem; }
+.video-admin-list-head span { color: var(--muted); font-size: .8rem; }
+.video-admin-list-item { padding: 12px 0; border-top: 1px solid var(--border); }
+.video-admin-list-item > div:nth-child(2) { display: grid; gap: 3px; min-width: 0; flex: 1; }
+.video-admin-list-item strong { overflow: hidden; color: var(--text); font-size: .9rem; text-overflow: ellipsis; white-space: nowrap; }
+.video-admin-list-item span { color: var(--muted); font-size: .8rem; }
+.video-admin-icon { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 50%; background: var(--accent); color: #fff; font-size: .72rem; }
+.video-admin-list-item .item-action:disabled { cursor: not-allowed; opacity: .55; }
+.video-admin-list-note { margin: 14px 0 0; color: var(--muted); font-size: .82rem; line-height: 1.5; }
+@media (max-width: 840px) { .video-admin-layout { grid-template-columns: 1fr; } }

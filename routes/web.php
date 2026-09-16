@@ -25,6 +25,7 @@ Route::get('news/{slug}', [NewsController::class, 'show'])->name('news.show');
 Route::get('activities', [ActivityController::class, 'index'])->name('activities.index');
 Route::get('activities/{slug}', [ActivityController::class, 'show'])->name('activities.show');
 Route::get('spp', [SppController::class, 'show'])->name('spp.show');
+Route::view('videos', 'videos')->name('videos.index');
 Route::get('downloads/{download}/file', [DownloadController::class, 'download'])->name('downloads.download');
 
 // ─── Legacy URLs (Backward Compatibility - 301 Redirects) ───────────────────

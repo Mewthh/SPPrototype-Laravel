@@ -43,6 +43,15 @@ test('legacy spp.html redirects to /spp', function () {
     $response->assertRedirect('/spp');
 });
 
+test('videos and webinars page can be rendered via /videos', function () {
+    $response = $this->get('/videos');
+
+    $response->assertOk()
+        ->assertSee('Videos and Webinars')
+        ->assertSee('Philippine Physics Olympiad PPO2022 Closing Ceremony')
+        ->assertSee('Show More');
+});
+
 test('admin dashboard can be rendered via /admin by authenticated admin', function () {
     $admin = User::factory()->create(['role' => 'admin']);
 
@@ -52,7 +61,8 @@ test('admin dashboard can be rendered via /admin by authenticated admin', functi
         ->assertSee('SPP Admin Dashboard')
         ->assertSee('News Management')
         ->assertSee('Activities Management')
-        ->assertSee('SPP Conferences');
+        ->assertSee('SPP Conferences')
+        ->assertSee('Videos & Webinars');
 });
 
 test('legacy AdminDashboard.html redirects to /admin', function () {
@@ -70,5 +80,6 @@ test('authenticated admin users can access dashboard and view admin panels', fun
         ->assertSee('SPP Admin Dashboard')
         ->assertSee('News Management')
         ->assertSee('Activities Management')
-        ->assertSee('SPP Conferences');
+        ->assertSee('SPP Conferences')
+        ->assertSee('Videos & Webinars');
 });

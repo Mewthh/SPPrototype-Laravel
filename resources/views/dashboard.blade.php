@@ -137,6 +137,11 @@
 					<span class="nav-text">Downloads</span>
 					<span class="nav-badge" data-downloads-count-badge>19</span>
 				</a>
+				<a href="#videos-section" class="nav-item" data-nav-link>
+					<span class="nav-icon" aria-hidden="true">&#x25B6;</span>
+					<span class="nav-text">Videos &amp; Webinars</span>
+					<span class="nav-badge" data-videos-count-badge>12</span>
+				</a>
 				<div class="nav-section-label" style="margin-top: 1.25rem;">Site Settings</div>
 				<a href="#about-section" class="nav-item" data-nav-link>
 					<span class="nav-icon" aria-hidden="true">ⓘ</span>
@@ -1264,6 +1269,53 @@
 							<button type="button" class="button button-quiet" data-download-doc-cancel-btn>Cancel</button>
 						</div>
 					</form>
+				</div>
+			</section>
+
+			<section class="panel editor-panel" id="videos-section">
+				<div class="section-panel-head">
+					<div>
+						<p class="panel-kicker">Resource Library</p>
+						<h2>Videos &amp; Webinars</h2>
+					</div>
+					<span class="video-admin-preview-badge">UI only</span>
+				</div>
+
+				<div class="video-admin-layout">
+					<form class="compose-form video-admin-form" onsubmit="return false;">
+						<div class="editor-status-banner"><span>Add video or webinar</span></div>
+						<label class="field-row field-row-wide">
+							<span>Video title</span>
+							<input type="text" placeholder="e.g. SPP 2020 Plenary Session 5B" disabled>
+						</label>
+						<label class="field-row field-row-wide">
+							<span>Video URL</span>
+							<input type="url" placeholder="https://www.youtube.com/watch?v=..." disabled>
+						</label>
+						<label class="field-row">
+							<span>Date video was held</span>
+							<input type="date" disabled>
+						</label>
+						<p class="video-admin-help">Use the recording date, not the date the video was uploaded or posted.</p>
+						<div class="form-actions"><button class="button button-primary" type="button" disabled>Add Video</button></div>
+					</form>
+
+					<div class="video-admin-list" aria-label="Sample video list">
+						<div class="video-admin-list-head"><h3>Published videos</h3><span>12 items</span></div>
+						@foreach ([
+							['Philippine Physics Olympiad PPO2022 Closing Ceremony', '14 May 2022'],
+							['SPP 2020 Session 5G: Condensed Matter & Materials Science', '23 October 2020'],
+							['SPP 2020 Session 5D: Physics Education', '23 October 2020'],
+							['SPP 2020 Plenary Session 5B', '23 October 2020'],
+						] as [$title, $date])
+							<div class="video-admin-list-item">
+								<div class="video-admin-icon" aria-hidden="true">&#x25B6;</div>
+								<div><strong>{{ $title }}</strong><span>{{ $date }}</span></div>
+								<button type="button" class="item-action" disabled>Edit</button>
+							</div>
+						@endforeach
+						<p class="video-admin-list-note">The remaining 8 videos will appear here once video management is connected.</p>
+					</div>
 				</div>
 			</section>
 
