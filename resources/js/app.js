@@ -549,6 +549,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const cards = () => Array.from(videoLibraryGrid.querySelectorAll('.video-library-card'));
 
     function syncVideoLibraryButtons() {
+      if (!showMoreButton || !showLessButton) {
+        return;
+      }
+
       const hasHiddenCards = cards().some((card) => card.classList.contains('video-library-card-hidden'));
       showMoreButton.hidden = !hasHiddenCards;
       showLessButton.hidden = hasHiddenCards || cards().length <= 8;
@@ -568,6 +572,52 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     syncVideoLibraryButtons();
+  }
+
+  const videoPlayerModal = document.getElementById('video-player-modal');
+  if (videoPlayerModal) {
+    const videoPlayerFrame = videoPlayerModal.querySelector('[data-video-player-frame]');
+    const videoPlayerTitle = document.getElementById('video-player-title');
+    let videoPlayerTrigger = null;
+
+    function closeVideoPlayer() {
+      videoPlayerFrame.replaceChildren();
+      videoPlayerModal.classList.add('is-hidden');
+      document.body.style.overflow = '';
+      videoPlayerTrigger?.focus();
+    }
+
+    document.querySelectorAll('[data-video-player]').forEach((card) => {
+      card.addEventListener('click', () => {
+        const youtubeId = card.dataset.youtubeId;
+        if (!youtubeId) {
+          return;
+        }
+
+        const title = card.querySelector('h3')?.textContent?.trim() || 'Video player';
+        const player = document.createElement('iframe');
+        player.src = `https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&rel=0`;
+        player.title = title;
+        player.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        player.allowFullscreen = true;
+        videoPlayerFrame.replaceChildren(player);
+        videoPlayerTitle.textContent = title;
+        videoPlayerTrigger = card;
+        videoPlayerModal.classList.remove('is-hidden');
+        document.body.style.overflow = 'hidden';
+        videoPlayerModal.querySelector('[data-video-player-close]')?.focus();
+      });
+    });
+
+    videoPlayerModal.querySelectorAll('[data-video-player-close]').forEach((button) => {
+      button.addEventListener('click', closeVideoPlayer);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !videoPlayerModal.classList.contains('is-hidden')) {
+        closeVideoPlayer();
+      }
+    });
   }
 
   if (document.getElementById('article-root')) {

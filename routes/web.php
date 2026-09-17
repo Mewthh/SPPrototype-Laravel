@@ -15,6 +15,8 @@ use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\SppController;
+use App\Http\Controllers\VideoController;
+use App\Http\Controllers\Admin\VideoController as AdminVideoController;
 use Illuminate\Support\Facades\Route;
 
 // ─── Public Routes ──────────────────────────────────────────────────────────
@@ -25,7 +27,7 @@ Route::get('news/{slug}', [NewsController::class, 'show'])->name('news.show');
 Route::get('activities', [ActivityController::class, 'index'])->name('activities.index');
 Route::get('activities/{slug}', [ActivityController::class, 'show'])->name('activities.show');
 Route::get('spp', [SppController::class, 'show'])->name('spp.show');
-Route::view('videos', 'videos')->name('videos.index');
+Route::get('videos', [VideoController::class, 'index'])->name('videos.index');
 Route::get('downloads/{download}/file', [DownloadController::class, 'download'])->name('downloads.download');
 
 // ─── Legacy URLs (Backward Compatibility - 301 Redirects) ───────────────────
@@ -79,6 +81,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::delete('{conference}', [AdminConferenceController::class, 'destroy'])->name('destroy');
         Route::patch('{conference}/status', [AdminConferenceController::class, 'updateStatus'])->name('status');
     });
+
+    Route::apiResource('admin/api/videos', AdminVideoController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->names('admin.api.videos');
 
     Route::apiResource('admin/api/download-categories', DownloadCategoryController::class)
         ->only(['index', 'store', 'update', 'destroy'])

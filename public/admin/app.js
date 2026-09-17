@@ -4301,6 +4301,89 @@ proceedingsTemplateForm?.addEventListener('submit', async (event) => {
 
 loadProceedingsTemplate().catch(console.error);
 
+/* Videos and webinars */
+const videoForm = document.querySelector('[data-video-form]');
+const videoList = document.querySelector('[data-video-list]');
+const videoCount = document.querySelector('[data-video-count]');
+let editingVideoId = null;
+
+function escapeVideoText(value) {
+  const element = document.createElement('span');
+  element.textContent = value || '';
+  return element.innerHTML;
+}
+
+function resetVideoForm() {
+  editingVideoId = null;
+  videoForm?.reset();
+  document.querySelector('[data-video-form-heading]').textContent = 'Add video or webinar';
+  document.querySelector('[data-video-save]').textContent = 'Save Resource';
+  document.querySelector('[data-video-cancel]').hidden = true;
+}
+
+async function loadVideos() {
+  if (!videoList) return;
+  const response = await fetch('/admin/api/videos', { headers: { Accept: 'application/json' } });
+  if (!response.ok) throw new Error('Unable to load videos and webinars.');
+  const videos = (await response.json()).data;
+  videoList._videos = videos;
+  videoCount.textContent = `${videos.length} ${videos.length === 1 ? 'item' : 'items'}`;
+  videoList.innerHTML = videos.length ? videos.map((video) => `<div class="video-admin-list-item"><div class="video-admin-icon" aria-hidden="true">&#x25B6;</div><div><strong>${escapeVideoText(video.title)}</strong><span>${escapeVideoText(video.status)}</span></div><button type="button" class="item-action" data-video-edit="${video.id}">Edit</button><button type="button" class="item-action danger" data-video-delete="${video.id}">Delete</button></div>`).join('') : '<p class="video-admin-list-note">No resources yet. Add the first video or webinar.</p>';
+}
+
+videoForm?.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const save = document.querySelector('[data-video-save]');
+  let saved = false;
+  setButtonLoading(save, true, editingVideoId ? 'Updating Resource...' : 'Saving Resource...');
+  try {
+    const token = document.querySelector('meta[name="csrf-token"]')?.content;
+    const response = await fetch(editingVideoId ? `/admin/api/videos/${editingVideoId}` : '/admin/api/videos', { method: editingVideoId ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token || '', Accept: 'application/json' }, body: JSON.stringify(Object.fromEntries(new FormData(videoForm))) });
+    const body = await response.json();
+    if (!response.ok) throw new Error(body.message || 'Unable to save this resource.');
+    await loadVideos();
+    saved = true;
+    showFloatingToast(body.message);
+  } catch (error) {
+    showFloatingToast(error.message || 'Unable to save this resource.', 'Error');
+  } finally {
+    setButtonLoading(save, false);
+    if (saved) resetVideoForm();
+  }
+});
+
+document.querySelector('[data-video-cancel]')?.addEventListener('click', resetVideoForm);
+videoList?.addEventListener('click', async (event) => {
+  const button = event.target.closest('[data-video-edit], [data-video-delete]');
+  if (!button) return;
+  const id = Number(button.dataset.videoEdit || button.dataset.videoDelete);
+  const video = videoList._videos.find((item) => item.id === id);
+  if (!video) return;
+  if (button.dataset.videoEdit) {
+    editingVideoId = id;
+    for (const [key, value] of Object.entries(video)) {
+      const field = videoForm.elements[key];
+      if (field && value !== null) field.value = key === 'published_at' ? String(value).slice(0, 10) : value;
+    }
+    document.querySelector('[data-video-form-heading]').textContent = 'Edit video or webinar';
+    document.querySelector('[data-video-save]').textContent = 'Update Resource';
+    document.querySelector('[data-video-cancel]').hidden = false;
+    return;
+  }
+  if (!window.confirm(`Delete “${video.title}”?`)) return;
+  try {
+    const token = document.querySelector('meta[name="csrf-token"]')?.content;
+    const response = await fetch(`/admin/api/videos/${id}`, { method: 'DELETE', headers: { 'X-CSRF-TOKEN': token || '', Accept: 'application/json' } });
+    if (!response.ok) throw new Error('Unable to delete this resource.');
+    if (editingVideoId === id) resetVideoForm();
+    await loadVideos();
+    showFloatingToast('Resource deleted successfully.');
+  } catch (error) {
+    showFloatingToast(error.message || 'Unable to delete this resource.', 'Error');
+  }
+});
+loadVideos().catch((error) => { if (videoList) videoList.innerHTML = `<p class="video-admin-list-note">${escapeVideoText(error.message)}</p>`; });
+
 document.addEventListener('click', async (event) => {
   const button = event.target.closest('[data-download-add-category], [data-download-rename-cat], [data-download-delete-cat], [data-download-delete-cat-id], [data-download-add-doc], [data-download-doc-save-btn], [data-download-delete-doc-id]');
   if (!button) return;

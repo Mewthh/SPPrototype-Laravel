@@ -1278,43 +1278,29 @@
 						<p class="panel-kicker">Resource Library</p>
 						<h2>Videos &amp; Webinars</h2>
 					</div>
-					<span class="video-admin-preview-badge">UI only</span>
+					<span class="video-admin-preview-badge">Managed</span>
 				</div>
 
 				<div class="video-admin-layout">
-					<form class="compose-form video-admin-form" onsubmit="return false;">
-						<div class="editor-status-banner"><span>Add video or webinar</span></div>
+					<form class="compose-form video-admin-form" data-video-form>
+						<div class="editor-status-banner"><span data-video-form-heading>Add video or webinar</span></div>
 						<label class="field-row field-row-wide">
-							<span>Video title</span>
-							<input type="text" placeholder="e.g. SPP 2020 Plenary Session 5B" disabled>
+							<span>Title</span>
+							<input type="text" name="title" required>
 						</label>
 						<label class="field-row field-row-wide">
-							<span>Video URL</span>
-							<input type="url" placeholder="https://www.youtube.com/watch?v=..." disabled>
+							<span>YouTube link</span>
+							<input type="url" name="video_url" placeholder="https://www.youtube.com/watch?v=..." inputmode="url" required>
 						</label>
-						<label class="field-row">
-							<span>Date video was held</span>
-							<input type="date" disabled>
-						</label>
+						<label class="field-row"><span>Recording date</span><input type="date" name="published_at"></label>
+						<label class="field-row"><span>Status</span><select name="status"><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></label>
 						<p class="video-admin-help">Use the recording date, not the date the video was uploaded or posted.</p>
-						<div class="form-actions"><button class="button button-primary" type="button" disabled>Add Video</button></div>
+						<div class="form-actions"><button class="button button-primary" type="submit" data-video-save>Save Resource</button><button class="button button-quiet" type="button" data-video-cancel hidden>Cancel</button></div>
 					</form>
 
-					<div class="video-admin-list" aria-label="Sample video list">
-						<div class="video-admin-list-head"><h3>Published videos</h3><span>12 items</span></div>
-						@foreach ([
-							['Philippine Physics Olympiad PPO2022 Closing Ceremony', '14 May 2022'],
-							['SPP 2020 Session 5G: Condensed Matter & Materials Science', '23 October 2020'],
-							['SPP 2020 Session 5D: Physics Education', '23 October 2020'],
-							['SPP 2020 Plenary Session 5B', '23 October 2020'],
-						] as [$title, $date])
-							<div class="video-admin-list-item">
-								<div class="video-admin-icon" aria-hidden="true">&#x25B6;</div>
-								<div><strong>{{ $title }}</strong><span>{{ $date }}</span></div>
-								<button type="button" class="item-action" disabled>Edit</button>
-							</div>
-						@endforeach
-						<p class="video-admin-list-note">The remaining 8 videos will appear here once video management is connected.</p>
+					<div class="video-admin-list" aria-label="Managed videos and webinars">
+						<div class="video-admin-list-head"><h3>Resources</h3><span data-video-count>0 items</span></div>
+						<div data-video-list><p class="video-admin-list-note">Loading resources…</p></div>
 					</div>
 				</div>
 			</section>

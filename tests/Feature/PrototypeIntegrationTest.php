@@ -48,8 +48,7 @@ test('videos and webinars page can be rendered via /videos', function () {
 
     $response->assertOk()
         ->assertSee('Videos and Webinars')
-        ->assertSee('Philippine Physics Olympiad PPO2022 Closing Ceremony')
-        ->assertSee('Show More');
+        ->assertSee('No videos or webinars have been published yet.');
 });
 
 test('admin dashboard can be rendered via /admin by authenticated admin', function () {
