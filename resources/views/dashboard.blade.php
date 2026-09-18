@@ -142,6 +142,18 @@
 					<span class="nav-text">Videos &amp; Webinars</span>
 					<span class="nav-badge" data-videos-count-badge>12</span>
 				</a>
+				<a href="#membership-faq-section" class="nav-item" data-nav-link>
+					<span class="nav-icon" aria-hidden="true">
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+							stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<circle cx="12" cy="12" r="10"></circle>
+							<path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+							<line x1="12" y1="17" x2="12.01" y2="17"></line>
+						</svg>
+					</span>
+					<span class="nav-text">Membership FAQ</span>
+					<span class="nav-badge" data-faq-count-badge style="background: var(--accent-strong); color: var(--surface);">7</span>
+				</a>
 				<div class="nav-section-label" style="margin-top: 1.25rem;">Site Settings</div>
 				<a href="#about-section" class="nav-item" data-nav-link>
 					<span class="nav-icon" aria-hidden="true">ⓘ</span>
@@ -1303,6 +1315,379 @@
 						<div data-video-list><p class="video-admin-list-note">Loading resources…</p></div>
 					</div>
 				</div>
+			</section>
+
+			<!-- MEMBERSHIP FAQ SECTION -->
+			<section class="panel editor-panel is-hidden-section" id="membership-faq-section">
+				<div class="section-panel-head" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
+					<div>
+						<p class="panel-kicker">Resource Library &amp; Public Pages</p>
+						<h2 style="font-size: 1.5rem; font-weight: 800; color: var(--accent-strong); margin: 4px 0 0 0;">Membership FAQ Management</h2>
+					</div>
+					<div style="display: flex; align-items: center; gap: 10px;">
+						<span class="video-admin-preview-badge" style="background: var(--surface-strong); border: 1px solid var(--border); color: var(--accent-strong); padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.78rem; font-weight: 700;">UI Only &bull; 7 Active FAQs</span>
+						<button type="button" class="button button-primary" onclick="alert('UI Demo: Add new FAQ item modal/drawer')" style="display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.88rem;">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+							Add New FAQ Item
+						</button>
+					</div>
+				</div>
+
+				<!-- Page Header Settings & Form Link Cards -->
+				<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 24px; box-shadow: var(--shadow);">
+					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+						<h3 style="font-size: 1rem; font-weight: 800; color: var(--accent-strong); margin: 0; display: flex; align-items: center; gap: 8px;">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+							Public Header &amp; Application Form Links
+						</h3>
+						<button type="button" class="button button-secondary" style="padding: 5px 12px; font-size: 0.8rem; font-weight: 700;">Save Header Links</button>
+					</div>
+
+					<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px;">
+						<div>
+							<label style="font-size: 0.78rem; font-weight: 800; color: var(--muted); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em;">MEMBERSHIP INQUIRY FORM URL</label>
+							<div style="display: flex; gap: 8px;">
+								<input type="url" value="https://docs.google.com/forms/d/e/1FAIpQLSexjHKcRXZk9Q6mq-AZj2fijUBVjzoUcsRi7VvONcxU5H4olQ/viewform" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.88rem; background: var(--surface); color: var(--text);" />
+								<a href="https://docs.google.com/forms/d/e/1FAIpQLSexjHKcRXZk9Q6mq-AZj2fijUBVjzoUcsRi7VvONcxU5H4olQ/viewform" target="_blank" rel="noopener noreferrer" class="button button-quiet" style="padding: 8px 12px; font-size: 0.8rem; text-decoration: none;" title="Test Link">Open</a>
+							</div>
+						</div>
+						<div>
+							<label style="font-size: 0.78rem; font-weight: 800; color: var(--muted); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em;">MEMBERSHIP APPLICATION FORM URL</label>
+							<div style="display: flex; gap: 8px;">
+								<input type="url" value="https://docs.google.com/forms/d/e/1FAIpQLSdO5VZ9uKaRC-mObDdPcipjsl1aBjWKIF9-H5tVs_C2EKifJQ/viewform" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.88rem; background: var(--surface); color: var(--text);" />
+								<a href="https://docs.google.com/forms/d/e/1FAIpQLSdO5VZ9uKaRC-mObDdPcipjsl1aBjWKIF9-H5tVs_C2EKifJQ/viewform" target="_blank" rel="noopener noreferrer" class="button button-quiet" style="padding: 8px 12px; font-size: 0.8rem; text-decoration: none;" title="Test Link">Open</a>
+							</div>
+						</div>
+					</div>
+
+					<div>
+						<label style="font-size: 0.78rem; font-weight: 800; color: var(--muted); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em;">SEARCH HELPER NOTICE BANNER TEXT</label>
+						<textarea rows="2" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.88rem; background: var(--surface); color: var(--text); resize: vertical;">Search this webpage for related terms of your query using your web browser's search function. If you don't find it here, you may accomplish an online form to ask your question:</textarea>
+					</div>
+				</div>
+
+				<!-- FAQs Management Roster / Accordion Cards -->
+				<div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow); margin-bottom: 24px;">
+					
+					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 12px;">
+						<div style="display: flex; align-items: center; gap: 10px;">
+							<h3 style="font-size: 1.05rem; font-weight: 800; color: var(--accent-strong); margin: 0;">Frequently Asked Questions</h3>
+							<span style="font-size: 0.75rem; background: var(--surface-strong); color: var(--muted); padding: 3px 10px; border-radius: 12px; font-weight: 700;">7 Items</span>
+						</div>
+						
+						<div style="display: flex; gap: 10px; align-items: center;">
+							<input type="text" placeholder="Search questions..." style="padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; background: var(--surface-soft); color: var(--text); width: 220px;" />
+							<select style="padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; background: var(--surface-soft); color: var(--text);">
+								<option selected>All Categories</option>
+								<option>Membership Types</option>
+								<option>Application &amp; Fees</option>
+								<option>Status &amp; Dues</option>
+								<option>Certificates &amp; Validity</option>
+							</select>
+						</div>
+					</div>
+
+					<div style="display: flex; flex-direction: column; gap: 14px;">
+
+						<!-- FAQ Item 1 -->
+						<div class="tab-card-admin" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; transition: var(--transition);">
+							<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px;">
+								<div style="display: flex; align-items: flex-start; gap: 10px;">
+									<span style="cursor: grab; color: var(--muted); font-weight: 800; font-size: 1.1rem; line-height: 1.2;" title="Drag to reorder">&#x2630;</span>
+									<span style="font-weight: 800; font-size: 0.8rem; background: var(--accent-strong); color: var(--surface); padding: 3px 8px; border-radius: var(--radius-sm);">Q1</span>
+									<div>
+										<strong style="font-size: 0.98rem; color: var(--accent-strong); display: block; line-height: 1.4;">
+											1. What are the types of membership in Samahang Pisika ng Pilipinas (SPP, or Samahan)?
+										</strong>
+										<span style="font-size: 0.72rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">Category: Membership Types</span>
+									</div>
+								</div>
+								<div style="display: flex; gap: 8px; align-items: center;">
+									<span style="font-size: 0.72rem; background: rgba(27, 122, 76, 0.12); color: var(--success); padding: 3px 8px; border-radius: var(--radius-pill); font-weight: 700;">Visible</span>
+									<button type="button" class="button button-quiet" style="padding: 4px 10px; font-size: 0.78rem;">Edit</button>
+									<button type="button" class="button button-quiet" style="color: var(--danger); padding: 4px 10px; font-size: 0.78rem;">Delete</button>
+								</div>
+							</div>
+							<div style="background: var(--surface); padding: 12px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-size: 0.86rem; color: var(--text); line-height: 1.5; font-style: italic;">
+								"There are three basic types of membership in SPP: (1) Associate member; (2) Regular member; and (3) Institutional member. For details, kindly refer to the SPP Constitution and By-Laws Article II <a href="#" style="color: #60a5fa; text-decoration: underline;">here</a>."
+							</div>
+						</div>
+
+						<!-- FAQ Item 2 -->
+						<div class="tab-card-admin" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; transition: var(--transition);">
+							<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px;">
+								<div style="display: flex; align-items: flex-start; gap: 10px;">
+									<span style="cursor: grab; color: var(--muted); font-weight: 800; font-size: 1.1rem; line-height: 1.2;" title="Drag to reorder">&#x2630;</span>
+									<span style="font-weight: 800; font-size: 0.8rem; background: var(--accent-strong); color: var(--surface); padding: 3px 8px; border-radius: var(--radius-sm);">Q2</span>
+									<div>
+										<strong style="font-size: 0.98rem; color: var(--accent-strong); display: block; line-height: 1.4;">
+											2. How do I apply for membership to the Samahan?
+										</strong>
+										<span style="font-size: 0.72rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">Category: Application &amp; Fees</span>
+									</div>
+								</div>
+								<div style="display: flex; gap: 8px; align-items: center;">
+									<span style="font-size: 0.72rem; background: rgba(27, 122, 76, 0.12); color: var(--success); padding: 3px 8px; border-radius: var(--radius-pill); font-weight: 700;">Visible</span>
+									<button type="button" class="button button-quiet" style="padding: 4px 10px; font-size: 0.78rem;">Edit</button>
+									<button type="button" class="button button-quiet" style="color: var(--danger); padding: 4px 10px; font-size: 0.78rem;">Delete</button>
+								</div>
+							</div>
+							<div style="background: var(--surface); padding: 12px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-size: 0.86rem; color: var(--text); line-height: 1.5; font-style: italic;">
+								"The Samahan accepts membership application and/or profile update via a submission online. The online form and submission requirements are available from the link below: <span style="background: rgba(96, 165, 250, 0.15); color: #60a5fa; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Membership Application Form</span>"
+							</div>
+						</div>
+
+						<!-- FAQ Item 3 -->
+						<div class="tab-card-admin" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; transition: var(--transition);">
+							<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px;">
+								<div style="display: flex; align-items: flex-start; gap: 10px;">
+									<span style="cursor: grab; color: var(--muted); font-weight: 800; font-size: 1.1rem; line-height: 1.2;" title="Drag to reorder">&#x2630;</span>
+									<span style="font-weight: 800; font-size: 0.8rem; background: var(--accent-strong); color: var(--surface); padding: 3px 8px; border-radius: var(--radius-sm);">Q3</span>
+									<div>
+										<strong style="font-size: 0.98rem; color: var(--accent-strong); display: block; line-height: 1.4;">
+											3. Is there an application fee to be paid as a new member?
+										</strong>
+										<span style="font-size: 0.72rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">Category: Application &amp; Fees</span>
+									</div>
+								</div>
+								<div style="display: flex; gap: 8px; align-items: center;">
+									<span style="font-size: 0.72rem; background: rgba(27, 122, 76, 0.12); color: var(--success); padding: 3px 8px; border-radius: var(--radius-pill); font-weight: 700;">Visible</span>
+									<button type="button" class="button button-quiet" style="padding: 4px 10px; font-size: 0.78rem;">Edit</button>
+									<button type="button" class="button button-quiet" style="color: var(--danger); padding: 4px 10px; font-size: 0.78rem;">Delete</button>
+								</div>
+							</div>
+							<div style="background: var(--surface); padding: 12px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-size: 0.86rem; color: var(--text); line-height: 1.5; font-style: italic;">
+								"No. Once your application is approved you are required to attend the SPP National Physics Congress to take an oath of membership and pay annual membership dues. However, your annual membership fee is waived if you have paid conference fees to attend the SPP Congress in the same year."
+							</div>
+						</div>
+
+						<!-- FAQ Item 4 -->
+						<div class="tab-card-admin" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; transition: var(--transition);">
+							<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px;">
+								<div style="display: flex; align-items: flex-start; gap: 10px;">
+									<span style="cursor: grab; color: var(--muted); font-weight: 800; font-size: 1.1rem; line-height: 1.2;" title="Drag to reorder">&#x2630;</span>
+									<span style="font-weight: 800; font-size: 0.8rem; background: var(--accent-strong); color: var(--surface); padding: 3px 8px; border-radius: var(--radius-sm);">Q4</span>
+									<div>
+										<strong style="font-size: 0.98rem; color: var(--accent-strong); display: block; line-height: 1.4;">
+											4. How do I know my membership status in the Samahan?
+										</strong>
+										<span style="font-size: 0.72rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">Category: Status &amp; Dues</span>
+									</div>
+								</div>
+								<div style="display: flex; gap: 8px; align-items: center;">
+									<span style="font-size: 0.72rem; background: rgba(27, 122, 76, 0.12); color: var(--success); padding: 3px 8px; border-radius: var(--radius-pill); font-weight: 700;">Visible</span>
+									<button type="button" class="button button-quiet" style="padding: 4px 10px; font-size: 0.78rem;">Edit</button>
+									<button type="button" class="button button-quiet" style="color: var(--danger); padding: 4px 10px; font-size: 0.78rem;">Delete</button>
+								</div>
+							</div>
+							<div style="background: var(--surface); padding: 12px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-size: 0.86rem; color: var(--text); line-height: 1.5; font-style: italic;">
+								"You may ask the Membership Committee via the following link: <a href="#" style="color: #60a5fa; text-decoration: underline;">Membership Inquiry form</a>."
+							</div>
+						</div>
+
+						<!-- FAQ Item 5 -->
+						<div class="tab-card-admin" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; transition: var(--transition);">
+							<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px;">
+								<div style="display: flex; align-items: flex-start; gap: 10px;">
+									<span style="cursor: grab; color: var(--muted); font-weight: 800; font-size: 1.1rem; line-height: 1.2;" title="Drag to reorder">&#x2630;</span>
+									<span style="font-weight: 800; font-size: 0.8rem; background: var(--accent-strong); color: var(--surface); padding: 3px 8px; border-radius: var(--radius-sm);">Q5</span>
+									<div>
+										<strong style="font-size: 0.98rem; color: var(--accent-strong); display: block; line-height: 1.4;">
+											5. How is the membership fee paid in the Samahan?
+										</strong>
+										<span style="font-size: 0.72rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">Category: Application &amp; Fees</span>
+									</div>
+								</div>
+								<div style="display: flex; gap: 8px; align-items: center;">
+									<span style="font-size: 0.72rem; background: rgba(27, 122, 76, 0.12); color: var(--success); padding: 3px 8px; border-radius: var(--radius-pill); font-weight: 700;">Visible</span>
+									<button type="button" class="button button-quiet" style="padding: 4px 10px; font-size: 0.78rem;">Edit</button>
+									<button type="button" class="button button-quiet" style="color: var(--danger); padding: 4px 10px; font-size: 0.78rem;">Delete</button>
+								</div>
+							</div>
+							<div style="background: var(--surface); padding: 12px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-size: 0.86rem; color: var(--text); line-height: 1.5; font-style: italic;">
+								"In the past few years, the Membership Fee for a given year is deemed paid every time you attend the annual SPP National Physics Congress. The membership fee is waived for members who pay for the conference fee that year."
+							</div>
+						</div>
+
+						<!-- FAQ Item 6 -->
+						<div class="tab-card-admin" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; transition: var(--transition);">
+							<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px;">
+								<div style="display: flex; align-items: flex-start; gap: 10px;">
+									<span style="cursor: grab; color: var(--muted); font-weight: 800; font-size: 1.1rem; line-height: 1.2;" title="Drag to reorder">&#x2630;</span>
+									<span style="font-weight: 800; font-size: 0.8rem; background: var(--accent-strong); color: var(--surface); padding: 3px 8px; border-radius: var(--radius-sm);">Q6</span>
+									<div>
+										<strong style="font-size: 0.98rem; color: var(--accent-strong); display: block; line-height: 1.4;">
+											6. How do I request for a membership certificate?
+										</strong>
+										<span style="font-size: 0.72rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">Category: Certificates &amp; Validity</span>
+									</div>
+								</div>
+								<div style="display: flex; gap: 8px; align-items: center;">
+									<span style="font-size: 0.72rem; background: rgba(27, 122, 76, 0.12); color: var(--success); padding: 3px 8px; border-radius: var(--radius-pill); font-weight: 700;">Visible</span>
+									<button type="button" class="button button-quiet" style="padding: 4px 10px; font-size: 0.78rem;">Edit</button>
+									<button type="button" class="button button-quiet" style="color: var(--danger); padding: 4px 10px; font-size: 0.78rem;">Delete</button>
+								</div>
+							</div>
+							<div style="background: var(--surface); padding: 12px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-size: 0.86rem; color: var(--text); line-height: 1.5; font-style: italic;">
+								"You may accomplish the query form under 'Request for certificate of membership': <a href="#" style="color: #60a5fa; text-decoration: underline;">Membership Inquiry form</a>."
+							</div>
+						</div>
+
+						<!-- FAQ Item 7 -->
+						<div class="tab-card-admin" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; transition: var(--transition);">
+							<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px;">
+								<div style="display: flex; align-items: flex-start; gap: 10px;">
+									<span style="cursor: grab; color: var(--muted); font-weight: 800; font-size: 1.1rem; line-height: 1.2;" title="Drag to reorder">&#x2630;</span>
+									<span style="font-weight: 800; font-size: 0.8rem; background: var(--accent-strong); color: var(--surface); padding: 3px 8px; border-radius: var(--radius-sm);">Q7</span>
+									<div>
+										<strong style="font-size: 0.98rem; color: var(--accent-strong); display: block; line-height: 1.4;">
+											7. When does a membership certificate lose validity?
+										</strong>
+										<span style="font-size: 0.72rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">Category: Certificates &amp; Validity</span>
+									</div>
+								</div>
+								<div style="display: flex; gap: 8px; align-items: center;">
+									<span style="font-size: 0.72rem; background: rgba(27, 122, 76, 0.12); color: var(--success); padding: 3px 8px; border-radius: var(--radius-pill); font-weight: 700;">Visible</span>
+									<button type="button" class="button button-quiet" style="padding: 4px 10px; font-size: 0.78rem;">Edit</button>
+									<button type="button" class="button button-quiet" style="color: var(--danger); padding: 4px 10px; font-size: 0.78rem;">Delete</button>
+								</div>
+							</div>
+							<div style="background: var(--surface); padding: 12px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-size: 0.86rem; color: var(--text); line-height: 1.5; font-style: italic;">
+								"Membership certificates are valid for 72 months (6 years) from the month of issue (except for 'lifetime membership'). You are encouraged to maintain active membership by regularly attending the Physics Congress every year. Check Article II of the SPP Constitution and By-Laws <a href="#" style="color: #60a5fa; text-decoration: underline;">here</a> for more details."
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+				<!-- Live Public Page UI Preview Card -->
+				<div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow);">
+					
+					<!-- Mock Toolbar -->
+					<div style="background: var(--surface-strong); padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border);">
+						<div style="display: flex; align-items: center; gap: 8px;">
+							<span style="width: 10px; height: 10px; border-radius: 50%; background: #dc3545; display: inline-block;"></span>
+							<span style="width: 10px; height: 10px; border-radius: 50%; background: #c27d00; display: inline-block;"></span>
+							<span style="width: 10px; height: 10px; border-radius: 50%; background: #1b7a4c; display: inline-block;"></span>
+							<span style="font-size: 0.8rem; color: var(--muted); font-weight: 700; margin-left: 10px;">Live User Website Preview &mdash; Membership FAQ Page</span>
+						</div>
+						<div style="background: var(--surface); color: var(--muted); font-size: 0.78rem; padding: 4px 14px; border-radius: var(--radius-pill); border: 1px solid var(--border);">
+							https://spp-online.org/resources/membership-faq
+						</div>
+					</div>
+
+					<!-- Simulated User Website View (Theme-Reactive using SPP CSS variables) -->
+					<div style="background: var(--bg-page); color: var(--text); padding: 36px 32px; font-family: system-ui, -apple-system, sans-serif; transition: var(--transition);">
+						<div style="max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 300px; gap: 40px;">
+							
+							<!-- Main Left Column -->
+							<div>
+								<h1 style="font-size: 2.2rem; font-weight: 800; color: var(--accent-strong); text-align: center; margin-bottom: 36px; letter-spacing: -0.02em;">Membership FAQ</h1>
+
+								<p style="font-size: 0.9rem; color: var(--muted); line-height: 1.5; margin-bottom: 16px;">
+									Search this webpage for related terms of your query using your web browser's search function. If you don't find it here, you may accomplish an online form to ask your question:
+								</p>
+
+								<div style="margin-bottom: 32px;">
+									<a style="display: inline-flex; align-items: center; gap: 8px; background: var(--accent-strong); color: var(--surface); padding: 9px 18px; border-radius: 6px; font-size: 0.88rem; font-weight: 700; text-decoration: none; box-shadow: var(--shadow);">
+										<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+										Membership Inquiry Form
+									</a>
+								</div>
+
+								<h2 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-strong); margin-bottom: 24px; padding-bottom: 8px; border-bottom: 1px solid var(--border);">
+									Frequently Asked Questions about SPP Membership
+								</h2>
+
+								<!-- Questions List matching Reference Photo -->
+								<div style="display: flex; flex-direction: column; gap: 20px; font-size: 0.92rem; line-height: 1.6;">
+									<div>
+										<strong style="color: var(--accent-strong); display: block; margin-bottom: 4px;">1. What are the types of membership in Samahang Pisika ng Pilipinas (SPP, or Samahan)?</strong>
+										<div style="color: var(--muted); font-style: italic;">
+											There are three basic types of membership in SPP: (1) Associate member; (2) Regular member; and (3) Institutional member. For details, kindly refer to the SPP Constitution and By-Laws Article II <a style="color: var(--accent); text-decoration: underline;">here</a>.
+										</div>
+									</div>
+
+									<div>
+										<strong style="color: var(--accent-strong); display: block; margin-bottom: 4px;">2. How do I apply for membership to the Samahan?</strong>
+										<div style="color: var(--muted); font-style: italic; margin-bottom: 8px;">
+											The Samahan accepts membership application and/or profile update via a submission online. The online form and submission requirements are available from the link below:
+										</div>
+										<a style="display: inline-flex; align-items: center; gap: 8px; background: var(--accent-strong); color: var(--surface); padding: 7px 16px; border-radius: 6px; font-size: 0.84rem; font-weight: 700; text-decoration: none;">
+											<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+											Membership Application Form
+										</a>
+									</div>
+
+									<div>
+										<strong style="color: var(--accent-strong); display: block; margin-bottom: 4px;">3. Is there an application fee to be paid as a new member?</strong>
+										<div style="color: var(--muted); font-style: italic;">
+											No. Once your application is approved you are required to attend the SPP National Physics Congress to take an oath of membership and pay annual membership dues. However, your annual membership fee is waived if you have paid conference fees to attend the SPP Congress in the same year.
+										</div>
+									</div>
+
+									<div>
+										<strong style="color: var(--accent-strong); display: block; margin-bottom: 4px;">4. How do I know my membership status in the Samahan?</strong>
+										<div style="color: var(--muted); font-style: italic;">
+											You may ask the Membership Committee via the following link: <a style="color: var(--accent); text-decoration: underline;">Membership Inquiry form</a>.
+										</div>
+									</div>
+
+									<div>
+										<strong style="color: var(--accent-strong); display: block; margin-bottom: 4px;">5. How is the membership fee paid in the Samahan?</strong>
+										<div style="color: var(--muted); font-style: italic;">
+											In the past few years, the Membership Fee for a given year is deemed paid every time you attend the annual SPP National Physics Congress. The <strong style="color: var(--text); font-style: normal;">membership fee is waived</strong> for members who pay for the conference fee that year.
+										</div>
+									</div>
+
+									<div>
+										<strong style="color: var(--accent-strong); display: block; margin-bottom: 4px;">6. How do I request for a membership certificate?</strong>
+										<div style="color: var(--muted); font-style: italic;">
+											You may accomplish the query form under "Request for certificate of membership": <a style="color: var(--accent); text-decoration: underline;">Membership Inquiry form</a>.
+										</div>
+									</div>
+
+									<div>
+										<strong style="color: #ffffff; display: block; margin-bottom: 4px;">7. When does a membership certificate lose validity?</strong>
+										<div style="color: var(--muted); font-style: italic;">
+											Membership certificates are <strong style="color: var(--text); font-style: normal;">valid for 72 months (6 years) from the month of issue</strong> (except for "lifetime membership"). You are encouraged to maintain active membership by regularly attending the Physics Congress every year. Check Article II of the SPP Constitution and By-Laws <a style="color: var(--accent); text-decoration: underline;">here</a> for more details.
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- Sidebar Widgets on Reference Website -->
+							<div>
+								<div style="margin-bottom: 32px;">
+									<h3 style="font-size: 1.05rem; font-weight: 700; color: var(--accent-strong); margin-bottom: 16px;">Recent Activities</h3>
+									<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+										<div style="background: var(--surface-soft); border-radius: 6px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent-strong); font-size: 0.8rem; border: 1px solid var(--border);">SPP 2026</div>
+										<div style="background: var(--surface-soft); border-radius: 6px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--success); font-size: 0.8rem; border: 1px solid var(--border);">Entangles</div>
+										<div style="background: var(--surface-soft); border-radius: 6px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--warn); font-size: 0.8rem; border: 1px solid var(--border);">SPP 2024</div>
+										<div style="background: var(--surface-soft); border-radius: 6px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent); font-size: 0.8rem; border: 1px solid var(--border);">SPP 2023</div>
+									</div>
+								</div>
+
+								<div>
+									<h3 style="font-size: 1.05rem; font-weight: 700; color: var(--accent-strong); margin-bottom: 12px;">Recent News</h3>
+									<div style="font-size: 0.82rem; color: var(--muted); display: flex; flex-direction: column; gap: 12px;">
+										<div>
+											<a style="color: var(--accent); font-weight: 600; text-decoration: none;">Job Posting 2025-1: SPP Graduate Student Assistant</a>
+											<div style="font-size: 0.75rem; color: var(--muted);">14 April 2025</div>
+										</div>
+										<div>
+											<a style="color: var(--accent); font-weight: 600; text-decoration: none;">Association of Asia Pacific Physical Societies announces APPC16</a>
+											<div style="font-size: 0.75rem; color: var(--muted);">1 March 2025</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+
 			</section>
 
 

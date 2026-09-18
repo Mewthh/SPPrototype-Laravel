@@ -16,7 +16,7 @@
                     <a href="#resources" class="nav-dropdown-toggle">Resources <span
                             class="dropdown-chevron">&#x25BE;</span></a>
                     <div class="nav-dropdown-panel" aria-label="Resources submenu">
-                        <a href="#membership-faq">Membership FAQ</a>
+                        <a href="{{ route('membership-faq') }}">Membership FAQ</a>
                         <a href="https://proceedings.spp-online.org/" target="_blank"
                             rel="noopener noreferrer">Proceedings of the SPP</a>
                         <a href="{{ route('videos.index') }}">Videos and Webinars</a>
@@ -112,7 +112,7 @@
                     <details class="mobile-sub-menu">
                         <summary>Resources <span class="dropdown-chevron">&#x25BE;</span></summary>
                         <div class="mobile-sub-menu-panel">
-                            <a href="#membership-faq">Membership FAQ</a>
+                            <a href="{{ route('membership-faq') }}">Membership FAQ</a>
                             <a href="https://proceedings.spp-online.org/" target="_blank"
                                 rel="noopener noreferrer">Proceedings of the SPP</a>
                             <a href="{{ route('videos.index') }}">Videos and Webinars</a>

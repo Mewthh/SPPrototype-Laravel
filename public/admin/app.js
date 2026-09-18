@@ -3192,7 +3192,7 @@ navLinks.forEach((link) => {
 
 function updateActiveNavLink() {
   let currentHash = window.location.hash || '#news-section';
-  if (!['#news-section', '#activities-section', '#conferences-section', '#downloads-section', '#videos-section', '#hero-banner-section', '#about-section'].includes(currentHash)) {
+  if (!['#news-section', '#activities-section', '#conferences-section', '#downloads-section', '#videos-section', '#membership-faq-section', '#hero-banner-section', '#about-section'].includes(currentHash)) {
     currentHash = '#news-section';
   }
   navLinks.forEach((link) => {
@@ -3200,7 +3200,7 @@ function updateActiveNavLink() {
     link.classList.toggle('active', isActive);
   });
 
-  const sections = ['news-section', 'activities-section', 'conferences-section', 'downloads-section', 'videos-section', 'hero-banner-section', 'about-section'];
+  const sections = ['news-section', 'activities-section', 'conferences-section', 'downloads-section', 'videos-section', 'membership-faq-section', 'hero-banner-section', 'about-section'];
   sections.forEach((secId) => {
     const secEl = document.getElementById(secId);
     if (secEl) {

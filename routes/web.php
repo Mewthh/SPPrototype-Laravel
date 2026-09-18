@@ -28,6 +28,7 @@ Route::get('activities', [ActivityController::class, 'index'])->name('activities
 Route::get('activities/{slug}', [ActivityController::class, 'show'])->name('activities.show');
 Route::get('spp', [SppController::class, 'show'])->name('spp.show');
 Route::get('videos', [VideoController::class, 'index'])->name('videos.index');
+Route::view('membership-faq', 'membership-faq')->name('membership-faq');
 Route::get('downloads/{download}/file', [DownloadController::class, 'download'])->name('downloads.download');
 
 // ─── Legacy URLs (Backward Compatibility - 301 Redirects) ───────────────────
