@@ -1,13 +1,10 @@
 <x-layouts.public title="Membership FAQ | Samahang Pisika ng Pilipinas">
     <section class="membership-faq-page" style="padding: 40px 0 60px;">
-        <div class="shell" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
-            <div style="display: grid; grid-template-columns: 1fr 320px; gap: 40px; align-items: start;">
-                
-                <!-- Main Left Column -->
-                <main aria-label="Membership FAQ content">
-                    <header style="text-align: center; margin-bottom: 36px;">
-                        <h1 style="font-size: 2.25rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 12px 0; letter-spacing: -0.02em;">Membership FAQ</h1>
-                    </header>
+        <div class="shell" style="max-width: 920px; margin: 0 auto; padding: 0 20px;">
+            <main aria-label="Membership FAQ content">
+                <header style="text-align: center; margin-bottom: 36px;">
+                    <h1 style="font-size: 2.25rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 12px 0; letter-spacing: -0.02em;">Membership FAQ</h1>
+                </header>
 
                     <div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 32px;">
                         <p style="font-size: 0.95rem; color: var(--text); line-height: 1.6; margin: 0 0 16px 0;">
@@ -104,35 +101,6 @@
                         </div>
                     </section>
                 </main>
-
-                <!-- Right Sidebar Widgets -->
-                <aside aria-label="Related activities and news">
-                    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 24px; box-shadow: var(--shadow);">
-                        <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 16px 0;">Recent Activities</h3>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                            <a href="{{ route('activities.index') }}" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent-strong); font-size: 0.85rem; text-decoration: none;">SPP 2026</a>
-                            <a href="{{ route('activities.index') }}" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--success); font-size: 0.85rem; text-decoration: none;">Entangles</a>
-                            <a href="{{ route('activities.index') }}" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--warn); font-size: 0.85rem; text-decoration: none;">SPP 2024</a>
-                            <a href="{{ route('activities.index') }}" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent); font-size: 0.85rem; text-decoration: none;">SPP 2023</a>
-                        </div>
-                    </div>
-
-                    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow);">
-                        <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0;">Recent News</h3>
-                        <div style="display: flex; flex-direction: column; gap: 14px;">
-                            <div>
-                                <a href="{{ route('news.index') }}" style="color: var(--accent-strong); font-weight: 700; font-size: 0.88rem; text-decoration: none; line-height: 1.4; display: block; margin-bottom: 4px;">Job Posting 2025-1: SPP Graduate Student Assistant</a>
-                                <span style="font-size: 0.78rem; color: var(--muted);">14 April 2025</span>
-                            </div>
-                            <div>
-                                <a href="{{ route('news.index') }}" style="color: var(--accent-strong); font-weight: 700; font-size: 0.88rem; text-decoration: none; line-height: 1.4; display: block; margin-bottom: 4px;">Association of Asia Pacific Physical Societies announces APPC16</a>
-                                <span style="font-size: 0.78rem; color: var(--muted);">1 March 2025</span>
-                            </div>
-                        </div>
-                    </div>
-                </aside>
-
-            </div>
         </div>
     </section>
 </x-layouts.public>
