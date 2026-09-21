@@ -28,10 +28,6 @@ class Video extends Model
      */
     public function youtubeId(): ?string
     {
-        if (! is_string($this->video_url)) {
-            return null;
-        }
-
         $parts = parse_url($this->video_url);
         if ($parts === false) {
             return null;
@@ -41,7 +37,7 @@ class Video extends Model
         $path = trim($parts['path'] ?? '', '/');
 
         if ($host === 'youtu.be') {
-            $videoId = explode('/', $path)[0] ?? null;
+            $videoId = explode('/', $path)[0];
         } elseif (in_array($host, ['youtube.com', 'www.youtube.com', 'm.youtube.com'], true)) {
             parse_str($parts['query'] ?? '', $query);
             $videoId = $query['v'] ?? match (true) {

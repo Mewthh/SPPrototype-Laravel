@@ -42,7 +42,7 @@ class VideoController extends Controller
     }
 
     /**
-     * @return array{title: string, video_url: string, published_at?: string|null, status: 'draft'|'published'|'archived'}
+     * @return array{title: string, video_url: string, published_at?: string|null, status: string}
      */
     private function validated(Request $request): array
     {
@@ -70,8 +70,8 @@ class VideoController extends Controller
     }
 
     /**
-     * @param  array{title: string, video_url: string, published_at?: string|null, status: 'draft'|'published'|'archived'}  $validated
-     * @return array{title: string, video_url: string, published_at: Carbon|null, status: 'draft'|'published'|'archived}
+     * @param  array{title: string, video_url: string, published_at?: string|null, status: string}  $validated
+     * @return array{title: string, video_url: string, published_at: Carbon|null, status: string}
      */
     private function attributes(array $validated): array
     {
