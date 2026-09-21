@@ -11,12 +11,12 @@ use App\Http\Controllers\Admin\HeroBannerController as AdminHeroBannerController
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\Admin\ProceedingsTemplateController;
+use App\Http\Controllers\Admin\VideoController as AdminVideoController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\SppController;
 use App\Http\Controllers\VideoController;
-use App\Http\Controllers\Admin\VideoController as AdminVideoController;
 use Illuminate\Support\Facades\Route;
 
 // ─── Public Routes ──────────────────────────────────────────────────────────
