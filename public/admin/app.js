@@ -967,7 +967,7 @@ function applyMarkdownFormat(inputOrTextarea, format) {
     const newline = start > 0 && val[start - 1] !== '\n' ? '\n' : '';
     insertAtCursor(`${newline}\n---\n\n`, newline.length + 1, 3);
   } else if (format === 'link') {
-    showLinkModal(selected || '', '').then((result) => {
+    showLinkModal(selected || '').then((result) => {
       if (!result) return;
       const { text, url } = result;
       const snippet = `[${text}](${url})`;
@@ -1771,6 +1771,11 @@ function showLinkModal(prefillText = '', prefillUrl = '') {
           <h3 class="confirm-modal-title" id="link-modal-title">Insert Link</h3>
           <p class="confirm-modal-message">Enter the link text and URL below.</p>
           <div style="display:flex;flex-direction:column;gap:12px;margin:0 0 20px;">
+            <div id="link-modal-destination-row" style="display:flex;flex-direction:column;gap:10px;text-align:left;">
+              <span style="display:block;text-align:center;font-size:0.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">OR</span>
+              <span style="font-size:0.8rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">Link To</span>
+              <select id="link-modal-destination" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-strong);color:var(--text);font-size:0.9rem;"><option value="custom">Custom URL</option><option value="article-ii">Article II</option><option value="inquiry">Membership Inquiry Form</option><option value="application">Membership Application Form</option></select>
+            </div>
             <label style="display:flex;flex-direction:column;gap:5px;text-align:left;">
               <span style="font-size:0.8rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">Link Text</span>
               <input id="link-modal-text" type="text" placeholder="e.g. Click here" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-strong);color:var(--text);font-size:0.9rem;outline:none;" />
@@ -1793,9 +1798,21 @@ function showLinkModal(prefillText = '', prefillUrl = '') {
     const urlInput = modal.querySelector('#link-modal-url');
     const btnCancel = modal.querySelector('#link-modal-cancel');
     const btnInsert = modal.querySelector('#link-modal-insert');
+    const destinationRow = modal.querySelector('#link-modal-destination-row');
+    const destination = modal.querySelector('#link-modal-destination');
 
     textInput.value = prefillText;
     urlInput.value = prefillUrl || 'https://';
+    destinationRow.style.display = 'flex';
+    destination.value = 'custom';
+    destination.onchange = () => {
+      const urls = {
+        'article-ii': '/membership/articles/article-ii',
+        inquiry: 'https://docs.google.com/forms/d/e/1FAIpQLSexjHKcRXZk9Q6mq-AZj2fijUBVjzoUcsRi7VvONcxU5H4olQ/viewform',
+        application: 'https://docs.google.com/forms/d/e/1FAIpQLSdO5VZ9uKaRC-mObDdPcipjsl1aBjWKIF9-H5tVs_C2EKifJQ/viewform',
+      };
+      if (urls[destination.value]) urlInput.value = urls[destination.value];
+    };
 
     function close(result) {
       modal.classList.add('is-hidden');
@@ -4383,6 +4400,138 @@ videoList?.addEventListener('click', async (event) => {
   }
 });
 loadVideos().catch((error) => { if (videoList) videoList.innerHTML = `<p class="video-admin-list-note">${escapeVideoText(error.message)}</p>`; });
+
+/* Membership FAQ manager */
+const faqForm = document.querySelector('[data-faq-form]');
+const faqList = document.querySelector('[data-faq-list]');
+const faqSearch = document.querySelector('[data-faq-search]');
+const faqFormHome = document.querySelector('[data-faq-form-home]');
+const membershipArticleForm = document.querySelector('[data-membership-article-form]');
+let editingFaqId = null;
+let membershipFaqs = [];
+let membershipArticleLoaded = false;
+
+function resetFaqForm() {
+  editingFaqId = null;
+  if (faqForm && faqFormHome) faqFormHome.after(faqForm);
+  faqForm?.reset();
+  faqForm?.elements.answer?.dispatchEvent(new Event('input', { bubbles: true }));
+  faqForm.hidden = true;
+  document.querySelector('[data-faq-form-heading]').textContent = 'Add FAQ';
+  document.querySelector('[data-faq-save]').textContent = 'Save FAQ';
+}
+
+function renderMembershipFaqs() {
+  if (!faqList) return;
+  faqList.hidden = false;
+  document.querySelectorAll('[data-faq-count-badge]').forEach((badge) => { badge.textContent = String(membershipFaqs.length); });
+  const query = faqSearch?.value.trim().toLowerCase() || '';
+  const faqs = membershipFaqs.filter((faq) => !query || faq.question.toLowerCase().includes(query) || faq.answer.toLowerCase().includes(query));
+  faqList.innerHTML = faqs.length ? faqs.map((faq, index) => `<div class="tab-card-admin" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px;"><div style="display: flex; justify-content: space-between; gap: 12px;"><div><strong style="color: var(--accent-strong);">${index + 1}. ${escapeHtml(faq.question)}</strong><p style="margin: 8px 0 0; white-space: pre-line; color: var(--muted);">${escapeFaqAnswer(faq.answer)}</p></div><div style="display: flex; gap: 8px; align-items: flex-start;"><span style="font-size: 0.72rem; background: ${faq.is_visible ? 'rgba(27, 122, 76, 0.12)' : 'var(--surface-strong)'}; color: ${faq.is_visible ? 'var(--success)' : 'var(--muted)'}; padding: 3px 8px; border-radius: var(--radius-pill); font-weight: 700;">${faq.is_visible ? 'Visible' : 'Hidden'}</span><button type="button" class="button button-quiet" data-faq-edit="${faq.id}" style="padding: 4px 10px; font-size: 0.78rem;">Edit</button><button type="button" class="button button-quiet" data-faq-delete="${faq.id}" style="color: var(--danger); padding: 4px 10px; font-size: 0.78rem;">Delete</button></div></div></div>`).join('') : '<p class="video-admin-list-note">No matching FAQs found.</p>';
+}
+
+function escapeFaqAnswer(answer) {
+  return escapeHtml(answer).replace(/\[([^\]]+)\]\((\/(?:[^)\s]*)|https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #2563eb; font-weight: 700; text-decoration: underline;">$1</a>');
+}
+
+async function loadMembershipArticle() {
+  const response = await fetch('/admin/api/membership-article', { headers: { Accept: 'application/json' } });
+  if (!response.ok) throw new Error('Unable to load Article II.');
+  const article = (await response.json()).data;
+  membershipArticleForm.elements.title.value = article.title;
+  membershipArticleForm.elements.content.value = article.content;
+  membershipArticleForm.elements.content.dispatchEvent(new Event('input', { bubbles: true }));
+  membershipArticleLoaded = true;
+}
+
+async function loadMembershipFaqs() {
+  if (!faqList) return;
+  const response = await fetch('/admin/api/membership-faqs', { headers: { Accept: 'application/json' } });
+  if (!response.ok) throw new Error('Unable to load membership FAQs.');
+  membershipFaqs = (await response.json()).data;
+  renderMembershipFaqs();
+}
+
+document.querySelector('[data-faq-add]')?.addEventListener('click', () => {
+  resetFaqForm();
+  faqForm.hidden = false;
+  faqForm.elements.question.focus();
+});
+document.querySelector('[data-faq-cancel]')?.addEventListener('click', resetFaqForm);
+document.querySelector('[data-membership-article-open]')?.addEventListener('click', async () => {
+  const button = document.querySelector('[data-membership-article-open]');
+  try {
+    setButtonLoading(button, true, 'Loading Article II...');
+    resetFaqForm();
+    faqList.hidden = true;
+    document.querySelector('[data-faq-search]')?.closest('div')?.setAttribute('hidden', 'hidden');
+    membershipArticleForm.hidden = false;
+    if (!membershipArticleLoaded) await loadMembershipArticle();
+  } catch (error) { showFloatingToast(error.message || 'Unable to load Article II.', 'Error'); } finally { setButtonLoading(button, false); }
+});
+document.querySelector('[data-membership-article-close]')?.addEventListener('click', () => {
+  membershipArticleForm.hidden = true;
+  faqList.hidden = false;
+  document.querySelector('[data-faq-search]')?.closest('div')?.removeAttribute('hidden');
+});
+membershipArticleForm?.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const saveButton = membershipArticleForm.querySelector('[type="submit"]');
+  setButtonLoading(saveButton, true, 'Saving Article II...');
+  const token = document.querySelector('meta[name="csrf-token"]')?.content;
+  try {
+    const response = await fetch('/admin/api/membership-article', { method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token || '', Accept: 'application/json' }, body: JSON.stringify(Object.fromEntries(new FormData(membershipArticleForm))) });
+    const body = await response.json();
+    if (!response.ok) throw new Error(body.message || 'Unable to save Article II.');
+    showFloatingToast(body.message);
+  } catch (error) { showFloatingToast(error.message || 'Unable to save Article II.', 'Error'); } finally { setButtonLoading(saveButton, false); }
+});
+faqSearch?.addEventListener('input', renderMembershipFaqs);
+faqForm?.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const saveButton = document.querySelector('[data-faq-save]');
+  setButtonLoading(saveButton, true, editingFaqId ? 'Updating FAQ...' : 'Saving FAQ...');
+  const payload = Object.fromEntries(new FormData(faqForm));
+  payload.is_visible = faqForm.elements.is_visible.checked;
+  const token = document.querySelector('meta[name="csrf-token"]')?.content;
+  try {
+    const response = await fetch(editingFaqId ? `/admin/api/membership-faqs/${editingFaqId}` : '/admin/api/membership-faqs', { method: editingFaqId ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token || '', Accept: 'application/json' }, body: JSON.stringify(payload) });
+    const body = await response.json();
+    if (!response.ok) throw new Error(body.message || 'Unable to save FAQ.');
+    resetFaqForm();
+    await loadMembershipFaqs();
+    showFloatingToast(body.message);
+  } catch (error) { showFloatingToast(error.message || 'Unable to save FAQ.', 'Error'); } finally { setButtonLoading(saveButton, false); }
+});
+faqList?.addEventListener('click', async (event) => {
+  const button = event.target.closest('[data-faq-edit], [data-faq-delete]');
+  if (!button) return;
+  const id = Number(button.dataset.faqEdit || button.dataset.faqDelete);
+  const faq = membershipFaqs.find((item) => item.id === id);
+  if (!faq) return;
+  if (button.dataset.faqEdit) {
+    editingFaqId = id;
+    button.closest('.tab-card-admin')?.appendChild(faqForm);
+    faqForm.hidden = false;
+    faqForm.elements.question.value = faq.question;
+    faqForm.elements.answer.value = faq.answer;
+    faqForm.elements.answer.dispatchEvent(new Event('input', { bubbles: true }));
+    faqForm.elements.is_visible.checked = faq.is_visible;
+    document.querySelector('[data-faq-form-heading]').textContent = 'Edit FAQ';
+    document.querySelector('[data-faq-save]').textContent = 'Update FAQ';
+    faqForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return;
+  }
+  if (!window.confirm(`Delete “${faq.question}”?`)) return;
+  const token = document.querySelector('meta[name="csrf-token"]')?.content;
+  const response = await fetch(`/admin/api/membership-faqs/${id}`, { method: 'DELETE', headers: { 'X-CSRF-TOKEN': token || '', Accept: 'application/json' } });
+  if (!response.ok) { showFloatingToast('Unable to delete FAQ.', 'Error'); return; }
+  if (editingFaqId === id) resetFaqForm();
+  await loadMembershipFaqs();
+  showFloatingToast('FAQ deleted successfully.');
+});
+loadMembershipFaqs().catch((error) => { if (faqList) { faqList.hidden = false; faqList.innerHTML = `<p class="video-admin-list-note">${escapeHtml(error.message)}</p>`; } });
+loadMembershipArticle().catch(console.error);
 
 document.addEventListener('click', async (event) => {
   const button = event.target.closest('[data-download-add-category], [data-download-rename-cat], [data-download-delete-cat], [data-download-delete-cat-id], [data-download-add-doc], [data-download-doc-save-btn], [data-download-delete-doc-id]');

@@ -9,11 +9,15 @@ use App\Http\Controllers\Admin\DownloadCategoryController;
 use App\Http\Controllers\Admin\DownloadController as AdminDownloadController;
 use App\Http\Controllers\Admin\HeroBannerController as AdminHeroBannerController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
+use App\Http\Controllers\Admin\MembershipFaqController as AdminMembershipFaqController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\Admin\ProceedingsTemplateController;
 use App\Http\Controllers\Admin\VideoController as AdminVideoController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MembershipFaqController;
+use App\Http\Controllers\MembershipArticleController;
+use App\Http\Controllers\Admin\MembershipArticleController as AdminMembershipArticleController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\SppController;
 use App\Http\Controllers\VideoController;
@@ -28,7 +32,8 @@ Route::get('activities', [ActivityController::class, 'index'])->name('activities
 Route::get('activities/{slug}', [ActivityController::class, 'show'])->name('activities.show');
 Route::get('spp', [SppController::class, 'show'])->name('spp.show');
 Route::get('videos', [VideoController::class, 'index'])->name('videos.index');
-Route::view('membership-faq', 'membership-faq')->name('membership-faq');
+Route::get('membership-faq', [MembershipFaqController::class, 'index'])->name('membership-faq');
+Route::get('membership/articles/{slug}', [MembershipArticleController::class, 'show'])->name('membership-articles.show');
 Route::get('downloads/{download}/file', [DownloadController::class, 'download'])->name('downloads.download');
 
 // ─── Legacy URLs (Backward Compatibility - 301 Redirects) ───────────────────
@@ -86,6 +91,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::apiResource('admin/api/videos', AdminVideoController::class)
         ->only(['index', 'store', 'update', 'destroy'])
         ->names('admin.api.videos');
+
+    Route::apiResource('admin/api/membership-faqs', AdminMembershipFaqController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->names('admin.api.membership-faqs');
+    Route::get('admin/api/membership-article', [AdminMembershipArticleController::class, 'show'])->name('admin.api.membership-article.show');
+    Route::put('admin/api/membership-article', [AdminMembershipArticleController::class, 'update'])->name('admin.api.membership-article.update');
 
     Route::apiResource('admin/api/download-categories', DownloadCategoryController::class)
         ->only(['index', 'store', 'update', 'destroy'])
