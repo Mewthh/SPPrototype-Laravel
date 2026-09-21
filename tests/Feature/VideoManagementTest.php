@@ -29,7 +29,7 @@ test('administrators can create a video resource', function () {
     $this->actingAs($admin)
         ->postJson(route('admin.api.videos.store'), [
             'title' => 'Physics Teaching Recording',
-            'video_url' => 'https://www.youtube.com/watch?v=abc123',
+            'video_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
             'published_at' => '2026-09-17',
             'status' => 'published',
         ])
