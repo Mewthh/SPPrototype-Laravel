@@ -389,8 +389,7 @@
 						</div>
 
 						<div class="form-actions">
-							<button type="submit" class="button button-primary" data-news-submit-primary>Save &
-								Publish</button>
+							<button type="submit" class="button button-primary" data-news-submit-primary>Save</button>
 							<button type="submit" class="button button-secondary" data-status-override="draft"
 								data-news-submit-secondary>Save as Draft</button>
 							<button type="reset" class="button button-quiet">Reset</button>
@@ -618,8 +617,7 @@
 						</div>
 
 						<div class="form-actions">
-							<button type="submit" class="button button-primary" data-activity-submit-primary>Save &
-								Publish</button>
+							<button type="submit" class="button button-primary" data-activity-submit-primary>Save</button>
 							<button type="submit" class="button button-secondary" data-status-override="scheduled"
 								data-activity-submit-secondary>Save as Scheduled</button>
 							<button type="reset" class="button button-quiet">Reset</button>
@@ -902,8 +900,7 @@
 						</div>
 
 						<div class="form-actions">
-							<button type="submit" class="button button-primary" data-conference-submit-primary>Save &
-								Publish</button>
+							<button type="submit" class="button button-primary" data-conference-submit-primary>Save</button>
 							<button type="submit" class="button button-secondary" data-status-override="draft"
 								data-conference-submit-secondary>Save as Draft</button>
 							<button type="reset" class="button button-quiet">Reset</button>

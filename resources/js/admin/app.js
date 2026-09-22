@@ -489,7 +489,7 @@ function updateNewsEditorUI() {
     if (newsBanner) newsBanner.classList.remove('is-editing');
     if (newsBannerText) newsBannerText.textContent = 'Create New News Post';
     if (newsCancelEdit) newsCancelEdit.style.display = 'none';
-    if (newsSubmitPrimary) newsSubmitPrimary.textContent = 'Save & Publish';
+    if (newsSubmitPrimary) newsSubmitPrimary.textContent = 'Save';
     if (newsSubmitSecondary) newsSubmitSecondary.textContent = 'Save as Draft';
   }
 }
@@ -508,7 +508,7 @@ function updateActivityEditorUI() {
     if (activityBanner) activityBanner.classList.remove('is-editing');
     if (activityBannerText) activityBannerText.textContent = 'Create New Activity';
     if (activityCancelEdit) activityCancelEdit.style.display = 'none';
-    if (activitySubmitPrimary) activitySubmitPrimary.textContent = 'Save & Publish';
+    if (activitySubmitPrimary) activitySubmitPrimary.textContent = 'Save';
     if (activitySubmitSecondary) activitySubmitSecondary.textContent = 'Save as Scheduled';
   }
 }
