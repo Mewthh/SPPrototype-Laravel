@@ -3,8 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         $defaults = [
@@ -28,7 +27,5 @@ return new class extends Migration
             ->update(['answer' => 'Membership certificates are valid for 72 months (6 years) from the month of issue (except for “lifetime membership”). You are encouraged to maintain active membership by regularly attending the Physics Congress every year. Check Article II of the SPP Constitution and By-Laws [here](/membership/articles/article-ii) for more details.', 'updated_at' => now()]);
     }
 
-    public function down(): void
-    {
-    }
+    public function down(): void {}
 };
