@@ -35,6 +35,4 @@ return new class extends Migration {
             default => [],
         };
     }
-
-    public function down(): void {}
 };

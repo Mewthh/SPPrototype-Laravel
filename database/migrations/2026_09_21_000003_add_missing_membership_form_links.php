@@ -21,6 +21,4 @@ return new class extends Migration {
                 ->update(['answer' => $answer, 'updated_at' => now()]);
         }
     }
-
-    public function down(): void {}
 };
