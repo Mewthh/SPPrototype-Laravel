@@ -47,8 +47,7 @@ class NewsController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'summary' => ['nullable', 'string'],
             'excerpt' => ['nullable', 'string'],
-            'publishDate' => ['nullable', 'date'],
-            'published_at' => ['nullable', 'date'],
+            'published_at' => ['exclude_unless:status,scheduled', 'required_if:status,scheduled', 'date'],
             'body' => ['nullable', 'string'],
             'content' => ['nullable', 'string'],
             'status' => ['required', 'in:draft,published,scheduled,archived'],
@@ -62,13 +61,9 @@ class NewsController extends Controller
         $excerpt = $validated['excerpt'] ?? $validated['summary'] ?? null;
         $status = $validated['status'];
 
-        $publishedAt = null;
-        $rawDate = $validated['published_at'] ?? $validated['publishDate'] ?? null;
-        if ($rawDate) {
-            $publishedAt = Carbon::parse($rawDate);
-        } elseif ($status === 'published') {
-            $publishedAt = Carbon::now();
-        }
+        $publishedAt = $status === 'scheduled'
+            ? Carbon::parse($validated['published_at'])
+            : ($status === 'published' ? Carbon::now() : null);
 
         $imagePath = $this->handleImageUpload($request);
 
@@ -107,8 +102,7 @@ class NewsController extends Controller
             'title' => ['sometimes', 'required', 'string', 'max:255'],
             'summary' => ['nullable', 'string'],
             'excerpt' => ['nullable', 'string'],
-            'publishDate' => ['nullable'],
-            'published_at' => ['nullable'],
+            'published_at' => ['exclude_unless:status,scheduled', 'required_if:status,scheduled', 'date'],
             'body' => ['nullable', 'string'],
             'content' => ['nullable', 'string'],
             'status' => ['sometimes', 'required', 'in:draft,published,scheduled,archived'],
@@ -130,14 +124,14 @@ class NewsController extends Controller
             $news->excerpt = $validated['excerpt'] ?? $validated['summary'] ?? null;
         }
 
+        $previousStatus = $news->status;
         if (isset($validated['status'])) {
             $news->status = $validated['status'];
         }
 
-        $rawDate = $validated['published_at'] ?? $validated['publishDate'] ?? null;
-        if ($rawDate) {
-            $news->published_at = Carbon::parse($rawDate);
-        } elseif ($news->status === 'published' && ! $news->published_at) {
+        if ($news->status === 'scheduled') {
+            $news->published_at = Carbon::parse($validated['published_at']);
+        } elseif ($news->status === 'published' && $previousStatus !== 'published') {
             $news->published_at = Carbon::now();
         }
 
@@ -176,11 +170,12 @@ class NewsController extends Controller
     public function updateStatus(Request $request, News $news): JsonResponse
     {
         $validated = $request->validate([
-            'status' => ['required', 'in:draft,published,scheduled,archived'],
+            'status' => ['required', 'in:draft,published,archived'],
         ]);
 
+        $previousStatus = $news->status;
         $news->status = $validated['status'];
-        if ($news->status === 'published' && ! $news->published_at) {
+        if ($news->status === 'published' && $previousStatus !== 'published') {
             $news->published_at = Carbon::now();
         }
         $news->save();

@@ -65,7 +65,11 @@ class ActivityController extends Controller
             return null;
         }
 
-        if (in_array($activity->status, ['published', 'scheduled'])) {
+        if ($activity->status === 'published') {
+            return $activity;
+        }
+
+        if ($activity->status === 'scheduled' && $activity->published_at && $activity->published_at->lessThanOrEqualTo(now())) {
             return $activity;
         }
 

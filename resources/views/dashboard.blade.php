@@ -230,7 +230,7 @@
 						<div class="editor-status-banner" data-news-banner>
 							<span data-news-banner-text>Create New News Post</span>
 							<button type="button" class="item-action" data-news-cancel-edit
-								style="display: none;">Cancel Edit</button>
+								style="display: none;">Cancel</button>
 						</div>
 
 						<!-- Draft Recovery Banner -->
@@ -273,9 +273,9 @@
 								maxlength="200"></textarea>
 						</label>
 
-						<label class="field-row">
-							<span>Publish date</span>
-							<input type="date" name="publishDate" />
+						<label class="field-row" data-scheduled-publish-field hidden>
+							<span>Publish date and time</span>
+							<input type="datetime-local" name="published_at" disabled />
 						</label>
 
 						<div class="field-row field-row-wide">
@@ -391,7 +391,7 @@
 						<div class="form-actions">
 							<button type="submit" class="button button-primary" data-news-submit-primary>Save</button>
 							<button type="submit" class="button button-secondary" data-status-override="draft"
-								data-news-submit-secondary>Save as Draft</button>
+								data-news-submit-secondary>Draft</button>
 							<button type="reset" class="button button-quiet">Reset</button>
 						</div>
 					</form>
@@ -448,7 +448,7 @@
 								<button type="button" class="button button-secondary" data-news-load-more>Show
 									More</button>
 								<button type="button" class="button button-secondary" data-news-show-less
-									style="display: none;">Show Less</button>
+									style="display: none;">Less</button>
 							</div>
 						</div>
 					</div>
@@ -473,7 +473,7 @@
 						<div class="editor-status-banner" data-activity-banner>
 							<span data-activity-banner-text>Create New Activity</span>
 							<button type="button" class="item-action" data-activity-cancel-edit
-								style="display: none;">Cancel Edit</button>
+								style="display: none;">Cancel</button>
 						</div>
 
 						<input type="hidden" name="editingId" value="" />
@@ -500,9 +500,9 @@
 								maxlength="200"></textarea>
 						</label>
 
-						<label class="field-row">
-							<span>Event Date</span>
-							<input type="date" name="publishDate" />
+						<label class="field-row" data-scheduled-publish-field hidden>
+							<span>Publish date and time</span>
+							<input type="datetime-local" name="published_at" disabled />
 						</label>
 
 						<div class="field-row field-row-wide">
@@ -619,7 +619,7 @@
 						<div class="form-actions">
 							<button type="submit" class="button button-primary" data-activity-submit-primary>Save</button>
 							<button type="submit" class="button button-secondary" data-status-override="scheduled"
-								data-activity-submit-secondary>Save as Scheduled</button>
+								data-activity-submit-secondary>Schedule</button>
 							<button type="reset" class="button button-quiet">Reset</button>
 						</div>
 					</form>
@@ -677,7 +677,7 @@
 								<button type="button" class="button button-secondary" data-activity-load-more>Show
 									More</button>
 								<button type="button" class="button button-secondary" data-activity-show-less
-									style="display: none;">Show Less</button>
+									style="display: none;">Less</button>
 							</div>
 						</div>
 					</div>
@@ -702,7 +702,7 @@
 						<div class="editor-status-banner" data-conference-banner>
 							<span data-conference-banner-text>Create New Conference</span>
 							<button type="button" class="item-action" data-conference-cancel-edit
-								style="display: none;">Cancel Edit</button>
+								style="display: none;">Cancel</button>
 						</div>
 
 						<input type="hidden" name="editingId" value="" />
@@ -859,7 +859,7 @@
 											<line x1="12" y1="5" x2="12" y2="19"></line>
 											<line x1="5" y1="12" x2="19" y2="12"></line>
 										</svg>
-										Add New Tab
+										Add
 									</button>
 								</div>
 							</div>
@@ -870,7 +870,7 @@
 
 							<div class="conference-tabs-toggle-wrap is-hidden" data-conference-tabs-toggle-wrap>
 								<button type="button" class="conference-tabs-toggle-btn" data-conference-tabs-toggle aria-expanded="false">
-									<span class="conference-tabs-toggle-text" data-conference-tabs-toggle-text>Show More Tabs</span>
+									<span class="conference-tabs-toggle-text" data-conference-tabs-toggle-text>More</span>
 									<svg class="conference-tabs-toggle-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 										<polyline points="6 9 12 15 18 9"></polyline>
 									</svg>
@@ -902,7 +902,7 @@
 						<div class="form-actions">
 							<button type="submit" class="button button-primary" data-conference-submit-primary>Save</button>
 							<button type="submit" class="button button-secondary" data-status-override="draft"
-								data-conference-submit-secondary>Save as Draft</button>
+								data-conference-submit-secondary>Draft</button>
 							<button type="reset" class="button button-quiet">Reset</button>
 						</div>
 					</form>
@@ -1078,8 +1078,8 @@
 							@endforeach
 							</div>
 							<div class="admin-about-list-actions" data-about-list-actions="officers">
-								<button type="button" class="button button-secondary" data-about-show-more>Show More</button>
-								<button type="button" class="button button-secondary is-hidden" data-about-show-less>Show Less</button>
+								<button type="button" class="button button-secondary" data-about-show-more>More</button>
+								<button type="button" class="button button-secondary is-hidden" data-about-show-less>Less</button>
 							</div>
 						</section>
 
@@ -1095,8 +1095,8 @@
 							@endforeach
 							</div>
 							<div class="admin-about-list-actions" data-about-list-actions="councilors">
-								<button type="button" class="button button-secondary" data-about-show-more>Show More</button>
-								<button type="button" class="button button-secondary is-hidden" data-about-show-less>Show Less</button>
+								<button type="button" class="button button-secondary" data-about-show-more>More</button>
+								<button type="button" class="button button-secondary is-hidden" data-about-show-less>Less</button>
 							</div>
 						</section>
 
@@ -1128,7 +1128,7 @@
 								<label class="field-row"><span>Second button</span><input class="proceedings-text-input" name="second_label" placeholder="Button name"><input class="proceedings-text-input" name="second_url" type="url" placeholder="Paste link: https://example.com/file.pdf"><span class="proceedings-or">— OR —</span><input class="proceedings-file-input" name="second_file" type="file"><span class="proceedings-checkbox"><input name="second_opens_in_new_tab" type="checkbox" value="1" checked> open in a new tab</span></label>
 							</div>
 						</div>
-						<div class="form-actions"><button type="submit" class="button button-primary" data-proceedings-save>Save Template</button></div>
+						<div class="form-actions"><button type="submit" class="button button-primary" data-proceedings-save>Save</button></div>
 					</form>
 				</div>
 
@@ -1142,7 +1142,7 @@
 						<div style="display: flex; gap: 10px; flex-wrap: nowrap; align-items: center;">
 							<button type="button" class="button button-primary" data-download-add-category style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
 								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-								<span>Add Category</span>
+								<span>Add</span>
 							</button>
 						</div>
 					</div>
@@ -1158,8 +1158,8 @@
 						<div class="queue-pagination" data-download-cat-pagination style="display: none;">
 							<span class="pagination-info" data-download-cat-pagination-info>Showing 3 categories</span>
 							<div class="queue-pagination-actions" style="display: flex; gap: 10px; align-items: center;">
-								<button type="button" class="button button-secondary" data-download-cat-load-more>Show More</button>
-								<button type="button" class="button button-secondary" data-download-cat-show-less style="display: none;">Show Less</button>
+								<button type="button" class="button button-secondary" data-download-cat-load-more>More</button>
+								<button type="button" class="button button-secondary" data-download-cat-show-less style="display: none;">Less</button>
 							</div>
 						</div>
 					</div>
@@ -1174,11 +1174,11 @@
 						</div>
 						<div style="display: flex; gap: 10px; flex-wrap: nowrap; align-items: center; white-space: nowrap;">
 							<button type="button" class="button button-secondary" data-download-back-to-categories style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
-								&larr; Back to All Categories
+								&larr; Back
 							</button>
 							<button type="button" class="button button-primary" data-download-add-doc style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
 								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-								<span>Add Document</span>
+								<span>Add</span>
 							</button>
 						</div>
 					</div>
@@ -1210,8 +1210,8 @@
 						<div class="queue-pagination" data-download-doc-pagination style="display: none; margin-top: 18px;">
 							<span class="pagination-info" data-download-doc-pagination-info>Showing 3 of 12 documents</span>
 							<div class="queue-pagination-actions" style="display: flex; gap: 10px; align-items: center;">
-								<button type="button" class="button button-secondary" data-download-doc-load-more>Show More</button>
-								<button type="button" class="button button-secondary" data-download-doc-show-less style="display: none;">Show Less</button>
+								<button type="button" class="button button-secondary" data-download-doc-load-more>More</button>
+								<button type="button" class="button button-secondary" data-download-doc-show-less style="display: none;">Less</button>
 							</div>
 						</div>
 					</div>
@@ -1273,7 +1273,7 @@
 						<div class="form-actions">
 							<button type="button" class="button button-primary" data-download-doc-save-btn>
 								<span class="btn-spinner is-hidden" data-download-save-spinner aria-hidden="true"></span>
-								<span data-download-save-label>Save Document</span>
+								<span data-download-save-label>Save</span>
 							</button>
 							<button type="button" class="button button-quiet" data-download-doc-cancel-btn>Cancel</button>
 						</div>
@@ -1304,7 +1304,7 @@
 						<label class="field-row"><span>Recording date</span><input type="date" name="published_at"></label>
 						<label class="field-row"><span>Status</span><select name="status"><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></label>
 						<p class="video-admin-help">Use the recording date, not the date the video was uploaded or posted.</p>
-						<div class="form-actions"><button class="button button-primary" type="submit" data-video-save>Save Resource</button><button class="button button-quiet" type="button" data-video-cancel hidden>Cancel</button></div>
+						<div class="form-actions"><button class="button button-primary" type="submit" data-video-save>Save</button><button class="button button-quiet" type="button" data-video-cancel hidden>Cancel</button></div>
 					</form>
 
 					<div class="video-admin-list" aria-label="Managed videos and webinars">
@@ -1330,7 +1330,7 @@
 							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
 							Public Header &amp; Application Form Links
 						</h3>
-						<button type="button" class="button button-secondary" style="padding: 5px 12px; font-size: 0.8rem; font-weight: 700;">Save Header Links</button>
+						<button type="button" class="button button-secondary" style="padding: 5px 12px; font-size: 0.8rem; font-weight: 700;">Save</button>
 					</div>
 
 					<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px;">
@@ -1375,10 +1375,10 @@
 						</div>
 					</div>
 					<form data-membership-article-form hidden style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; margin-bottom: 18px;">
-						<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px;"><h4 style="margin: 0; color: var(--accent-strong);">Article II Editor</h4><button type="button" class="button button-secondary" data-membership-article-close style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;">&larr; Back to FAQs</button></div>
+						<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px;"><h4 style="margin: 0; color: var(--accent-strong);">Article II Editor</h4><button type="button" class="button button-secondary" data-membership-article-close style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;">&larr; Back</button></div>
 						<label style="display: block; margin-bottom: 10px;"><span style="display: block; font-weight: 700; margin-bottom: 5px;">Article title</span><input name="title" required maxlength="255" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);"></label>
 						<div class="rich-editor-wrap" data-rich-editor="membership-article-content" style="margin-bottom: 12px;"><span style="display: block; font-weight: 700; margin-bottom: 5px;">Article content</span><div class="editor-toolbar" role="toolbar" aria-label="Article II formatting toolbar"><button type="button" class="toolbar-btn" data-format="bold"><strong>B</strong></button><button type="button" class="toolbar-btn" data-format="italic"><em>I</em></button><button type="button" class="toolbar-btn" data-format="underline"><u>U</u></button><button type="button" class="toolbar-btn" data-format="link">&#x1F517;</button><button type="button" class="toolbar-btn" data-format="ul">&#x2022; List</button><button type="button" class="toolbar-btn" data-format="ol">1. List</button></div><textarea name="content" required rows="14" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); resize: vertical;"></textarea></div>
-						<button type="submit" class="button button-primary">Save Article II</button>
+						<button type="submit" class="button button-primary">Save</button>
 					</form>
 
 					<div data-faq-form-home></div>
@@ -1393,7 +1393,7 @@
 							<textarea name="answer" required maxlength="10000" rows="5" placeholder="Write the answer, then select text and use the link button for links such as [here](https://example.com)." style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); resize: vertical;"></textarea>
 						</div>
 						<label style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;"><input type="checkbox" name="is_visible" value="1" checked> Visible on public page</label>
-						<div style="display: flex; gap: 8px;"><button type="submit" class="button button-primary" data-faq-save>Save FAQ</button><button type="button" class="button button-quiet" data-faq-cancel>Cancel</button></div>
+						<div style="display: flex; gap: 8px;"><button type="submit" class="button button-primary" data-faq-save>Save</button><button type="button" class="button button-quiet" data-faq-cancel>Cancel</button></div>
 					</form>
 
 					<div data-faq-list style="display: flex; flex-direction: column; gap: 14px;"></div>

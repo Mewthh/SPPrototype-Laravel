@@ -39,7 +39,6 @@ test('admin can create a new news post in database', function () {
         'summary' => 'Researchers discovered a new particle state.',
         'body' => 'Full article text detailing the quantum physics experiment and methodology.',
         'status' => 'published',
-        'publishDate' => '2026-08-26',
     ];
 
     $response = $this->postJson(route('admin.api.news.store'), $payload);
@@ -140,6 +139,82 @@ test('public home page displays published news posts from database', function ()
         ->assertSee('Public Visible News Article')
         ->assertSee('This summary should be visible to public users.')
         ->assertDontSee('Secret Internal Draft News');
+});
+
+test('scheduled news is hidden until its publish date', function () {
+    $this->travelTo('2026-09-24 12:00:00');
+
+    News::factory()->create([
+        'title' => 'Future Scheduled News',
+        'slug' => 'future-scheduled-news',
+        'status' => 'scheduled',
+        'published_at' => '2026-09-25 12:00:00',
+    ]);
+
+    $response = $this->get(route('home'));
+
+    $response->assertDontSee('Future Scheduled News');
+});
+
+test('scheduled news is visible on and after its publish date', function () {
+    $this->travelTo('2026-09-24 12:00:00');
+
+    News::factory()->create([
+        'title' => 'Ready Scheduled News',
+        'slug' => 'ready-scheduled-news',
+        'status' => 'scheduled',
+        'published_at' => '2026-09-24 12:00:00',
+    ]);
+
+    $response = $this->get(route('news.show', ['slug' => 'ready-scheduled-news']));
+
+    $response->assertSee('Ready Scheduled News');
+});
+
+test('admin cannot schedule news without a publish date and time', function () {
+    $response = $this->postJson(route('admin.api.news.store'), [
+        'title' => 'Incomplete Scheduled News',
+        'status' => 'scheduled',
+    ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors('published_at');
+});
+
+test('admin sets the publish time when publishing news immediately', function () {
+    $this->travelTo('2026-09-24 12:00:00');
+
+    $response = $this->postJson(route('admin.api.news.store'), [
+        'title' => 'Immediate News',
+        'status' => 'published',
+        'published_at' => '2026-10-01 12:00:00',
+    ]);
+
+    $response->assertCreated();
+
+    $this->assertDatabaseHas('news', [
+        'title' => 'Immediate News',
+        'published_at' => '2026-09-24 12:00:00',
+    ]);
+});
+
+test('publishing scheduled news immediately replaces its scheduled publish time', function () {
+    $this->travelTo('2026-09-24 12:00:00');
+
+    $news = News::factory()->create([
+        'status' => 'scheduled',
+        'published_at' => '2026-10-01 12:00:00',
+    ]);
+
+    $response = $this->patchJson(route('admin.api.news.status', $news), ['status' => 'published']);
+
+    $response->assertSuccessful();
+
+    $this->assertDatabaseHas('news', [
+        'id' => $news->id,
+        'status' => 'published',
+        'published_at' => '2026-09-24 12:00:00',
+    ]);
 });
 
 test('public news page displays news detail by slug parameter or route', function () {

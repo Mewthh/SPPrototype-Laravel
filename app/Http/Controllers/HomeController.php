@@ -30,7 +30,14 @@ class HomeController extends Controller
             ->get();
 
         $activities = Activity::query()
-            ->whereIn('status', ['published', 'scheduled'])
+            ->where(function ($query) {
+                $query->where('status', 'published')
+                    ->orWhere(function ($query) {
+                        $query->where('status', 'scheduled')
+                            ->whereNotNull('published_at')
+                            ->where('published_at', '<=', now());
+                    });
+            })
             ->orderBy('event_date', 'asc')
             ->orderBy('created_at', 'desc')
             ->get();

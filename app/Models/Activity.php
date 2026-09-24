@@ -19,13 +19,14 @@ use Illuminate\Support\Facades\Storage;
  * @property string|null $image
  * @property-read string|null $image_url
  * @property Carbon|null $event_date
+ * @property Carbon|null $published_at
  * @property string|null $location
  * @property string $status
  * @property bool $is_featured
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['title', 'slug', 'summary', 'description', 'image', 'event_date', 'location', 'status', 'is_featured'])]
+#[Fillable(['title', 'slug', 'summary', 'description', 'image', 'event_date', 'published_at', 'location', 'status', 'is_featured'])]
 class Activity extends Model
 {
     /** @use HasFactory<ActivityFactory> */
@@ -49,6 +50,7 @@ class Activity extends Model
     {
         return [
             'event_date' => 'date',
+            'published_at' => 'datetime',
             'is_featured' => 'boolean',
         ];
     }

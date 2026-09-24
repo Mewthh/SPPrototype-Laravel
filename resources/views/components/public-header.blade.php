@@ -95,7 +95,7 @@
             </form>
 
             <a class="btn-login-header" href="{{ route('login') }}" aria-label="Log in">Log In</a>
-            <a class="btn-join-spp" href="{{ route('about.show') }}">About SPP</a>
+            <a class="btn-join-spp" href="{{ route('membership-faq') }}">Join SPP</a>
 
             <details class="mobile-nav">
                 <summary class="mobile-nav-toggle" aria-label="Open menu">
@@ -143,7 +143,7 @@
                         @endif
                     </div>
                     <a class="btn-login-header mobile" href="{{ route('login') }}">Log In</a>
-                    <a class="btn-join-spp mobile" href="{{ route('about.show') }}">About SPP</a>
+                    <a class="btn-join-spp mobile" href="{{ route('membership-faq') }}">Join SPP</a>
 
                 </nav>
             </details>

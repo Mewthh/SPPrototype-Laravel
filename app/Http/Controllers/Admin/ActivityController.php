@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -45,7 +46,7 @@ class ActivityController extends Controller
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'summary' => ['nullable', 'string'],
-            'publishDate' => ['nullable', 'date'],
+            'published_at' => ['exclude_unless:status,scheduled', 'required_if:status,scheduled', 'date'],
             'event_date' => ['nullable', 'date'],
             'body' => ['nullable', 'string'],
             'description' => ['nullable', 'string'],
@@ -60,7 +61,10 @@ class ActivityController extends Controller
         $description = $validated['description'] ?? $validated['body'] ?? '';
         $summary = $validated['summary'] ?? null;
         $status = $validated['status'];
-        $eventDate = $validated['event_date'] ?? $validated['publishDate'] ?? null;
+        $eventDate = $validated['event_date'] ?? null;
+        $publishedAt = $status === 'scheduled'
+            ? Carbon::parse($validated['published_at'])
+            : ($status === 'published' ? Carbon::now() : null);
         $location = $validated['location'] ?? null;
         $featured = (bool) ($request->input('featureOnHomepage', false));
 
@@ -73,6 +77,7 @@ class ActivityController extends Controller
             'description' => $description,
             'image' => $imagePath,
             'event_date' => $eventDate,
+            'published_at' => $publishedAt,
             'location' => $location,
             'status' => $status,
             'is_featured' => $featured,
@@ -102,8 +107,8 @@ class ActivityController extends Controller
         $validated = $request->validate([
             'title' => ['sometimes', 'required', 'string', 'max:255'],
             'summary' => ['nullable', 'string'],
-            'publishDate' => ['nullable'],
-            'event_date' => ['nullable'],
+            'published_at' => ['exclude_unless:status,scheduled', 'required_if:status,scheduled', 'date'],
+            'event_date' => ['nullable', 'date'],
             'body' => ['nullable', 'string'],
             'description' => ['nullable', 'string'],
             'location' => ['nullable', 'string', 'max:255'],
@@ -126,13 +131,19 @@ class ActivityController extends Controller
             $activity->summary = $validated['summary'];
         }
 
+        $previousStatus = $activity->status;
         if (isset($validated['status'])) {
             $activity->status = $validated['status'];
         }
 
-        $rawDate = $validated['event_date'] ?? $validated['publishDate'] ?? null;
-        if ($rawDate) {
-            $activity->event_date = $rawDate;
+        if ($activity->status === 'scheduled') {
+            $activity->published_at = Carbon::parse($validated['published_at']);
+        } elseif ($activity->status === 'published' && $previousStatus !== 'published') {
+            $activity->published_at = Carbon::now();
+        }
+
+        if (array_key_exists('event_date', $validated)) {
+            $activity->event_date = $validated['event_date'];
         }
 
         if (isset($validated['location'])) {
@@ -178,10 +189,14 @@ class ActivityController extends Controller
     public function updateStatus(Request $request, Activity $activity): JsonResponse
     {
         $validated = $request->validate([
-            'status' => ['required', 'in:draft,published,scheduled,archived'],
+            'status' => ['required', 'in:draft,published,archived'],
         ]);
 
+        $previousStatus = $activity->status;
         $activity->status = $validated['status'];
+        if ($activity->status === 'published' && $previousStatus !== 'published') {
+            $activity->published_at = Carbon::now();
+        }
         $activity->save();
 
         return response()->json([

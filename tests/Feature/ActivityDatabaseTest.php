@@ -39,7 +39,6 @@ test('admin can create a new activity in database', function () {
         'summary' => 'Annual colloquium bringing together physicists.',
         'body' => 'Detailed description of the event program and speakers.',
         'status' => 'published',
-        'publishDate' => '2026-09-15',
         'location' => 'Manila, Philippines',
     ];
 
@@ -147,17 +146,81 @@ test('published activities appear on the homepage', function () {
         ->assertDontSee('Hidden Draft Activity');
 });
 
-test('scheduled activities appear on the homepage', function () {
+test('scheduled activities are hidden until their publish date and time', function () {
+    $this->travelTo('2026-09-24 12:00:00');
+
     Activity::factory()->create([
         'title' => 'Future Scheduled Event',
         'slug' => 'future-scheduled-event',
         'status' => 'scheduled',
+        'published_at' => '2026-09-25 12:00:00',
     ]);
 
     $response = $this->get(route('home'));
 
     $response->assertSuccessful()
-        ->assertSee('Future Scheduled Event');
+        ->assertDontSee('Future Scheduled Event');
+});
+
+test('scheduled activities are visible on and after their publish date and time', function () {
+    $this->travelTo('2026-09-24 12:00:00');
+
+    Activity::factory()->create([
+        'title' => 'Ready Scheduled Event',
+        'slug' => 'ready-scheduled-event',
+        'status' => 'scheduled',
+        'published_at' => '2026-09-24 12:00:00',
+    ]);
+
+    $response = $this->get(route('activities.show', ['slug' => 'ready-scheduled-event']));
+
+    $response->assertSee('Ready Scheduled Event');
+});
+
+test('admin cannot schedule an activity without a publish date and time', function () {
+    $response = $this->postJson(route('admin.api.activities.store'), [
+        'title' => 'Incomplete Scheduled Event',
+        'status' => 'scheduled',
+    ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors('published_at');
+});
+
+test('admin sets the publish time when publishing an activity immediately', function () {
+    $this->travelTo('2026-09-24 12:00:00');
+
+    $response = $this->postJson(route('admin.api.activities.store'), [
+        'title' => 'Immediate Activity',
+        'status' => 'published',
+        'published_at' => '2026-10-01 12:00:00',
+    ]);
+
+    $response->assertCreated();
+
+    $this->assertDatabaseHas('activities', [
+        'title' => 'Immediate Activity',
+        'published_at' => '2026-09-24 12:00:00',
+    ]);
+});
+
+test('publishing a scheduled activity immediately replaces its scheduled publish time', function () {
+    $this->travelTo('2026-09-24 12:00:00');
+
+    $activity = Activity::factory()->create([
+        'status' => 'scheduled',
+        'published_at' => '2026-10-01 12:00:00',
+    ]);
+
+    $response = $this->patchJson(route('admin.api.activities.status', $activity), ['status' => 'published']);
+
+    $response->assertSuccessful();
+
+    $this->assertDatabaseHas('activities', [
+        'id' => $activity->id,
+        'status' => 'published',
+        'published_at' => '2026-09-24 12:00:00',
+    ]);
 });
 
 test('archived activities do not appear on the homepage', function () {

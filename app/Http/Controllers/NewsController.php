@@ -81,7 +81,7 @@ class NewsController extends Controller
             return $news;
         }
 
-        if ($news->status === 'scheduled' && $news->published_at && $news->published_at->isPast()) {
+        if ($news->status === 'scheduled' && $news->published_at && $news->published_at->lessThanOrEqualTo(now())) {
             return $news;
         }
 

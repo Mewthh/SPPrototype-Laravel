@@ -3730,9 +3730,14 @@ html[data-theme="dark"] .conference-tab-btn.active span {
 }
 
 /* Videos and webinars */
+main:has(.videos-page) {
+    padding: 0;
+    background: var(--surface-soft);
+}
+
 .videos-page {
     padding: 72px 0 96px;
-    background: var(--page-bg, var(--surface-soft));
+    background: transparent;
     min-height: 70vh;
 }
 

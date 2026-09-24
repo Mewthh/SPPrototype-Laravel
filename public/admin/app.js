@@ -390,6 +390,33 @@ function formatDate(value) {
   return new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(date);
 }
 
+function formatDateTimeLocal(value) {
+  if (!value) return '';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+
+  const pad = (number) => String(number).padStart(2, '0');
+
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function updateScheduledPublishField(form) {
+  const field = form?.querySelector('[data-scheduled-publish-field]');
+  const input = form?.elements.published_at;
+  const isScheduled = form?.elements.status?.value === 'scheduled';
+
+  if (!field || !input) return;
+
+  field.hidden = !isScheduled;
+  input.disabled = !isScheduled;
+  input.required = isScheduled;
+
+  if (!isScheduled) {
+    input.value = '';
+  }
+}
+
 function statusLabel(status) {
   if (status === 'scheduled') return 'Scheduled';
   if (status === 'published') return 'Published';
@@ -524,13 +551,13 @@ function renderNewsQueue() {
           newsLoadMoreBtn.style.display = 'none';
         } else {
           newsLoadMoreBtn.style.display = 'inline-flex';
-          newsLoadMoreBtn.textContent = 'Show More';
+          newsLoadMoreBtn.textContent = 'More';
         }
       }
       if (newsShowLessBtn) {
         if (state.newsVisibleCount > PAGE_SIZE) {
           newsShowLessBtn.style.display = 'inline-flex';
-          newsShowLessBtn.textContent = 'Show Less';
+          newsShowLessBtn.textContent = 'Less';
         } else {
           newsShowLessBtn.style.display = 'none';
         }
@@ -601,13 +628,13 @@ function renderActivityQueue() {
           activityLoadMoreBtn.style.display = 'none';
         } else {
           activityLoadMoreBtn.style.display = 'inline-flex';
-          activityLoadMoreBtn.textContent = 'Show More';
+          activityLoadMoreBtn.textContent = 'More';
         }
       }
       if (activityShowLessBtn) {
         if (state.activityVisibleCount > PAGE_SIZE) {
           activityShowLessBtn.style.display = 'inline-flex';
-          activityShowLessBtn.textContent = 'Show Less';
+          activityShowLessBtn.textContent = 'Less';
         } else {
           activityShowLessBtn.style.display = 'none';
         }
@@ -626,14 +653,14 @@ function updateNewsEditorUI() {
     if (newsBanner) newsBanner.classList.add('is-editing');
     if (newsBannerText) newsBannerText.textContent = post ? `Editing: "${post.title}"` : 'Editing News Post';
     if (newsCancelEdit) newsCancelEdit.style.display = 'inline-flex';
-    if (newsSubmitPrimary) newsSubmitPrimary.textContent = 'Update Post';
-    if (newsSubmitSecondary) newsSubmitSecondary.textContent = 'Save as Draft';
+    if (newsSubmitPrimary) newsSubmitPrimary.textContent = 'Update';
+    if (newsSubmitSecondary) newsSubmitSecondary.textContent = 'Draft';
   } else {
     if (newsBanner) newsBanner.classList.remove('is-editing');
     if (newsBannerText) newsBannerText.textContent = 'Create New News Post';
     if (newsCancelEdit) newsCancelEdit.style.display = 'none';
     if (newsSubmitPrimary) newsSubmitPrimary.textContent = 'Save';
-    if (newsSubmitSecondary) newsSubmitSecondary.textContent = 'Save as Draft';
+    if (newsSubmitSecondary) newsSubmitSecondary.textContent = 'Draft';
   }
 }
 
@@ -645,14 +672,14 @@ function updateActivityEditorUI() {
     if (activityBanner) activityBanner.classList.add('is-editing');
     if (activityBannerText) activityBannerText.textContent = post ? `Editing: "${post.title}"` : 'Editing Activity';
     if (activityCancelEdit) activityCancelEdit.style.display = 'inline-flex';
-    if (activitySubmitPrimary) activitySubmitPrimary.textContent = 'Update Activity';
-    if (activitySubmitSecondary) activitySubmitSecondary.textContent = 'Save as Scheduled';
+    if (activitySubmitPrimary) activitySubmitPrimary.textContent = 'Update';
+    if (activitySubmitSecondary) activitySubmitSecondary.textContent = 'Schedule';
   } else {
     if (activityBanner) activityBanner.classList.remove('is-editing');
     if (activityBannerText) activityBannerText.textContent = 'Create New Activity';
     if (activityCancelEdit) activityCancelEdit.style.display = 'none';
     if (activitySubmitPrimary) activitySubmitPrimary.textContent = 'Save';
-    if (activitySubmitSecondary) activitySubmitSecondary.textContent = 'Save as Scheduled';
+    if (activitySubmitSecondary) activitySubmitSecondary.textContent = 'Schedule';
   }
 }
 
@@ -1641,7 +1668,7 @@ function startEditingNews(postId) {
   state.editingNewsId = post.id;
   newsForm.elements.title.value = post.title || '';
   newsForm.elements.summary.value = post.summary || '';
-  newsForm.elements.publishDate.value = post.publishDate || '';
+  newsForm.elements.published_at.value = post.publishedAt || '';
   newsForm.elements.body.value = post.body || '';
   if (newsForm.elements.body._syncToVisual) {
     newsForm.elements.body._syncToVisual();
@@ -1651,6 +1678,7 @@ function startEditingNews(postId) {
   if (newsForm.elements.status) {
     newsForm.elements.status.value = post.status || 'published';
   }
+  updateScheduledPublishField(newsForm);
 
   const newsZone = document.querySelector('[data-upload-zone="news"]');
   if (post.coverImage && newsZone?._applyImage) {
@@ -1697,6 +1725,7 @@ async function fetchNewsFromDatabase() {
       title: item.title,
       summary: item.excerpt || item.summary || '',
       publishDate: item.published_at ? String(item.published_at).substring(0, 10) : (item.created_at ? String(item.created_at).substring(0, 10) : ''),
+      publishedAt: formatDateTimeLocal(item.published_at),
       status: item.status || 'published',
       body: item.content || item.body || '',
       coverImage: item.image_url || item.image || item.coverImage || null,
@@ -1723,6 +1752,7 @@ async function fetchActivitiesFromDatabase() {
       title: item.title,
       summary: item.excerpt || item.summary || '',
       publishDate: item.published_at ? String(item.published_at).substring(0, 10) : (item.created_at ? String(item.created_at).substring(0, 10) : ''),
+      publishedAt: formatDateTimeLocal(item.published_at),
       status: item.status || 'scheduled',
       body: item.content || item.body || '',
       coverImage: item.image_url || item.image || item.coverImage || null,
@@ -2030,6 +2060,11 @@ async function handleNewsSubmit(event) {
   const chosenStatus = overrideStatus || String(data.get('status') || 'published');
   data.set('status', chosenStatus);
 
+  if (chosenStatus === 'scheduled' && !String(data.get('published_at') || '').trim()) {
+    alert('Choose a publish date and time before scheduling this news post.');
+    return;
+  }
+
   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
   // If image preview has a data URL or image string that wasn't uploaded via input file
@@ -2076,7 +2111,8 @@ async function handleNewsSubmit(event) {
     clearNewsDraft(savedId);
     await fetchNewsFromDatabase();
     setNewsView('posts');
-    showFloatingToast(savedId ? `News post "${title}" updated successfully.` : `News post "${title}" published successfully.`);
+    const action = chosenStatus === 'scheduled' ? 'scheduled' : 'published';
+    showFloatingToast(savedId ? `News post "${title}" updated successfully.` : `News post "${title}" ${action} successfully.`);
   } catch (err) {
     console.error('Error saving news:', err);
     alert('An error occurred while saving the news post.');
@@ -2173,7 +2209,7 @@ function startEditingActivity(postId) {
   state.editingActivityId = post.id;
   activityForm.elements.title.value = post.title || '';
   activityForm.elements.summary.value = post.summary || '';
-  activityForm.elements.publishDate.value = post.publishDate || '';
+  activityForm.elements.published_at.value = post.publishedAt || '';
   activityForm.elements.body.value = post.body || '';
   if (activityForm.elements.body._syncToVisual) {
     activityForm.elements.body._syncToVisual();
@@ -2183,6 +2219,7 @@ function startEditingActivity(postId) {
   if (activityForm.elements.status) {
     activityForm.elements.status.value = post.status || 'scheduled';
   }
+  updateScheduledPublishField(activityForm);
 
   const activityZone = document.querySelector('[data-upload-zone="activity"]');
   if (post.coverImage && activityZone?._applyImage) {
@@ -2226,6 +2263,11 @@ async function handleActivitySubmit(event) {
   const chosenStatus = overrideStatus || String(data.get('status') || 'scheduled');
   data.set('status', chosenStatus);
 
+  if (chosenStatus === 'scheduled' && !String(data.get('published_at') || '').trim()) {
+    alert('Choose a publish date and time before scheduling this activity.');
+    return;
+  }
+
   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
   if (imageState.activity && !data.get('coverImage')?.name) {
@@ -2262,7 +2304,8 @@ async function handleActivitySubmit(event) {
     document.querySelector('[data-upload-zone="activity"]')?._clearImage?.();
     await fetchActivitiesFromDatabase();
     setActivityView('posts');
-    showFloatingToast(savedActivityId ? `Activity "${title}" updated successfully.` : `Activity "${title}" published successfully.`);
+    const action = chosenStatus === 'scheduled' ? 'scheduled' : 'published';
+    showFloatingToast(savedActivityId ? `Activity "${title}" updated successfully.` : `Activity "${title}" ${action} successfully.`);
   } catch (err) {
     console.error('Error saving activity:', err);
     alert('An error occurred while saving the activity.');
@@ -2397,14 +2440,14 @@ function updateConferenceEditorUI() {
     conferenceBanner.classList.add('is-editing');
     conferenceBannerText.textContent = conf ? `Editing: "${conf.title}"` : 'Editing Conference';
     if (conferenceCancelEdit) conferenceCancelEdit.style.display = 'inline-flex';
-    if (conferenceSubmitPrimary) conferenceSubmitPrimary.textContent = 'Update Conference';
-    if (conferenceSubmitSecondary) conferenceSubmitSecondary.textContent = 'Save as Draft';
+    if (conferenceSubmitPrimary) conferenceSubmitPrimary.textContent = 'Update';
+    if (conferenceSubmitSecondary) conferenceSubmitSecondary.textContent = 'Draft';
   } else {
     conferenceBanner.classList.remove('is-editing');
     conferenceBannerText.textContent = 'Create New Conference';
     if (conferenceCancelEdit) conferenceCancelEdit.style.display = 'none';
     if (conferenceSubmitPrimary) conferenceSubmitPrimary.textContent = 'Save';
-    if (conferenceSubmitSecondary) conferenceSubmitSecondary.textContent = 'Save as Draft';
+    if (conferenceSubmitSecondary) conferenceSubmitSecondary.textContent = 'Draft';
   }
 }
 
@@ -2562,8 +2605,8 @@ function updateConferenceTabsVisibility() {
       toggleBtn.setAttribute('aria-expanded', _conferenceTabsExpanded ? 'true' : 'false');
       const hiddenCount = totalTabs - limit;
       toggleText.textContent = _conferenceTabsExpanded
-        ? 'Show Less'
-        : `Show More (${hiddenCount} more)`;
+        ? 'Less'
+        : 'More';
     } else {
       toggleWrap.classList.add('is-hidden');
     }
@@ -2704,7 +2747,7 @@ function addConferenceTab(tabData = {}) {
           Save
         </button>
         <button type="button" class="button button-quiet conference-tab-cancel-button" data-conference-tab-cancel style="display: none;">
-          Cancel Editing
+          Cancel
         </button>
       </div>
     </div>
@@ -3058,6 +3101,8 @@ function bindEvents() {
   });
 
   newsForm?.addEventListener('submit', handleNewsSubmit);
+  newsForm?.elements.status?.addEventListener('change', () => updateScheduledPublishField(newsForm));
+  updateScheduledPublishField(newsForm);
   newsForm?.addEventListener('input', (e) => {
     if (['title', 'summary', 'body'].includes(e.target.name)) {
       scheduleNewsAutosave();
@@ -3075,6 +3120,7 @@ function bindEvents() {
         newsForm.elements.body.dispatchEvent(new Event('change', { bubbles: true }));
       }
       updateNewsEditorUI();
+      updateScheduledPublishField(newsForm);
       checkNewsDraft(null);
     }, 0);
   });
@@ -3085,6 +3131,8 @@ function bindEvents() {
   document.querySelector('[data-draft-discard="news"]')?.addEventListener('click', discardNewsDraft);
 
   activityForm?.addEventListener('submit', handleActivitySubmit);
+  activityForm?.elements.status?.addEventListener('change', () => updateScheduledPublishField(activityForm));
+  updateScheduledPublishField(activityForm);
   activityForm?.addEventListener('reset', () => {
     state.editingActivityId = null;
     window.setTimeout(() => {
@@ -3096,6 +3144,7 @@ function bindEvents() {
         activityForm.elements.body.dispatchEvent(new Event('input', { bubbles: true }));
         activityForm.elements.body.dispatchEvent(new Event('change', { bubbles: true }));
       }
+      updateScheduledPublishField(activityForm);
       updateActivityEditorUI();
     }, 0);
   });
@@ -3955,6 +4004,7 @@ function openDocEditor(docId = null, preselectedCatId = null) {
   const yearInput = form.querySelector('[data-download-doc-year]');
   const fileActions = document.querySelector('[data-download-file-actions]');
   const filenameLabel = document.querySelector('[data-download-attached-filename]');
+  const saveLabel = document.querySelector('[data-download-save-label]');
 
   const targetCatId = preselectedCatId || downloadEditingCatId || (downloadCategories[0] ? downloadCategories[0].id : '');
 
@@ -3972,6 +4022,7 @@ function openDocEditor(docId = null, preselectedCatId = null) {
     }
 
     if (foundDoc && foundCat) {
+      if (saveLabel) saveLabel.textContent = 'Update';
       if (headingEl) headingEl.textContent = `Edit Document: ${foundDoc.title || foundDoc.filename}`;
       if (bannerTextEl) bannerTextEl.textContent = 'Editing Document';
       if (docIdInput) docIdInput.value = foundDoc.id;
@@ -3990,6 +4041,7 @@ function openDocEditor(docId = null, preselectedCatId = null) {
     }
   } else {
     // Create new document
+    if (saveLabel) saveLabel.textContent = 'Save';
     if (headingEl) headingEl.textContent = 'Add Download Document';
     if (bannerTextEl) bannerTextEl.textContent = 'Add Document to Directory';
     if (docIdInput) docIdInput.value = '';
@@ -4312,7 +4364,7 @@ proceedingsTemplateForm?.addEventListener('submit', async (event) => {
     showFloatingToast(error.message || 'Unable to save proceedings template.', 'Error');
   } finally {
     saveButton.disabled = false;
-    saveButton.textContent = 'Save Template';
+    saveButton.textContent = 'Save';
   }
 });
 
@@ -4334,7 +4386,7 @@ function resetVideoForm() {
   editingVideoId = null;
   videoForm?.reset();
   document.querySelector('[data-video-form-heading]').textContent = 'Add video or webinar';
-  document.querySelector('[data-video-save]').textContent = 'Save Resource';
+  document.querySelector('[data-video-save]').textContent = 'Save';
   document.querySelector('[data-video-cancel]').hidden = true;
 }
 
@@ -4383,7 +4435,7 @@ videoList?.addEventListener('click', async (event) => {
       if (field && value !== null) field.value = key === 'published_at' ? String(value).slice(0, 10) : value;
     }
     document.querySelector('[data-video-form-heading]').textContent = 'Edit video or webinar';
-    document.querySelector('[data-video-save]').textContent = 'Update Resource';
+    document.querySelector('[data-video-save]').textContent = 'Update';
     document.querySelector('[data-video-cancel]').hidden = false;
     return;
   }
@@ -4418,7 +4470,7 @@ function resetFaqForm() {
   faqForm?.elements.answer?.dispatchEvent(new Event('input', { bubbles: true }));
   faqForm.hidden = true;
   document.querySelector('[data-faq-form-heading]').textContent = 'Add FAQ';
-  document.querySelector('[data-faq-save]').textContent = 'Save FAQ';
+  document.querySelector('[data-faq-save]').textContent = 'Save';
 }
 
 function renderMembershipFaqs() {
@@ -4518,7 +4570,7 @@ faqList?.addEventListener('click', async (event) => {
     faqForm.elements.answer.dispatchEvent(new Event('input', { bubbles: true }));
     faqForm.elements.is_visible.checked = faq.is_visible;
     document.querySelector('[data-faq-form-heading]').textContent = 'Edit FAQ';
-    document.querySelector('[data-faq-save]').textContent = 'Update FAQ';
+    document.querySelector('[data-faq-save]').textContent = 'Update';
     faqForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     return;
   }
@@ -4594,7 +4646,7 @@ document.addEventListener('click', async (event) => {
       form.removeAttribute('aria-busy');
       button.disabled = false;
       button.classList.remove('is-loading');
-      if (saveLabel) saveLabel.textContent = 'Save Document';
+      if (saveLabel) saveLabel.textContent = 'Save';
       saveSpinner?.classList.add('is-hidden');
     }
     return;
