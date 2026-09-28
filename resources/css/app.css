@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import '../../vendor/livewire/flux/dist/flux.css';
 @import './spp.css';
+@import './portal.css';
 @import './admin.css';
 
 @source '../views';

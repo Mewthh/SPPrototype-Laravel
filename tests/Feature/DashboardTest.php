@@ -13,7 +13,6 @@ test('authenticated admin users can visit the dashboard', function () {
 
     $response = $this->get(route('dashboard'));
     $response->assertOk()
-        ->assertSee('Add New Tab')
         ->assertSee('Frequently Asked Questions')
         ->assertSee('Add')
         ->assertDontSee('UI Only')

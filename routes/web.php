@@ -36,6 +36,16 @@ Route::get('membership-faq', [MembershipFaqController::class, 'index'])->name('m
 Route::get('membership/articles/{slug}', [MembershipArticleController::class, 'show'])->name('membership-articles.show');
 Route::get('downloads/{download}/file', [DownloadController::class, 'download'])->name('downloads.download');
 
+Route::prefix('membership-portal')->name('membership-portal.')->group(function () {
+    Route::view('/', 'portal.dashboard')->name('dashboard');
+    Route::view('application', 'portal.application')->name('application');
+    Route::view('membership', 'portal.membership')->name('membership');
+    Route::view('information', 'portal.information')->name('information');
+    Route::view('inquiries', 'portal.inquiries')->name('inquiries');
+    Route::view('notifications', 'portal.notifications')->name('notifications');
+    Route::view('settings', 'portal.settings')->name('settings');
+});
+
 // ─── Legacy URLs (Backward Compatibility - 301 Redirects) ───────────────────
 Route::redirect('index.html', '/', 301);
 Route::redirect('news.html', '/news', 301);
