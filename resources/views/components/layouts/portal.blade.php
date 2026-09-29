@@ -45,7 +45,7 @@
                 <button type="button" class="portal-popover-toggle" data-show-more>Show More</button>
                 <button type="button" class="portal-popover-toggle" data-show-less hidden>Show Less</button>
             </section>
-            <button class="portal-theme-button" type="button" data-theme-toggle aria-label="Toggle theme mode">◐</button>
+
             <details class="portal-account-menu">
                 <summary>Sample Name</summary>
                 <span>Account</span>
@@ -122,5 +122,15 @@
             });
         });
     </script>
+    <!-- Floating Theme Toggle Button -->
+    <button class="theme-toggle floating-theme-toggle" type="button" data-theme-toggle
+        aria-label="Toggle theme mode" title="Toggle theme mode">
+        <span class="theme-icon theme-icon-moon" aria-hidden="true">&#x263E;</span>
+        <span class="theme-icon theme-icon-sun" aria-hidden="true">&#x2600;</span>
+        <span class="floating-theme-tooltip">
+            <span class="theme-toggle-text theme-label-dark">Dark Mode</span>
+            <span class="theme-toggle-text theme-label-light">Light Mode</span>
+        </span>
+    </button>
 </body>
 </html>
