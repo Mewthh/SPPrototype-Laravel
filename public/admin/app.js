@@ -3258,7 +3258,7 @@ navLinks.forEach((link) => {
 
 function updateActiveNavLink() {
   let currentHash = window.location.hash || '#news-section';
-  if (!['#news-section', '#activities-section', '#conferences-section', '#downloads-section', '#videos-section', '#membership-faq-section', '#hero-banner-section', '#about-section'].includes(currentHash)) {
+  if (!['#news-section', '#activities-section', '#conferences-section', '#downloads-section', '#videos-section', '#membership-faq-section', '#membership-portal-section', '#hero-banner-section', '#about-section'].includes(currentHash)) {
     currentHash = '#news-section';
   }
   navLinks.forEach((link) => {
@@ -3266,7 +3266,7 @@ function updateActiveNavLink() {
     link.classList.toggle('active', isActive);
   });
 
-  const sections = ['news-section', 'activities-section', 'conferences-section', 'downloads-section', 'videos-section', 'membership-faq-section', 'hero-banner-section', 'about-section'];
+  const sections = ['news-section', 'activities-section', 'conferences-section', 'downloads-section', 'videos-section', 'membership-faq-section', 'membership-portal-section', 'hero-banner-section', 'about-section'];
   sections.forEach((secId) => {
     const secEl = document.getElementById(secId);
     if (secEl) {
@@ -3277,6 +3277,27 @@ function updateActiveNavLink() {
 }
 window.addEventListener('hashchange', updateActiveNavLink);
 window.addEventListener('load', updateActiveNavLink);
+
+// Portal Management UI Sub-tab switcher
+document.addEventListener('click', (event) => {
+  const tabBtn = event.target.closest('[data-portal-tab]');
+  if (!tabBtn) return;
+
+  const targetTab = tabBtn.getAttribute('data-portal-tab');
+  const parentContainer = tabBtn.closest('#membership-portal-section');
+  if (!parentContainer) return;
+
+  // Toggle active tab buttons
+  const tabs = parentContainer.querySelectorAll('[data-portal-tab]');
+  tabs.forEach(t => t.classList.toggle('active', t === tabBtn));
+
+  // Toggle visible panels
+  const panels = parentContainer.querySelectorAll('[data-portal-panel]');
+  panels.forEach(p => {
+    const isTarget = p.getAttribute('data-portal-panel') === targetTab;
+    p.style.display = isTarget ? 'block' : 'none';
+  });
+});
 
 function updateAboutMemberVisibility(list, visibleCount = 2) {
   const members = Array.from(list.querySelectorAll('[data-about-member]'));

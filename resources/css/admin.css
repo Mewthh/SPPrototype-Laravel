@@ -357,14 +357,18 @@ a {
   align-items: center;
   justify-content: center;
   min-width: 22px;
-  height: 20px;
-  padding: 0 7px;
+  min-height: 20px;
+  height: auto;
+  padding: 2px 7px;
   border-radius: var(--radius-pill);
   font-size: 0.75rem;
   font-weight: 700;
   background: var(--surface-soft);
   color: var(--muted);
   border: 1px solid var(--border);
+  white-space: nowrap;
+  flex-shrink: 0;
+  line-height: 1.2;
 }
 
 .dashboard-nav a.active .nav-badge,
