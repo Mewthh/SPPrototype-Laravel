@@ -35,6 +35,7 @@ Route::get('videos', [VideoController::class, 'index'])->name('videos.index');
 Route::get('membership-faq', [MembershipFaqController::class, 'index'])->name('membership-faq');
 Route::get('membership/articles/{slug}', [MembershipArticleController::class, 'show'])->name('membership-articles.show');
 Route::get('downloads/{download}/file', [DownloadController::class, 'download'])->name('downloads.download');
+Route::view('join-spp', 'join-spp')->name('join-spp');
 
 Route::prefix('membership-portal')->name('membership-portal.')->group(function () {
     Route::view('/', 'portal.dashboard')->name('dashboard');
