@@ -110,16 +110,6 @@
 					<span class="nav-text">Announcements</span>
 				</a>
 
-				<a href="#settings" class="nav-item" data-portal-tab="settings">
-					<span class="nav-icon" aria-hidden="true">
-						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<circle cx="12" cy="12" r="3"></circle>
-							<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-						</svg>
-					</span>
-					<span class="nav-text">Portal Settings</span>
-				</a>
-
 				<div class="nav-section-label" style="margin-top: 1.25rem;">Navigation</div>
 				<a href="{{ route('admin') }}" class="nav-item">
 					<span class="nav-icon" aria-hidden="true">
@@ -221,7 +211,7 @@
 									<td style="padding: 14px 16px; color: var(--muted);">MM/DD/YYYY</td>
 									<td style="padding: 14px 16px;"><span style="background: rgba(194, 125, 0, 0.12); color: var(--warn); border: 1px solid rgba(194, 125, 0, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">Under Evaluation</span></td>
 									<td style="padding: 14px 16px; text-align: right;">
-										<button type="button" class="button button-primary" style="padding: 5px 10px; font-size: 0.78rem;">Review</button>
+										<button type="button" class="button button-primary" style="padding: 5px 10px; font-size: 0.78rem;" data-open-review-modal>Review</button>
 										<button type="button" class="button button-secondary" style="padding: 5px 10px; font-size: 0.78rem;">Approve</button>
 									</td>
 								</tr>
@@ -382,40 +372,6 @@
 					</div>
 				</div>
 
-				<!-- TAB 5: SETTINGS -->
-				<div data-portal-panel="settings" style="display: none;">
-					<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-						<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px;">
-							<h4 style="margin: 0 0 12px; color: var(--accent-strong); font-weight: 800;">Membership Dues &amp; Tier Rates</h4>
-							<div style="display: flex; flex-direction: column; gap: 10px;">
-								<label style="font-size: 0.8rem; font-weight: 700; color: var(--muted);">REGULAR MEMBER DUES (PHP)
-									<input type="number" value="1000" style="width: 100%; margin-top: 4px; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);" />
-								</label>
-								<label style="font-size: 0.8rem; font-weight: 700; color: var(--muted);">STUDENT MEMBER DUES (PHP)
-									<input type="number" value="500" style="width: 100%; margin-top: 4px; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);" />
-								</label>
-								<label style="font-size: 0.8rem; font-weight: 700; color: var(--muted);">LIFE MEMBERSHIP ONE-TIME (PHP)
-									<input type="number" value="10000" style="width: 100%; margin-top: 4px; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);" />
-								</label>
-							</div>
-							<button type="button" class="button button-primary" style="margin-top: 14px; font-weight: 700;">Save Rates</button>
-						</div>
-
-						<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px;">
-							<h4 style="margin: 0 0 12px; color: var(--accent-strong); font-weight: 800;">Portal Features &amp; Workflow</h4>
-							<label style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 0.88rem;">
-								<input type="checkbox" checked /> Allow Online Member Application Submissions
-							</label>
-							<label style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 0.88rem;">
-								<input type="checkbox" checked /> Require Endorsement Upload for Student Tier
-							</label>
-							<label style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 0.88rem;">
-								<input type="checkbox" checked /> Automated Email Notification on Status Change
-							</label>
-							<button type="button" class="button button-primary" style="margin-top: 14px; font-weight: 700;">Save Settings</button>
-						</div>
-					</div>
-				</div>
 			</div>
 		</main>
 	</div>
@@ -430,7 +386,185 @@
 		</span>
 	</button>
 
-	<!-- Script for Sidebar Tab Switching & Mobile Menu -->
+	<!-- Review Application Details Modal -->
+	<div id="review-application-modal" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
+		<div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 950px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: var(--shadow); overflow: hidden; margin: auto;">
+			<!-- Modal Header -->
+			<div style="padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--surface-soft);">
+				<div>
+					<span style="font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;">Membership Application Review</span>
+					<h2 style="font-size: 1.3rem; font-weight: 900; color: var(--accent-strong); margin: 2px 0 0 0;">Sample Name</h2>
+				</div>
+				<button type="button" data-close-review-modal style="background: none; border: none; font-size: 1.5rem; color: var(--muted); cursor: pointer; padding: 4px 8px; line-height: 1;" aria-label="Close modal">&times;</button>
+			</div>
+
+			<!-- Modal Body (Cards Grid matching exact screenshot sections) -->
+			<div style="padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px;">
+				<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
+					<!-- 1. Membership Information -->
+					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
+						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Membership Information</h4>
+						<div style="display: flex; flex-direction: column; gap: 12px;">
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Membership Type</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Regular Member</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Application Type</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample Application</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Application Date</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">MM/DD/YYYY</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted); margin-bottom: 4px;">Application Status</div>
+								<span style="background: rgba(194, 125, 0, 0.12); color: var(--warn); border: 1px solid rgba(194, 125, 0, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">Under Evaluation</span>
+							</div>
+						</div>
+					</div>
+
+					<!-- 2. Recommender -->
+					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
+						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Recommender</h4>
+						<div style="display: flex; flex-direction: column; gap: 12px;">
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Name</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample Name</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Email</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">example@email.com</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Suffix</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Alternate Recommender</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample Name</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted); margin-bottom: 4px;">Recommender Status</div>
+								<span style="background: rgba(59, 130, 246, 0.12); color: #1d4ed8; border: 1px solid rgba(59, 130, 246, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800;">Pending</span>
+							</div>
+						</div>
+					</div>
+
+					<!-- 3. Personal Information -->
+					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
+						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Personal Information</h4>
+						<div style="display: flex; flex-direction: column; gap: 12px;">
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Surname</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">First Name(s)</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample Name</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Middle Name(s)</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Mobile Number</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Email Address</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">example@email.com</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- 4. Professional Information -->
+					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
+						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Professional Information</h4>
+						<div style="display: flex; flex-direction: column; gap: 12px;">
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Current Institutional Affiliation</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample Institution</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Current Position</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Professional / Institutional Email</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">example@email.com</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- 5. Educational Information -->
+					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
+						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Educational Information</h4>
+						<div style="display: flex; flex-direction: column; gap: 12px;">
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Highest Educational Attainment</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Degree</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Date Degree Obtained</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">MM/DD/YYYY</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Institution</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample Institution</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Institution Address</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- 6. Documents -->
+					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
+						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Documents</h4>
+						<div style="display: flex; flex-direction: column; gap: 14px;">
+							<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border); padding-bottom: 10px;">
+								<span style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong);">Updated CV</span>
+								<span style="background: rgba(27, 122, 76, 0.12); color: var(--success); border: 1px solid rgba(27, 122, 76, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">Submitted</span>
+							</div>
+							<div style="display: flex; justify-content: space-between; align-items: center;">
+								<span style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong);">Proof of Employment / Enrollment</span>
+								<span style="background: rgba(27, 122, 76, 0.12); color: var(--success); border: 1px solid rgba(27, 122, 76, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">Submitted</span>
+							</div>
+						</div>
+					</div>
+
+					<!-- 7. Validation / Certification -->
+					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
+						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Validation / Certification</h4>
+						<div style="display: flex; flex-direction: column; gap: 12px;">
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Declaration</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Agreed</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Certification</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Confirmed</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Modal Footer Actions -->
+			<div style="padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; background: var(--surface-soft);">
+				<button type="button" class="button button-secondary" data-close-review-modal style="font-weight: 700; font-size: 0.85rem;">Close</button>
+				<button type="button" class="button button-primary" style="font-weight: 700; font-size: 0.85rem;" onclick="alert('Application approved successfully.'); document.getElementById('review-application-modal').style.display='none';">Approve Application</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Script for Sidebar Tab Switching, Mobile Menu & Review Modal -->
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
 			const navLinks = document.querySelectorAll('[data-portal-tab]');
@@ -469,6 +603,35 @@
 			if (menuClose && sidebar) {
 				menuClose.addEventListener('click', function() {
 					sidebar.classList.remove('is-open');
+				});
+			}
+
+			// Review Modal Handlers
+			const reviewModal = document.getElementById('review-application-modal');
+			const openModalBtns = document.querySelectorAll('[data-open-review-modal]');
+			const closeModalBtns = document.querySelectorAll('[data-close-review-modal]');
+
+			openModalBtns.forEach(btn => {
+				btn.addEventListener('click', function() {
+					if (reviewModal) {
+						reviewModal.style.display = 'flex';
+					}
+				});
+			});
+
+			closeModalBtns.forEach(btn => {
+				btn.addEventListener('click', function() {
+					if (reviewModal) {
+						reviewModal.style.display = 'none';
+					}
+				});
+			});
+
+			if (reviewModal) {
+				reviewModal.addEventListener('click', function(e) {
+					if (e.target === reviewModal) {
+						reviewModal.style.display = 'none';
+					}
 				});
 			}
 		});
