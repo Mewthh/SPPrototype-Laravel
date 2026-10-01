@@ -57,6 +57,7 @@ Route::redirect('AdminDashboard.html', '/admin', 301);
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::view('admin', 'dashboard')->name('admin');
     Route::view('dashboard', 'dashboard')->name('dashboard');
+    Route::view('admin/membership-portal', 'admin.portal-manager')->name('admin.membership-portal');
     Route::get('admin/about', [AdminAboutController::class, 'edit'])->name('admin.about.edit');
     Route::put('admin/about', [AdminAboutController::class, 'update'])->name('admin.about.update');
 
