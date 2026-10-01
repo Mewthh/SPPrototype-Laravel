@@ -180,10 +180,10 @@
 					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
 						<div>
 							<span style="font-size: 0.78rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;">Pending Applications</span>
-							<div style="font-size: 1.8rem; font-weight: 900; color: #b45309; line-height: 1.1; margin-top: 2px;">4</div>
+							<div style="font-size: 1.8rem; font-weight: 900; color: var(--accent-strong); line-height: 1.1; margin-top: 2px;">4</div>
 							<span style="font-size: 0.78rem; color: var(--muted); margin-top: 4px; display: block;">Requires Secretariat Review</span>
 						</div>
-						<div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: rgba(234, 179, 8, 0.15); display: flex; align-items: center; justify-content: center; color: #b45309;">
+						<div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--accent-strong);">
 							<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
 						</div>
 					</div>
@@ -216,10 +216,10 @@
 										<div style="font-weight: 700; color: var(--accent-strong);">Sample Name</div>
 										<div style="font-size: 0.78rem; color: var(--muted);">example@email.com</div>
 									</td>
-									<td style="padding: 14px 16px;"><span style="background: rgba(59, 130, 246, 0.1); color: #1d4ed8; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 0.78rem;">Regular Member</span></td>
+									<td style="padding: 14px 16px;"><span style="background: var(--accent-soft); color: var(--accent-strong); border: 1px solid rgba(27, 122, 76, 0.25); padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 0.78rem;">Regular Member</span></td>
 									<td style="padding: 14px 16px; color: var(--text);">Sample Institution</td>
 									<td style="padding: 14px 16px; color: var(--muted);">MM/DD/YYYY</td>
-									<td style="padding: 14px 16px;"><span style="background: rgba(234, 179, 8, 0.15); color: #b45309; padding: 3px 10px; border-radius: 12px; font-weight: 700; font-size: 0.75rem;">Under Evaluation</span></td>
+									<td style="padding: 14px 16px;"><span style="background: rgba(194, 125, 0, 0.12); color: var(--warn); border: 1px solid rgba(194, 125, 0, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">Under Evaluation</span></td>
 									<td style="padding: 14px 16px; text-align: right;">
 										<button type="button" class="button button-primary" style="padding: 5px 10px; font-size: 0.78rem;">Review</button>
 										<button type="button" class="button button-secondary" style="padding: 5px 10px; font-size: 0.78rem;">Approve</button>
@@ -271,7 +271,7 @@
 										<div style="font-weight: 700; color: var(--accent-strong);">Sample Name</div>
 										<div style="font-size: 0.78rem; color: var(--muted);">example@email.com</div>
 									</td>
-									<td style="padding: 14px 16px;"><span style="background: rgba(59, 130, 246, 0.1); color: #1d4ed8; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 0.78rem;">Regular Member</span></td>
+									<td style="padding: 14px 16px;"><span style="background: var(--accent-soft); color: var(--accent-strong); border: 1px solid rgba(27, 122, 76, 0.25); padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 0.78rem;">Regular Member</span></td>
 									<td style="padding: 14px 16px; color: var(--text);">Sample Institution</td>
 									<td style="padding: 14px 16px; color: var(--muted);">MM/DD/YYYY</td>
 									<td style="padding: 14px 16px; text-align: right;">
@@ -289,10 +289,10 @@
 					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
 						<div>
 							<span style="font-size: 0.78rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;">Open Inquiries</span>
-							<div style="font-size: 1.8rem; font-weight: 900; color: #1d4ed8; line-height: 1.1; margin-top: 2px;">6</div>
+							<div style="font-size: 1.8rem; font-weight: 900; color: var(--accent-strong); line-height: 1.1; margin-top: 2px;">6</div>
 							<span style="font-size: 0.78rem; color: var(--muted); margin-top: 4px; display: block;">2 High Priority</span>
 						</div>
-						<div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: rgba(59, 130, 246, 0.15); display: flex; align-items: center; justify-content: center; color: #1d4ed8;">
+						<div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--accent-strong);">
 							<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
 						</div>
 					</div>
@@ -303,7 +303,7 @@
 							<div>
 								<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
 									<span style="font-weight: 800; color: var(--accent-strong); font-size: 0.92rem;">Application Status</span>
-									<span style="background: rgba(239, 68, 68, 0.12); color: #b91c1c; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 800;">SUBMITTED</span>
+									<span style="background: rgba(27, 122, 76, 0.12); color: var(--success); border: 1px solid rgba(27, 122, 76, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">SUBMITTED</span>
 								</div>
 								<div style="font-size: 0.8rem; color: var(--muted);">From: <strong>Sample Name</strong> (example@email.com) &bull; Submitted: MM/DD/YYYY</div>
 							</div>
@@ -314,7 +314,7 @@
 							<div>
 								<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
 									<span style="font-weight: 800; color: var(--accent-strong); font-size: 0.92rem;">Membership Status</span>
-									<span style="background: rgba(234, 179, 8, 0.15); color: #b45309; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 800;">UNDER REVIEW</span>
+									<span style="background: rgba(194, 125, 0, 0.12); color: var(--warn); border: 1px solid rgba(194, 125, 0, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">UNDER REVIEW</span>
 								</div>
 								<div style="font-size: 0.8rem; color: var(--muted);">From: <strong>Sample Name</strong> (example@email.com) &bull; Submitted: MM/DD/YYYY</div>
 							</div>
