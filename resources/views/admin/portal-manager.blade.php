@@ -336,7 +336,6 @@
 							<label for="inquiry-type-select" style="font-size: 0.78rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;">Query Type:</label>
 							<select id="inquiry-type-select" data-inquiry-type-filter style="padding: 6px 12px; font-size: 0.82rem; font-weight: 600; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);">
 								<option value="all">All Query Types</option>
-								<option value="Application Status">Application Status</option>
 								<option value="Membership Status">Membership Status</option>
 								<option value="Request for Certificate of Membership">Request for Certificate of Membership</option>
 								<option value="Other">Other</option>
@@ -374,18 +373,21 @@
 									data-inquirer-institution="National Institute of Physics, UP Diliman"
 									data-inquirer-tier="Regular Member"
 									data-application-type="Status Upgrade"
-									data-query-type="Application Status"
+									data-query-type="Membership Status"
+									data-last-known-membership="Regular member"
+									data-last-attendance-year="2022"
+									data-last-attendance-place="National Institute of Physics, UP Diliman"
 									data-date="10/01/2025"
 									data-status="Submitted"
 									data-priority="High"
-									data-remarks="Following up on Stage 4 document validation for my Regular Member upgrade submitted last Sept 28. Has the endorsement letter from the SPP Fellow been verified by the secretariat?"
+									data-remarks="Verifying official membership number and regular membership standing for university faculty tenure and promotion evaluation."
 									data-response="">
 									<td style="padding: 14px 16px;">
 										<div style="font-weight: 700; color: var(--accent-strong);">Dr. Aris C. Morales</div>
 										<div style="font-size: 0.78rem; color: var(--muted);">a.morales@nip.upd.edu.ph</div>
 									</td>
 									<td style="padding: 14px 16px; color: var(--text);">
-										Application Status
+										Membership Status
 									</td>
 									<td style="padding: 14px 16px; color: var(--muted);">
 										10/01/2025
@@ -408,6 +410,9 @@
 									data-inquirer-tier="Associate Member"
 									data-application-type="Membership Renewal"
 									data-query-type="Membership Status"
+									data-last-known-membership="Associate member"
+									data-last-attendance-year="2023"
+									data-last-attendance-place="Tagbilaran City, Bohol"
 									data-date="09/29/2025"
 									data-status="Under Review"
 									data-priority="Normal"
@@ -441,6 +446,14 @@
 									data-inquirer-tier="Regular Member"
 									data-application-type="New Application"
 									data-query-type="Request for Certificate of Membership"
+									data-oath-year="2018"
+									data-oath-venue="Ateneo de Davao University, Davao City"
+									data-known-membership-type="Regular"
+									data-last-attendance-year="2024"
+									data-last-attendance-place="Iloilo City"
+									data-purpose="Faculty promotion dossier and CHED research grant submission at DLSU."
+									data-certificate-attached="SPP_Cert_2025_RaymondCruz.pdf"
+									data-certificate-size="245 KB &bull; Certified Copy"
 									data-date="09/26/2025"
 									data-status="Under Review"
 									data-priority="High"
@@ -451,7 +464,11 @@
 										<div style="font-size: 0.78rem; color: var(--muted);">raymond.cruz@dlsu.edu.ph</div>
 									</td>
 									<td style="padding: 14px 16px; color: var(--text);">
-										Request for Certificate of Membership
+										<div>Request for Certificate of Membership</div>
+										<div class="row-cert-badge" style="margin-top: 4px; font-size: 0.72rem; color: #16a34a; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; background: rgba(22, 163, 74, 0.08); padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(22, 163, 74, 0.2);">
+											<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+											Certificate Attached
+										</div>
 									</td>
 									<td style="padding: 14px 16px; color: var(--muted);">
 										09/26/2025
@@ -473,18 +490,21 @@
 									data-inquirer-institution="University of Santo Tomas"
 									data-inquirer-tier="Associate Member"
 									data-application-type="New Application"
-									data-query-type="Application Status"
+									data-query-type="Membership Status"
+									data-last-known-membership="Associate member"
+									data-last-attendance-year="2023"
+									data-last-attendance-place="Online"
 									data-date="09/22/2025"
 									data-status="Responded"
 									data-priority="Normal"
-									data-remarks="Uploaded the bank transfer receipt for the membership application fee via Join SPP Stage 4. Kindly confirm receipt and advise next steps for portal access."
-									data-response="Dear Engr. Tan, Payment of PHP 800 has been verified by the Secretariat. Your application is now marked Approved. Welcome to SPP!">
+									data-remarks="Verifying if previous 2023 associate attendance qualifies towards regular membership transition requirements."
+									data-response="Dear Engr. Tan, The secretariat confirms your 2023 associate participation is recorded and eligible for regular membership upgrade.">
 									<td style="padding: 14px 16px;">
 										<div style="font-weight: 700; color: var(--accent-strong);">Engr. Gabriel Tan</div>
 										<div style="font-size: 0.78rem; color: var(--muted);">gabriel.tan@ust.edu.ph</div>
 									</td>
 									<td style="padding: 14px 16px; color: var(--text);">
-										Application Status
+										Membership Status
 									</td>
 									<td style="padding: 14px 16px; color: var(--muted);">
 										09/22/2025
@@ -507,6 +527,7 @@
 									data-inquirer-tier="Institutional Member"
 									data-application-type="Membership Renewal"
 									data-query-type="Other"
+									data-keywords="fee, institutional roster"
 									data-date="09/18/2025"
 									data-status="Responded"
 									data-priority="Normal"
@@ -540,6 +561,7 @@
 									data-inquirer-tier="Associate Member"
 									data-application-type="New Application"
 									data-query-type="Other"
+									data-keywords="password reset, 2FA recovery"
 									data-date="09/10/2025"
 									data-status="Closed"
 									data-priority="Low"
@@ -978,68 +1000,90 @@
 		</div>
 	</div>
 
-	<!-- Inquiry Details & Secretariat Response Modal -->
-	<div id="inquiry-detail-modal" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
-		<div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 900px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: var(--shadow); overflow: hidden; margin: auto;">
+	<!-- Inquiry Details & Secretariat Response Modal (Spacious, Uncluttered & Certificate Attachment Ready) -->
+	<div id="inquiry-detail-modal" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(5px); align-items: center; justify-content: center; padding: 24px; overflow-y: auto;">
+		<div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 1060px; width: 95vw; max-height: 92vh; display: flex; flex-direction: column; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35); overflow: hidden; margin: auto;">
 			<!-- Modal Header -->
-			<div style="padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--surface-soft);">
-				<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+			<div style="padding: 20px 28px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--surface-soft); flex-wrap: wrap; gap: 14px;">
+				<div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
 					<div>
 						<div style="display: flex; align-items: center; gap: 8px;">
-							<span style="font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;" id="modal-ticket-id">Ticket #INQ-1042</span>
+							<span style="font-size: 0.76rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;" id="modal-ticket-id">Ticket #INQ-1040</span>
 							<span id="modal-priority-badge" style="display: none; background: rgba(220, 38, 38, 0.1); color: #dc2626; border: 1px solid rgba(220, 38, 38, 0.25); padding: 2px 8px; border-radius: var(--radius-pill); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.03em;">HIGH PRIORITY</span>
-							<span id="modal-query-badge" style="background: rgba(37, 99, 235, 0.1); color: #2563eb; border: 1px solid rgba(37, 99, 235, 0.25); padding: 2px 8px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800;">Application Status</span>
+							<span id="modal-query-badge" style="background: rgba(22, 163, 74, 0.1); color: #16a34a; border: 1px solid rgba(22, 163, 74, 0.25); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 800;">Request for Certificate of Membership</span>
 						</div>
-						<h2 style="font-size: 1.25rem; font-weight: 900; color: var(--accent-strong); margin: 3px 0 0 0;" id="modal-inquirer-name">Dr. Aris C. Morales</h2>
+						<h2 style="font-size: 1.35rem; font-weight: 900; color: var(--accent-strong); margin: 4px 0 0 0;" id="modal-inquirer-name">Prof. Raymond C. Cruz</h2>
 					</div>
 				</div>
-				<div style="display: flex; align-items: center; gap: 10px;">
-					<span id="modal-status-badge" style="background: rgba(245, 158, 11, 0.12); color: #b45309; border: 1px solid rgba(245, 158, 11, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">SUBMITTED</span>
-					<button type="button" data-close-inquiry-modal style="background: none; border: none; font-size: 1.5rem; color: var(--muted); cursor: pointer; padding: 4px 8px; line-height: 1;" aria-label="Close modal">&times;</button>
+				<div style="display: flex; align-items: center; gap: 12px;">
+					<span id="modal-status-badge" style="background: rgba(194, 125, 0, 0.12); color: var(--warn); border: 1px solid rgba(194, 125, 0, 0.3); padding: 5px 14px; border-radius: var(--radius-pill); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.04em;">UNDER REVIEW</span>
+					<button type="button" data-close-inquiry-modal style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; font-size: 1.3rem; color: var(--muted); cursor: pointer; padding: 4px 10px; line-height: 1; transition: color 0.15s ease;" aria-label="Close modal">&times;</button>
 				</div>
 			</div>
 
-			<!-- Modal Body -->
-			<div style="padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px;">
-				<!-- Inquirer & Join SPP Application Context -->
-				<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
-					<div>
-						<div style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); letter-spacing: 0.04em;">Inquirer Contact</div>
-						<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-inquirer-email">a.morales@nip.upd.edu.ph</div>
-						<div style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;" id="modal-inquirer-institution">National Institute of Physics, UP Diliman</div>
-					</div>
-					<div>
-						<div style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); letter-spacing: 0.04em;">Membership Tier</div>
-						<div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
-							<span style="background: var(--accent-soft); color: var(--accent-strong); border: 1px solid rgba(27, 122, 76, 0.25); padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 0.76rem;" id="modal-inquirer-tier">Regular Member</span>
+			<!-- Modal Body: Spacious 2-Column Responsive Layout -->
+			<div style="padding: 26px 28px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 26px; align-items: start;">
+				
+				<!-- LEFT COLUMN: Submitted Inquiry Dossier -->
+				<div style="display: flex; flex-direction: column; gap: 18px;">
+					<!-- Inquirer Identity & Contact -->
+					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
+						<div style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); letter-spacing: 0.04em; margin-bottom: 10px;">Inquirer Profile &amp; Account Context</div>
+						<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+							<div>
+								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Registered Email</span>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-inquirer-email">raymond.cruz@dlsu.edu.ph</div>
+							</div>
+							<div>
+								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Affiliation</span>
+								<div style="font-size: 0.84rem; font-weight: 700; color: var(--text); margin-top: 2px;" id="modal-inquirer-institution">De La Salle University - Manila</div>
+							</div>
+							<div>
+								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Membership Standing</span>
+								<div style="margin-top: 3px;">
+									<span style="background: var(--accent-soft); color: var(--accent-strong); border: 1px solid rgba(27, 122, 76, 0.25); padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 0.76rem;" id="modal-inquirer-tier">Regular Member</span>
+								</div>
+							</div>
+							<div>
+								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Submission Date</span>
+								<div style="font-size: 0.84rem; font-weight: 700; color: var(--text); margin-top: 2px;" id="modal-submitted-date">09/26/2025</div>
+							</div>
 						</div>
-						<div style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">Application: <strong id="modal-app-type" style="color: var(--accent-strong);">Status Upgrade</strong></div>
 					</div>
-					<div>
-						<div style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); letter-spacing: 0.04em;">Date Filed in Portal</div>
-						<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-submitted-date">Oct 01, 2025</div>
-						<div style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">Channel: Self-Service Portal</div>
+
+					<!-- Submitted Questionnaire Answers -->
+					<div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
+						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+							<span style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--muted); letter-spacing: 0.04em;">Questionnaire Responses</span>
+							<span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-strong);" id="modal-query-type-label">Request for Certificate of Membership</span>
+						</div>
+
+						<!-- Dynamic questionnaire items injected via JS -->
+						<div id="modal-inquiry-fields-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+							<!-- Injected by JavaScript -->
+						</div>
+					</div>
+
+					<!-- Inquirer Remarks / Context Message -->
+					<div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
+						<span style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--muted); letter-spacing: 0.04em; display: block; margin-bottom: 8px;" id="modal-inquiry-remarks-title">Inquirer's Remarks &amp; Context</span>
+						<div style="background: var(--surface-soft); border-left: 3px solid var(--accent); padding: 14px 16px; border-radius: var(--radius-sm); font-size: 0.9rem; color: var(--text); line-height: 1.6;" id="modal-inquiry-remarks">
+							Requesting an official digital Certificate of Good Standing and Active Membership...
+						</div>
 					</div>
 				</div>
 
-				<!-- Member's Inquiry Remarks -->
-				<div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
-					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-						<span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--muted); letter-spacing: 0.04em;">Member's Remarks &amp; Inquiry</span>
-						<span style="font-size: 0.75rem; color: var(--muted);">Direct from Membership Portal Support</span>
+				<!-- RIGHT COLUMN: Secretariat Actions, Certificate Attachment & Response -->
+				<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 22px; display: flex; flex-direction: column; gap: 18px;">
+					<!-- Section Header -->
+					<div style="border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+						<h4 style="font-size: 1rem; font-weight: 800; color: var(--accent-strong); margin: 0;">Secretariat Response</h4>
 					</div>
-					<div style="background: var(--surface-soft); border-left: 3px solid var(--accent); padding: 14px 16px; border-radius: var(--radius-sm); font-size: 0.9rem; color: var(--text); line-height: 1.5;" id="modal-inquiry-remarks">
-						Following up on Stage 4 document validation for my Regular Member upgrade submitted last Sept 28. Has the endorsement letter from the SPP Fellow been verified by the secretariat?
-					</div>
-				</div>
 
-				<!-- Secretariat Response Form -->
-				<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px;">
-					<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Secretariat Action &amp; Response</h4>
-
-					<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 14px;">
+					<!-- Status & Template Controls -->
+					<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
 						<div>
-							<label style="font-size: 0.78rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px;">Update Ticket Status</label>
+							<label style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px;">Ticket Status</label>
 							<select id="modal-status-select" style="width: 100%; padding: 8px 12px; font-size: 0.85rem; font-weight: 700; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);">
 								<option value="Submitted">Submitted (Awaiting Action)</option>
 								<option value="Under Review">Under Review (Investigating)</option>
@@ -1048,36 +1092,72 @@
 							</select>
 						</div>
 						<div>
-							<label style="font-size: 0.78rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px;">Quick Response Template</label>
+							<label style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px;">Response Template</label>
 							<select id="modal-template-select" style="width: 100%; padding: 8px 12px; font-size: 0.85rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);">
-								<option value="">Choose a template or write custom...</option>
-								<option value="app_verified">Application Documents Verified - Ready for Council Approval</option>
-								<option value="cert_issued">Certificate of Membership Generated &amp; Available</option>
+								<option value="">Select pre-formatted template...</option>
+								<option value="cert_issued">Certificate of Membership Attached &amp; Available</option>
+								<option value="status_verified">Membership Status Verified &amp; Records Confirmed</option>
 								<option value="renewal_guidance">Renewal Guidelines &amp; Conference Discount Notice</option>
-								<option value="more_info">Additional Documents Required for Review</option>
+								<option value="more_info">Additional Details Requested from Member</option>
 							</select>
 						</div>
 					</div>
 
-					<div>
-						<label style="font-size: 0.78rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px;">Official Secretariat Response</label>
-						<textarea id="modal-response-text" rows="4" placeholder="Write response to be displayed in the member's portal inquiry history…" style="width: 100%; padding: 10px 12px; font-size: 0.88rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); resize: vertical; box-sizing: border-box;"></textarea>
+					<!-- ATTACH CERTIFICATE SECTION -->
+					<div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px;">
+						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+							<label style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--muted); margin: 0; letter-spacing: 0.04em;">Attach Certificate</label>
+							<span id="modal-cert-status-badge" style="font-size: 0.7rem; font-weight: 800; padding: 2px 7px; border-radius: 4px; background: rgba(22, 163, 74, 0.1); color: #16a34a;">Recommended</span>
+						</div>
+
+						<!-- Hidden native file input -->
+						<input type="file" id="modal-cert-file-input" accept=".pdf,.doc,.docx" style="display: none;" />
+
+						<!-- State A: Empty State (Upload) -->
+						<div id="modal-cert-empty-state" style="display: flex; flex-direction: column; align-items: center; gap: 10px; border: 1px dashed var(--border); border-radius: var(--radius-sm); padding: 20px 14px; text-align: center; background: var(--surface-soft);">
+							<div style="font-size: 0.82rem; color: var(--muted);">No certificate attached yet</div>
+							<button type="button" class="button button-secondary" id="modal-cert-choose-btn" style="padding: 7px 16px; font-size: 0.82rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+								Upload Certificate (.PDF)
+							</button>
+						</div>
+
+						<!-- State B: Certificate Attached Card -->
+						<div id="modal-cert-attached-state" style="display: none; background: rgba(22, 163, 74, 0.06); border: 1px solid rgba(22, 163, 74, 0.3); border-radius: var(--radius-sm); padding: 12px 14px; align-items: center; justify-content: space-between; gap: 10px;">
+							<div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+								<div style="width: 32px; height: 32px; border-radius: 6px; background: rgba(22, 163, 74, 0.15); color: #16a34a; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+									<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+								</div>
+								<div style="min-width: 0;">
+									<div id="modal-cert-filename" style="font-size: 0.82rem; font-weight: 800; color: var(--accent-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">SPP_Cert_2025_RaymondCruz.pdf</div>
+									<div id="modal-cert-filesize" style="font-size: 0.72rem; color: var(--muted);">245 KB &bull; Certified Copy</div>
+								</div>
+							</div>
+							<div style="display: flex; gap: 6px; flex-shrink: 0;">
+								<button type="button" id="modal-cert-preview-btn" style="padding: 5px 10px; font-size: 0.74rem; font-weight: 700; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; color: var(--text);">Preview</button>
+								<button type="button" id="modal-cert-remove-btn" style="padding: 5px 10px; font-size: 0.74rem; font-weight: 700; background: none; border: none; cursor: pointer; color: #dc2626;">Remove</button>
+							</div>
+						</div>
 					</div>
 
-					<div style="margin-top: 12px;">
-						<label style="font-size: 0.78rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px;">Internal Secretariat Notes (Private / Admin Only)</label>
+					<!-- Secretariat Response Message -->
+					<div>
+						<label style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 8px; letter-spacing: 0.04em;">Secretariat Response</label>
+						<textarea id="modal-response-text" rows="6" placeholder="Write your response to the member…" style="width: 100%; padding: 12px 14px; font-size: 0.88rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); resize: vertical; box-sizing: border-box; line-height: 1.6;"></textarea>
+					</div>
+
+					<!-- Internal Notes -->
+					<div>
+						<label style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px;">Internal Secretariat Notes (Private / Admin Only)</label>
 						<input type="text" id="modal-internal-notes" placeholder="Optional notes for Secretariat audit trail…" style="width: 100%; padding: 8px 12px; font-size: 0.82rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); box-sizing: border-box;" />
 					</div>
 				</div>
 			</div>
 
 			<!-- Modal Footer Actions -->
-			<div style="padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--surface-soft); flex-wrap: wrap; gap: 10px;">
-				<div style="font-size: 0.78rem; color: var(--muted);">Updates will reflect on the member's inquiry dashboard in real time.</div>
-				<div style="display: flex; gap: 10px;">
-					<button type="button" class="button button-quiet" data-close-inquiry-modal style="font-weight: 700; font-size: 0.85rem;">Cancel</button>
-					<button type="button" class="button button-primary" id="modal-send-response-btn" style="font-weight: 700; font-size: 0.85rem;">Save &amp; Update Inquiry</button>
-				</div>
+			<div style="padding: 18px 28px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; background: var(--surface-soft);">
+				<button type="button" class="button button-quiet" data-close-inquiry-modal style="font-weight: 700; font-size: 0.85rem;">Cancel</button>
+				<button type="button" class="button button-primary" id="modal-send-response-btn" style="font-weight: 700; font-size: 0.85rem;">Save Response</button>
 			</div>
 		</div>
 	</div>
@@ -1363,15 +1443,34 @@
 					const remarks = row.getAttribute('data-remarks') || '';
 					const response = row.getAttribute('data-response') || '';
 
-					// Populate modal
+					// Specific questionnaire fields
+					const lastKnownMem = row.getAttribute('data-last-known-membership') || '';
+					const lastAttYear = row.getAttribute('data-last-attendance-year') || '';
+					const lastAttPlace = row.getAttribute('data-last-attendance-place') || '';
+					const oathYear = row.getAttribute('data-oath-year') || '';
+					const oathVenue = row.getAttribute('data-oath-venue') || '';
+					const knownMemType = row.getAttribute('data-known-membership-type') || '';
+					const purpose = row.getAttribute('data-purpose') || '';
+					const keywords = row.getAttribute('data-keywords') || '';
+
+					// Certificate Attachment State
+					let currentAttachedCert = row.getAttribute('data-certificate-attached') || '';
+					let currentAttachedCertSize = row.getAttribute('data-certificate-size') || '';
+
+					// Populate header & contact
 					document.getElementById('modal-ticket-id').textContent = `Ticket #${ticketId}`;
 					document.getElementById('modal-inquirer-name').textContent = name;
 					document.getElementById('modal-inquirer-email').textContent = email;
 					document.getElementById('modal-inquirer-institution').textContent = inst;
 					document.getElementById('modal-inquirer-tier').textContent = tier;
-					document.getElementById('modal-app-type').textContent = appType;
 					document.getElementById('modal-submitted-date').textContent = date;
 					document.getElementById('modal-inquiry-remarks').textContent = remarks;
+
+					const targetEmailEl = document.getElementById('modal-response-target-email');
+					if (targetEmailEl) targetEmailEl.textContent = email;
+
+					const queryTypeLabel = document.getElementById('modal-query-type-label');
+					if (queryTypeLabel) queryTypeLabel.textContent = queryType;
 
 					const priorityBadge = document.getElementById('modal-priority-badge');
 					if (priorityBadge) {
@@ -1381,28 +1480,165 @@
 					const queryBadge = document.getElementById('modal-query-badge');
 					if (queryBadge) {
 						queryBadge.textContent = queryType;
-						if (queryType === 'Application Status') {
-							queryBadge.style.cssText = 'background: rgba(37, 99, 235, 0.1); color: #2563eb; border: 1px solid rgba(37, 99, 235, 0.25); padding: 2px 8px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800;';
-						} else if (queryType === 'Membership Status') {
-							queryBadge.style.cssText = 'background: rgba(147, 51, 234, 0.1); color: #9333ea; border: 1px solid rgba(147, 51, 234, 0.25); padding: 2px 8px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800;';
+						if (queryType === 'Membership Status') {
+							queryBadge.style.cssText = 'background: rgba(147, 51, 234, 0.1); color: #9333ea; border: 1px solid rgba(147, 51, 234, 0.25); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 800;';
 						} else if (queryType === 'Request for Certificate of Membership') {
-							queryBadge.style.cssText = 'background: rgba(22, 163, 74, 0.1); color: #16a34a; border: 1px solid rgba(22, 163, 74, 0.25); padding: 2px 8px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800;';
+							queryBadge.style.cssText = 'background: rgba(22, 163, 74, 0.1); color: #16a34a; border: 1px solid rgba(22, 163, 74, 0.25); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 800;';
 						} else {
-							queryBadge.style.cssText = 'background: rgba(107, 114, 128, 0.1); color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800;';
+							queryBadge.style.cssText = 'background: rgba(107, 114, 128, 0.1); color: var(--muted); border: 1px solid var(--border); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 800;';
 						}
+					}
+
+					// Dynamic Questions Display (Clean, Spacious Mini-Cards)
+					const fieldsContainer = document.getElementById('modal-inquiry-fields-container');
+					const remarksTitle = document.getElementById('modal-inquiry-remarks-title');
+
+					if (fieldsContainer) {
+						let html = '';
+						if (queryType === 'Membership Status') {
+							if (remarksTitle) remarksTitle.textContent = 'Background Context & Purpose of Inquiry';
+							html = `
+								<div style="background: var(--surface-soft); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+									<span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; letter-spacing: 0.03em;">Last Known Membership</span>
+									<span style="font-size: 0.92rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${lastKnownMem || 'Not specified'}</span>
+								</div>
+								<div style="background: var(--surface-soft); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+									<span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; letter-spacing: 0.03em;">Year of Last SPP Attendance</span>
+									<span style="font-size: 0.92rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${lastAttYear || 'N/A'}</span>
+								</div>
+								<div style="background: var(--surface-soft); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); grid-column: 1 / -1;">
+									<span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; letter-spacing: 0.03em;">Last SPP Attendance (Place)</span>
+									<span style="font-size: 0.92rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${lastAttPlace || 'N/A'}</span>
+								</div>
+							`;
+						} else if (queryType === 'Request for Certificate of Membership') {
+							if (remarksTitle) remarksTitle.textContent = 'Additional Inquirer Notes';
+							html = `
+								<div style="background: var(--surface-soft); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+									<span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; letter-spacing: 0.03em;">Year of Oath Taking</span>
+									<span style="font-size: 0.92rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${oathYear || 'N/A'}</span>
+								</div>
+								<div style="background: var(--surface-soft); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+									<span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; letter-spacing: 0.03em;">Venue of Oath Taking</span>
+									<span style="font-size: 0.92rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${oathVenue || 'Online'}</span>
+								</div>
+								<div style="background: var(--surface-soft); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+									<span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; letter-spacing: 0.03em;">Known Membership Type</span>
+									<span style="font-size: 0.92rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${knownMemType || tier}</span>
+								</div>
+								<div style="background: var(--surface-soft); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+									<span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; letter-spacing: 0.03em;">Last Attendance</span>
+									<span style="font-size: 0.92rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${lastAttYear ? `${lastAttYear} (${lastAttPlace || 'N/A'})` : 'N/A'}</span>
+								</div>
+								<div style="background: var(--surface-soft); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); grid-column: 1 / -1;">
+									<span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; letter-spacing: 0.03em;">Intended Certificate Purpose</span>
+									<span style="font-size: 0.92rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${purpose || 'Faculty Evaluation and Professional Dossier'}</span>
+								</div>
+							`;
+						} else {
+							if (remarksTitle) remarksTitle.textContent = 'Member Concern / Detailed Inquiry';
+							html = `
+								<div style="background: var(--surface-soft); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); grid-column: 1 / -1;">
+									<span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; letter-spacing: 0.03em;">Inquiry Keyword(s)</span>
+									<span style="font-size: 0.92rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${keywords || 'fee, inquiry'}</span>
+								</div>
+							`;
+						}
+						fieldsContainer.innerHTML = html;
+					}
+
+					// Certificate Attachment UI Sync
+					const certEmptyState = document.getElementById('modal-cert-empty-state');
+					const certAttachedState = document.getElementById('modal-cert-attached-state');
+					const certFileName = document.getElementById('modal-cert-filename');
+					const certFileSize = document.getElementById('modal-cert-filesize');
+					const certStatusBadge = document.getElementById('modal-cert-status-badge');
+					const certFileInput = document.getElementById('modal-cert-file-input');
+
+					function updateCertAttachmentUI() {
+						if (certStatusBadge) {
+							if (queryType === 'Request for Certificate of Membership') {
+								certStatusBadge.textContent = currentAttachedCert ? 'Attached & Ready' : 'Required / Recommended';
+								certStatusBadge.style.cssText = 'font-size: 0.7rem; font-weight: 800; padding: 2px 7px; border-radius: 4px; background: rgba(22, 163, 74, 0.1); color: #16a34a;';
+							} else {
+								certStatusBadge.textContent = currentAttachedCert ? 'Attached' : 'Optional';
+								certStatusBadge.style.cssText = 'font-size: 0.7rem; font-weight: 800; padding: 2px 7px; border-radius: 4px; background: rgba(107, 114, 128, 0.1); color: var(--muted);';
+							}
+						}
+
+						if (currentAttachedCert) {
+							if (certEmptyState) certEmptyState.style.display = 'none';
+							if (certAttachedState) {
+								certAttachedState.style.display = 'flex';
+								if (certFileName) certFileName.textContent = currentAttachedCert;
+								if (certFileSize) certFileSize.innerHTML = currentAttachedCertSize || '245 KB &bull; Certified Copy';
+							}
+						} else {
+							if (certAttachedState) certAttachedState.style.display = 'none';
+							if (certEmptyState) certEmptyState.style.display = 'flex';
+							if (certFileInput) certFileInput.value = '';
+						}
+					}
+
+					updateCertAttachmentUI();
+
+					// Cert Upload Button Trigger
+					const certChooseBtn = document.getElementById('modal-cert-choose-btn');
+					if (certChooseBtn && certFileInput) {
+						certChooseBtn.onclick = function() {
+							certFileInput.click();
+						};
+					}
+
+					// Cert File Input Change
+					if (certFileInput) {
+						certFileInput.onchange = function(e) {
+							const file = e.target.files[0];
+							if (file) {
+								currentAttachedCert = file.name;
+								currentAttachedCertSize = `${(file.size / 1024).toFixed(1)} KB &bull; Uploaded PDF`;
+								updateCertAttachmentUI();
+
+								if (responseTextarea && !responseTextarea.value.trim()) {
+									responseTextarea.value = `Dear ${name},\n\nPlease find attached your official SPP Certificate of Membership and Good Standing. A digital copy has also been synchronized to your Membership Portal dashboard.\n\nBest regards,\nSPP Secretariat`;
+								}
+								const statusSel = document.getElementById('modal-status-select');
+								if (statusSel && statusSel.value !== 'Responded') {
+									statusSel.value = 'Responded';
+								}
+							}
+						};
+					}
+
+					// Cert Preview Button
+					const certPreviewBtn = document.getElementById('modal-cert-preview-btn');
+					if (certPreviewBtn) {
+						certPreviewBtn.onclick = function() {
+							alert(`[DOCUMENT PREVIEW]\n\nSamahang Pisika ng Pilipinas (SPP)\nOfficial Certificate of Membership & Good Standing\n\nRecipient: ${name}\nFile: ${currentAttachedCert}\nStatus: Digitally Signed by SPP Secretariat & President\nSecurity: Validated QR Signature`);
+						};
+					}
+
+					// Cert Remove Button
+					const certRemoveBtn = document.getElementById('modal-cert-remove-btn');
+					if (certRemoveBtn) {
+						certRemoveBtn.onclick = function() {
+							currentAttachedCert = '';
+							currentAttachedCertSize = '';
+							updateCertAttachmentUI();
+						};
 					}
 
 					const statusBadge = document.getElementById('modal-status-badge');
 					if (statusBadge) {
 						statusBadge.textContent = status.toUpperCase();
 						if (status === 'Submitted') {
-							statusBadge.style.cssText = 'background: rgba(245, 158, 11, 0.12); color: #b45309; border: 1px solid rgba(245, 158, 11, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;';
+							statusBadge.style.cssText = 'background: rgba(245, 158, 11, 0.12); color: #b45309; border: 1px solid rgba(245, 158, 11, 0.3); padding: 5px 14px; border-radius: var(--radius-pill); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.04em;';
 						} else if (status === 'Under Review') {
-							statusBadge.style.cssText = 'background: rgba(194, 125, 0, 0.12); color: var(--warn); border: 1px solid rgba(194, 125, 0, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;';
+							statusBadge.style.cssText = 'background: rgba(194, 125, 0, 0.12); color: var(--warn); border: 1px solid rgba(194, 125, 0, 0.3); padding: 5px 14px; border-radius: var(--radius-pill); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.04em;';
 						} else if (status === 'Responded') {
-							statusBadge.style.cssText = 'background: rgba(27, 122, 76, 0.12); color: var(--success); border: 1px solid rgba(27, 122, 76, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;';
+							statusBadge.style.cssText = 'background: rgba(27, 122, 76, 0.12); color: var(--success); border: 1px solid rgba(27, 122, 76, 0.3); padding: 5px 14px; border-radius: var(--radius-pill); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.04em;';
 						} else {
-							statusBadge.style.cssText = 'background: rgba(107, 114, 128, 0.12); color: var(--muted); border: 1px solid rgba(107, 114, 128, 0.25); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;';
+							statusBadge.style.cssText = 'background: rgba(107, 114, 128, 0.12); color: var(--muted); border: 1px solid rgba(107, 114, 128, 0.25); padding: 5px 14px; border-radius: var(--radius-pill); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.04em;';
 						}
 					}
 
@@ -1435,28 +1671,36 @@
 			if (templateSelect && responseTextarea) {
 				templateSelect.addEventListener('change', function() {
 					const val = this.value;
-					if (val === 'app_verified') {
-						responseTextarea.value = 'Dear Member/Applicant, Your submitted application requirements have been verified by the Secretariat. Your dossier is now forwarded for Council evaluation.';
-					} else if (val === 'cert_issued') {
-						responseTextarea.value = 'Dear Member, Your digital Certificate of Membership and Good Standing has been generated and validated by the SPP Secretariat. You can now download it directly from your Membership Portal.';
+					if (val === 'cert_issued') {
+						responseTextarea.value = 'Dear Member, Your digital Certificate of Membership and Good Standing has been generated and validated by the SPP Secretariat. The official signed document is attached to this email and can also be downloaded directly from your Membership Portal.';
+						const statusSel = document.getElementById('modal-status-select');
+						if (statusSel) statusSel.value = 'Responded';
+					} else if (val === 'status_verified') {
+						responseTextarea.value = 'Dear Member, The SPP Secretariat has verified your membership records in our database. Your active status and tier standing have been confirmed.';
 					} else if (val === 'renewal_guidance') {
 						responseTextarea.value = 'Dear Member, Renewals for the upcoming membership cycle are active. Early renewal qualifies for discounted registration rates for the SPP Annual National Physics Conference.';
 					} else if (val === 'more_info') {
-						responseTextarea.value = 'Dear Member/Applicant, To complete the processing of your request, please provide the required supplemental document via the portal upload facility.';
+						responseTextarea.value = 'Dear Member, To complete the evaluation of your query, please provide the required supplemental details by replying to this email or uploading via the portal.';
 					}
 				});
 			}
 
-			// Save / Update Response
+			// Save / Update Response & Send Email
 			if (sendResponseBtn) {
 				sendResponseBtn.addEventListener('click', function() {
 					if (!currentActiveRow) return;
 
 					const newStatus = document.getElementById('modal-status-select').value;
 					const newResponse = responseTextarea.value.trim();
+					const certFileName = document.getElementById('modal-cert-filename');
+					const certAttachedState = document.getElementById('modal-cert-attached-state');
+
+					const isCertAttached = certAttachedState && certAttachedState.style.display !== 'none';
+					const certName = isCertAttached && certFileName ? certFileName.textContent : '';
 
 					currentActiveRow.setAttribute('data-status', newStatus);
 					currentActiveRow.setAttribute('data-response', newResponse);
+					currentActiveRow.setAttribute('data-certificate-attached', certName);
 
 					// Update tag in row
 					const tag = currentActiveRow.querySelector('.inquiry-status-tag');
@@ -1473,6 +1717,22 @@
 						}
 					}
 
+					// Update cert badge in row if present
+					let rowCertBadge = currentActiveRow.querySelector('.row-cert-badge');
+					const queryTypeTd = currentActiveRow.children[1];
+					if (isCertAttached && queryTypeTd) {
+						if (!rowCertBadge) {
+							rowCertBadge = document.createElement('div');
+							rowCertBadge.className = 'row-cert-badge';
+							rowCertBadge.style.cssText = 'margin-top: 4px; font-size: 0.72rem; color: #16a34a; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; background: rgba(22, 163, 74, 0.08); padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(22, 163, 74, 0.2);';
+							rowCertBadge.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> Certificate Attached';
+							queryTypeTd.appendChild(rowCertBadge);
+						}
+					} else if (!isCertAttached && rowCertBadge) {
+						rowCertBadge.remove();
+					}
+
+					alert(`Response saved successfully.`);
 					inquiryModal.style.display = 'none';
 					filterInquiries();
 				});
