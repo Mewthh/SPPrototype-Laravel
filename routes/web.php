@@ -43,6 +43,7 @@ Route::prefix('membership-portal')->name('membership-portal.')->group(function (
     Route::view('membership', 'portal.membership')->name('membership');
     Route::view('information', 'portal.information')->name('information');
     Route::view('inquiries', 'portal.inquiries')->name('inquiries');
+    Route::view('announcements', 'portal.announcements')->name('announcements');
     Route::view('notifications', 'portal.notifications')->name('notifications');
     Route::view('settings', 'portal.settings')->name('settings');
 });

@@ -1,5 +1,6 @@
 @php
     $navigation = [
+        ['route' => 'membership-portal.announcements', 'label' => 'Announcements', 'path' => 'M3 11l19-9-9 19-2-8-8-2Z'],
         ['route' => 'membership-portal.dashboard', 'label' => 'Dashboard', 'path' => 'M3 10l9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Z M9 21v-7h6v7'],
         ['route' => 'membership-portal.application', 'label' => 'My Application', 'path' => 'M4 3h16v18H4Z M8 8h8 M8 12h8 M8 16h5'],
         ['route' => 'membership-portal.membership', 'label' => 'Membership', 'path' => 'm12 3 3 6 6 .9-4.4 4.3 1 6.1-5.6-3-5.6 3 1-6.1L3 9.9 9 9Z'],
