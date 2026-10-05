@@ -40,10 +40,6 @@
                 <div class="article-body">
                     {!! \App\Support\Markdown::render($activity->description ?: $activity->summary) !!}
                 </div>
-
-                <footer class="article-footer">
-                    <a href="{{ route('home') }}#activities" class="button button-secondary">&larr; Back to Activities</a>
-                </footer>
             </article>
         @elseif(!empty($slug))
             <div class="article-not-found">

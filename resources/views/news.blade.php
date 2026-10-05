@@ -35,10 +35,6 @@
                 <div class="article-body">
                     {!! \App\Support\Markdown::render($news->content) !!}
                 </div>
-
-                <footer class="article-footer">
-                    <a href="{{ route('home') }}#news" class="button button-secondary">&larr; Back to News</a>
-                </footer>
             </article>
         @elseif(!empty($slug))
             <div class="article-not-found">

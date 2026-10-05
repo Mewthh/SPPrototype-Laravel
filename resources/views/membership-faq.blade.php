@@ -30,4 +30,15 @@
             </main>
         </div>
     </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.membership-faq-answer a').forEach(function(anchor) {
+                if (anchor.hostname !== window.location.hostname || anchor.href.includes('docs.google.com') || anchor.href.includes('forms/')) {
+                    anchor.setAttribute('target', '_blank');
+                    anchor.setAttribute('rel', 'noopener noreferrer');
+                }
+            });
+        });
+    </script>
 </x-layouts.public>
+
