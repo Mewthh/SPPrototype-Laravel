@@ -2450,7 +2450,7 @@ async function initDownloadsManager() {
   });
 
   // Delegated clicks for Category and Document rows
-  document.addEventListener('click', (e) => {
+  document.addEventListener('click', async (e) => {
     // Open category edit
     const openCatBtn = e.target.closest('[data-download-open-cat]');
     if (openCatBtn) {

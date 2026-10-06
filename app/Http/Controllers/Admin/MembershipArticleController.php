@@ -25,9 +25,18 @@ class MembershipArticleController extends Controller
 
     private function article(): Page
     {
-        return Page::query()->firstOrCreate(
+        $article = Page::query()->firstOrCreate(
             ['slug' => 'article-ii'],
-            ['title' => 'Article II — Membership', 'content' => 'Add the Article II content here.', 'status' => 'published'],
+            ['title' => 'Article II: Membership', 'content' => Page::defaultArticleIIContent(), 'status' => 'published'],
         );
+
+        if (in_array($article->content, ['Add the Article II content here.', 'Add the Article II content through the Membership FAQ editor.'], true)) {
+            $article->update([
+                'title' => 'Article II: Membership',
+                'content' => Page::defaultArticleIIContent(),
+            ]);
+        }
+
+        return $article;
     }
 }
