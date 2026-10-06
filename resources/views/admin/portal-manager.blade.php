@@ -25,6 +25,66 @@
 	<script
 		src="{{ asset('admin/app.js') }}?v={{ file_exists(public_path('admin/app.js')) ? filemtime(public_path('admin/app.js')) : time() }}"
 		defer></script>
+
+	<style>
+		/* High-Contrast Category Tab Navigation in Modals */
+		.app-cat-tab-btn,
+		.inquiry-cat-tab-btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			padding: 6px 16px;
+			font-size: 0.8rem;
+			font-weight: 700;
+			line-height: 1.2;
+			border-radius: var(--radius-pill);
+			cursor: pointer;
+			border: 1.5px solid var(--border);
+			background: var(--surface);
+			color: var(--text);
+			transition: all 0.15s ease;
+			user-select: none;
+			box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+		}
+
+		.app-cat-tab-btn:hover,
+		.inquiry-cat-tab-btn:hover {
+			border-color: var(--accent);
+			color: var(--accent-strong);
+			background: var(--accent-soft);
+		}
+
+		.app-cat-tab-btn.active,
+		.inquiry-cat-tab-btn.active {
+			background: var(--accent-strong) !important;
+			border-color: var(--accent-strong) !important;
+			color: var(--bg-page) !important;
+			font-weight: 800 !important;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+		}
+
+		html[data-theme="dark"] .app-cat-tab-btn,
+		html[data-theme="dark"] .inquiry-cat-tab-btn {
+			background: #18181b;
+			color: #f4f4f5;
+			border-color: #3f3f46;
+		}
+
+		html[data-theme="dark"] .app-cat-tab-btn:hover,
+		html[data-theme="dark"] .inquiry-cat-tab-btn:hover {
+			background: var(--accent-soft);
+			border-color: var(--accent);
+			color: var(--accent-strong);
+		}
+
+		html[data-theme="dark"] .app-cat-tab-btn.active,
+		html[data-theme="dark"] .inquiry-cat-tab-btn.active {
+			background: var(--accent-strong) !important;
+			border-color: var(--accent-strong) !important;
+			color: var(--bg-page) !important;
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+		}
+	</style>
 </head>
 
 <body>
@@ -166,17 +226,6 @@
 			<div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow);" id="portal-panels-wrapper">
 				<!-- TAB 1: APPLICATIONS -->
 				<div data-portal-panel="applications">
-					<!-- Pending Applications Widget -->
-					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
-						<div>
-							<span style="font-size: 0.78rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;">Pending Applications</span>
-							<div style="font-size: 1.8rem; font-weight: 900; color: var(--accent-strong); line-height: 1.1; margin-top: 2px;">4</div>
-							<span style="font-size: 0.78rem; color: var(--muted); margin-top: 4px; display: block;">Requires Secretariat Review</span>
-						</div>
-						<div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--accent-strong);">
-							<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-						</div>
-					</div>
 
 					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
 						<h3 style="font-size: 1.1rem; font-weight: 800; color: var(--accent-strong); margin: 0;">Membership Applications</h3>
@@ -222,17 +271,6 @@
 
 				<!-- TAB 2: MEMBER ROSTER -->
 				<div data-portal-panel="roster" style="display: none;">
-					<!-- Active Members Widget -->
-					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
-						<div>
-							<span style="font-size: 0.78rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;">Active Members</span>
-							<div style="font-size: 1.8rem; font-weight: 900; color: var(--accent-strong); line-height: 1.1; margin-top: 2px;">248</div>
-							<span style="font-size: 0.78rem; color: var(--muted); margin-top: 4px; display: block;">180 Regular &bull; 52 Associate &bull; 16 Institutional</span>
-						</div>
-						<div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--accent-strong);">
-							<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-						</div>
-					</div>
 
 					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 12px;">
 						<h3 style="font-size: 1.1rem; font-weight: 800; color: var(--accent-strong); margin: 0;">Member Directory &amp; Roster</h3>
@@ -281,42 +319,11 @@
 
 				<!-- TAB 3: INQUIRIES -->
 				<div data-portal-panel="inquiries" style="display: none;">
-					<!-- KPI Summary Cards Grid -->
-					<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 22px;">
-						<!-- Total Inquiries -->
-						<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 18px;">
-							<span style="font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;">Total Inquiries</span>
-							<div style="font-size: 1.7rem; font-weight: 900; color: var(--accent-strong); line-height: 1.1; margin-top: 4px;" data-inquiry-total-count>6</div>
-							<span style="font-size: 0.75rem; color: var(--muted); margin-top: 4px; display: block;">Across all query types</span>
-						</div>
-
-						<!-- Needs Attention / Submitted -->
-						<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 18px;">
-							<span style="font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;">Awaiting Response</span>
-							<div style="font-size: 1.7rem; font-weight: 900; color: var(--accent-strong); line-height: 1.1; margin-top: 4px;">1</div>
-							<span style="font-size: 0.75rem; color: var(--muted); margin-top: 4px; display: block;">Requires action</span>
-						</div>
-
-						<!-- Under Review -->
-						<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 18px;">
-							<span style="font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;">Under Review</span>
-							<div style="font-size: 1.7rem; font-weight: 900; color: var(--accent-strong); line-height: 1.1; margin-top: 4px;">2</div>
-							<span style="font-size: 0.75rem; color: var(--muted); margin-top: 4px; display: block;">Assigned to Secretariat</span>
-						</div>
-
-						<!-- Certificates Requested -->
-						<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 18px;">
-							<span style="font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;">Certificates Requested</span>
-							<div style="font-size: 1.7rem; font-weight: 900; color: var(--accent-strong); line-height: 1.1; margin-top: 4px;">1</div>
-							<span style="font-size: 0.75rem; color: var(--muted); margin-top: 4px; display: block;">Official endorsement</span>
-						</div>
-					</div>
 
 					<!-- Section Header & Filter Toolbar -->
 					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
 						<div>
 							<h3 style="font-size: 1.15rem; font-weight: 800; color: var(--accent-strong); margin: 0;">Member Support &amp; Inquiries</h3>
-							<p style="font-size: 0.8rem; color: var(--muted); margin: 3px 0 0;">Tickets filed through the Membership Portal and Join SPP application inquiries.</p>
 						</div>
 
 						<!-- Status Filter Tabs -->
@@ -329,21 +336,33 @@
 						</div>
 					</div>
 
-					<!-- Secondary Filter Toolbar (Query Type & Search) -->
+					<!-- Secondary Filter Toolbar (Query Type, Category & Search) -->
 					<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; background: var(--surface-soft); padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-md);">
-						<!-- Query Type Dropdown Filter (Matching portal/inquiries.blade.php) -->
-						<div style="display: flex; align-items: center; gap: 8px;">
-							<label for="inquiry-type-select" style="font-size: 0.78rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;">Query Type:</label>
-							<select id="inquiry-type-select" data-inquiry-type-filter style="padding: 6px 12px; font-size: 0.82rem; font-weight: 600; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);">
-								<option value="all">All Query Types</option>
-								<option value="Membership Status">Membership Status</option>
-								<option value="Request for Certificate of Membership">Request for Certificate of Membership</option>
-								<option value="Other">Other</option>
-							</select>
+						<div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+							<!-- Inquirer Category Filter (Members vs Applicants) -->
+							<div style="display: flex; align-items: center; gap: 8px;">
+								<label for="inquiry-category-select" style="font-size: 0.78rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;">Category:</label>
+								<select id="inquiry-category-select" data-inquiry-category-filter style="padding: 6px 12px; font-size: 0.82rem; font-weight: 600; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);">
+									<option value="all">All (Members &amp; Applicants)</option>
+									<option value="member">Members (Upgrades &amp; Renewals)</option>
+									<option value="applicant">Applicants (New Applications)</option>
+								</select>
+							</div>
+
+							<!-- Query Type Dropdown Filter (Matching portal/inquiries.blade.php) -->
+							<div style="display: flex; align-items: center; gap: 8px;">
+								<label for="inquiry-type-select" style="font-size: 0.78rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;">Query Type:</label>
+								<select id="inquiry-type-select" data-inquiry-type-filter style="padding: 6px 12px; font-size: 0.82rem; font-weight: 600; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);">
+									<option value="all">All Query Types</option>
+									<option value="Membership Status">Membership Status</option>
+									<option value="Request for Certificate of Membership">Request for Certificate of Membership</option>
+									<option value="Other">Other</option>
+								</select>
+							</div>
 						</div>
 
 						<!-- Search Filter Input -->
-						<div style="display: flex; align-items: center; gap: 8px; flex: 1; max-width: 360px; min-width: 240px;">
+						<div style="display: flex; align-items: center; gap: 8px; flex: 1; max-width: 340px; min-width: 220px;">
 							<div style="position: relative; width: 100%;">
 								<input type="search" placeholder="Search by name, email, institution, or remarks…" data-inquiry-search style="width: 100%; padding: 7px 12px 7px 32px; font-size: 0.82rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); box-sizing: border-box;" />
 								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -383,8 +402,11 @@
 									data-remarks="Verifying official membership number and regular membership standing for university faculty tenure and promotion evaluation."
 									data-response="">
 									<td style="padding: 14px 16px;">
-										<div style="font-weight: 700; color: var(--accent-strong);">Dr. Aris C. Morales</div>
-										<div style="font-size: 0.78rem; color: var(--muted);">a.morales@nip.upd.edu.ph</div>
+										<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+											<span style="font-weight: 700; color: var(--accent-strong);">Dr. Aris C. Morales</span>
+											<span class="inquiry-cat-tag" style="background: rgba(22, 163, 74, 0.07); color: #15803d; border: 1px solid rgba(22, 163, 74, 0.2); padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 600;">Member</span>
+										</div>
+										<div style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">a.morales@nip.upd.edu.ph</div>
 									</td>
 									<td style="padding: 14px 16px; color: var(--text);">
 										Membership Status
@@ -393,7 +415,7 @@
 										10/01/2025
 									</td>
 									<td style="padding: 14px 16px;">
-										<span class="inquiry-status-tag" style="background: rgba(245, 158, 11, 0.12); color: var(--warn); border: 1px solid rgba(194, 125, 0, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">Submitted</span>
+										<span class="inquiry-status-tag" style="background: transparent; color: var(--text); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">Submitted</span>
 									</td>
 									<td style="padding: 14px 16px; text-align: right;">
 										<button type="button" class="button button-primary" style="padding: 5px 12px; font-size: 0.78rem;" data-open-inquiry-modal>View</button>
@@ -419,8 +441,11 @@
 									data-remarks="I would like to inquire about the renewal procedure for 2026 Associate Membership and if early renewals qualify for the annual conference registration discount."
 									data-response="Secretariat reviewing renewal schedule. Advised member that early renewal window opens Nov 1 with early-bird conference rates.">
 									<td style="padding: 14px 16px;">
-										<div style="font-weight: 700; color: var(--accent-strong);">Maria Elena Santos</div>
-										<div style="font-size: 0.78rem; color: var(--muted);">mesantos@admu.edu.ph</div>
+										<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+											<span style="font-weight: 700; color: var(--accent-strong);">Maria Elena Santos</span>
+											<span class="inquiry-cat-tag" style="background: rgba(22, 163, 74, 0.07); color: #15803d; border: 1px solid rgba(22, 163, 74, 0.2); padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 600;">Member</span>
+										</div>
+										<div style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">mesantos@admu.edu.ph</div>
 									</td>
 									<td style="padding: 14px 16px; color: var(--text);">
 										Membership Status
@@ -429,7 +454,7 @@
 										09/29/2025
 									</td>
 									<td style="padding: 14px 16px;">
-										<span class="inquiry-status-tag" style="background: rgba(194, 125, 0, 0.12); color: var(--warn); border: 1px solid rgba(194, 125, 0, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">Under Review</span>
+										<span class="inquiry-status-tag" style="background: transparent; color: var(--text); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">Under Review</span>
 									</td>
 									<td style="padding: 14px 16px; text-align: right;">
 										<button type="button" class="button button-primary" style="padding: 5px 12px; font-size: 0.78rem;" data-open-inquiry-modal>View</button>
@@ -460,8 +485,11 @@
 									data-remarks="Requesting an official digital Certificate of Good Standing and Active Membership for faculty promotion and research grant dossier submission at DLSU."
 									data-response="Certificate generated and queued for officer digital signature.">
 									<td style="padding: 14px 16px;">
-										<div style="font-weight: 700; color: var(--accent-strong);">Prof. Raymond C. Cruz</div>
-										<div style="font-size: 0.78rem; color: var(--muted);">raymond.cruz@dlsu.edu.ph</div>
+										<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+											<span style="font-weight: 700; color: var(--accent-strong);">Prof. Raymond C. Cruz</span>
+											<span class="inquiry-cat-tag" style="background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 600;">Applicant</span>
+										</div>
+										<div style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">raymond.cruz@dlsu.edu.ph</div>
 									</td>
 									<td style="padding: 14px 16px; color: var(--text);">
 										<div>Request for Certificate of Membership</div>
@@ -474,7 +502,7 @@
 										09/26/2025
 									</td>
 									<td style="padding: 14px 16px;">
-										<span class="inquiry-status-tag" style="background: rgba(194, 125, 0, 0.12); color: var(--warn); border: 1px solid rgba(194, 125, 0, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">Under Review</span>
+										<span class="inquiry-status-tag" style="background: transparent; color: var(--text); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">Under Review</span>
 									</td>
 									<td style="padding: 14px 16px; text-align: right;">
 										<button type="button" class="button button-primary" style="padding: 5px 12px; font-size: 0.78rem;" data-open-inquiry-modal>View</button>
@@ -500,8 +528,11 @@
 									data-remarks="Verifying if previous 2023 associate attendance qualifies towards regular membership transition requirements."
 									data-response="Dear Engr. Tan, The secretariat confirms your 2023 associate participation is recorded and eligible for regular membership upgrade.">
 									<td style="padding: 14px 16px;">
-										<div style="font-weight: 700; color: var(--accent-strong);">Engr. Gabriel Tan</div>
-										<div style="font-size: 0.78rem; color: var(--muted);">gabriel.tan@ust.edu.ph</div>
+										<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+											<span style="font-weight: 700; color: var(--accent-strong);">Engr. Gabriel Tan</span>
+											<span class="inquiry-cat-tag" style="background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 600;">Applicant</span>
+										</div>
+										<div style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">gabriel.tan@ust.edu.ph</div>
 									</td>
 									<td style="padding: 14px 16px; color: var(--text);">
 										Membership Status
@@ -510,7 +541,7 @@
 										09/22/2025
 									</td>
 									<td style="padding: 14px 16px;">
-										<span class="inquiry-status-tag" style="background: rgba(27, 122, 76, 0.12); color: var(--success); border: 1px solid rgba(27, 122, 76, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">Responded</span>
+										<span class="inquiry-status-tag" style="background: rgba(22, 163, 74, 0.07); color: #15803d; border: 1px solid rgba(22, 163, 74, 0.18); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">Responded</span>
 									</td>
 									<td style="padding: 14px 16px; text-align: right;">
 										<button type="button" class="button button-primary" style="padding: 5px 12px; font-size: 0.78rem;" data-open-inquiry-modal>View</button>
@@ -534,8 +565,11 @@
 									data-remarks="We need to update our institutional primary representative contact and add two junior faculty researchers to our institutional membership roster."
 									data-response="Representative update form sent. Roster additions processed under Institutional tier limit.">
 									<td style="padding: 14px 16px;">
-										<div style="font-weight: 700; color: var(--accent-strong);">Dr. Patricia Gomez</div>
-										<div style="font-size: 0.78rem; color: var(--muted);">pgomez@clsu.edu.ph</div>
+										<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+											<span style="font-weight: 700; color: var(--accent-strong);">Dr. Patricia Gomez</span>
+											<span class="inquiry-cat-tag" style="background: rgba(22, 163, 74, 0.07); color: #15803d; border: 1px solid rgba(22, 163, 74, 0.2); padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 600;">Member</span>
+										</div>
+										<div style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">pgomez@clsu.edu.ph</div>
 									</td>
 									<td style="padding: 14px 16px; color: var(--text);">
 										Other
@@ -544,7 +578,7 @@
 										09/18/2025
 									</td>
 									<td style="padding: 14px 16px;">
-										<span class="inquiry-status-tag" style="background: rgba(27, 122, 76, 0.12); color: var(--success); border: 1px solid rgba(27, 122, 76, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">Responded</span>
+										<span class="inquiry-status-tag" style="background: rgba(22, 163, 74, 0.07); color: #15803d; border: 1px solid rgba(22, 163, 74, 0.18); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">Responded</span>
 									</td>
 									<td style="padding: 14px 16px; text-align: right;">
 										<button type="button" class="button button-primary" style="padding: 5px 12px; font-size: 0.78rem;" data-open-inquiry-modal>View</button>
@@ -568,8 +602,11 @@
 									data-remarks="Inquiry regarding password reset link and 2FA recovery code for the portal account. Resolved via automated link."
 									data-response="Automated one-time authentication code sent to registered university email. User successfully logged into the Membership Portal. Ticket closed.">
 									<td style="padding: 14px 16px;">
-										<div style="font-weight: 700; color: var(--accent-strong);">Kevin Lee</div>
-										<div style="font-size: 0.78rem; color: var(--muted);">klee@mapua.edu.ph</div>
+										<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+											<span style="font-weight: 700; color: var(--accent-strong);">Kevin Lee</span>
+											<span class="inquiry-cat-tag" style="background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 600;">Applicant</span>
+										</div>
+										<div style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">klee@mapua.edu.ph</div>
 									</td>
 									<td style="padding: 14px 16px; color: var(--text);">
 										Other
@@ -578,7 +615,7 @@
 										09/10/2025
 									</td>
 									<td style="padding: 14px 16px;">
-										<span class="inquiry-status-tag" style="background: rgba(107, 114, 128, 0.12); color: var(--muted); border: 1px solid rgba(107, 114, 128, 0.25); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">Closed</span>
+										<span class="inquiry-status-tag" style="background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">Closed</span>
 									</td>
 									<td style="padding: 14px 16px; text-align: right;">
 										<button type="button" class="button button-primary" style="padding: 5px 12px; font-size: 0.78rem;" data-open-inquiry-modal>View</button>
@@ -834,12 +871,34 @@
 				<button type="button" data-close-review-modal style="background: none; border: none; font-size: 1.5rem; color: var(--muted); cursor: pointer; padding: 4px 8px; line-height: 1;" aria-label="Close modal">&times;</button>
 			</div>
 
-			<!-- Modal Body (Cards Grid matching exact screenshot sections) -->
-			<div style="padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px;">
-				<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
-					<!-- 1. Membership Information -->
-					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
-						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Membership Information</h4>
+			<!-- Category Tab Navigation -->
+			<div style="padding: 12px 24px; border-bottom: 1px solid var(--border); background: var(--surface-soft);">
+				<div style="display: flex; gap: 8px; flex-wrap: wrap;" role="tablist" aria-label="Application Information Categories">
+					<button type="button" class="app-cat-tab-btn active" data-app-info-tab="membership">
+						Membership
+					</button>
+					<button type="button" class="app-cat-tab-btn" data-app-info-tab="personal">
+						Personal
+					</button>
+					<button type="button" class="app-cat-tab-btn" data-app-info-tab="professional">
+						Professional &amp; Education
+					</button>
+					<button type="button" class="app-cat-tab-btn" data-app-info-tab="documents">
+						Documents &amp; Validation
+					</button>
+				</div>
+			</div>
+
+			<!-- Modal Body: Categorized Cards Grid -->
+			<div style="padding: 20px 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;">
+				<div id="review-modal-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 16px;">
+
+					<!-- CATEGORY 1: Membership Information -->
+					<div data-app-cat-section="membership" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
+						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: var(--accent); flex-shrink: 0;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+							Membership Information
+						</h4>
 						<div style="display: flex; flex-direction: column; gap: 12px;">
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Membership Type</div>
@@ -855,14 +914,17 @@
 							</div>
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted); margin-bottom: 4px;">Application Status</div>
-								<span style="background: rgba(194, 125, 0, 0.12); color: var(--warn); border: 1px solid rgba(194, 125, 0, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">Under Evaluation</span>
+								<span style="background: transparent; color: var(--text); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">Under Evaluation</span>
 							</div>
 						</div>
 					</div>
 
-					<!-- 2. Recommender -->
-					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
-						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Recommender</h4>
+					<!-- CATEGORY 1: Recommender -->
+					<div data-app-cat-section="membership" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
+						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: #9333ea; flex-shrink: 0;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+							Recommender
+						</h4>
 						<div style="display: flex; flex-direction: column; gap: 12px;">
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Name</div>
@@ -882,14 +944,17 @@
 							</div>
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted); margin-bottom: 4px;">Recommender Status</div>
-								<span style="background: rgba(59, 130, 246, 0.12); color: #1d4ed8; border: 1px solid rgba(59, 130, 246, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800;">Pending</span>
+								<span style="background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">Pending</span>
 							</div>
 						</div>
 					</div>
 
-					<!-- 3. Personal Information -->
-					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
-						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Personal Information</h4>
+					<!-- CATEGORY 2: Personal Information -->
+					<div data-app-cat-section="personal" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px; display: none;">
+						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: var(--accent); flex-shrink: 0;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+							Personal Information
+						</h4>
 						<div style="display: flex; flex-direction: column; gap: 12px;">
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Surname</div>
@@ -914,9 +979,12 @@
 						</div>
 					</div>
 
-					<!-- 4. Professional Information -->
-					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
-						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Professional Information</h4>
+					<!-- CATEGORY 3: Professional Information -->
+					<div data-app-cat-section="professional" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px; display: none;">
+						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: #2563eb; flex-shrink: 0;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+							Professional Information
+						</h4>
 						<div style="display: flex; flex-direction: column; gap: 12px;">
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Current Institutional Affiliation</div>
@@ -933,9 +1001,12 @@
 						</div>
 					</div>
 
-					<!-- 5. Educational Information -->
-					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
-						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Educational Information</h4>
+					<!-- CATEGORY 3: Educational Information -->
+					<div data-app-cat-section="professional" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px; display: none;">
+						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: #ea580c; flex-shrink: 0;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+							Educational Information
+						</h4>
 						<div style="display: flex; flex-direction: column; gap: 12px;">
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Highest Educational Attainment</div>
@@ -960,9 +1031,12 @@
 						</div>
 					</div>
 
-					<!-- 6. Documents -->
-					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
-						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Documents</h4>
+					<!-- CATEGORY 4: Documents -->
+					<div data-app-cat-section="documents" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px; display: none;">
+						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: var(--accent); flex-shrink: 0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+							Documents
+						</h4>
 						<div style="display: flex; flex-direction: column; gap: 14px;">
 							<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border); padding-bottom: 10px;">
 								<span style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong);">Updated CV</span>
@@ -975,9 +1049,12 @@
 						</div>
 					</div>
 
-					<!-- 7. Validation / Certification -->
-					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
-						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Validation / Certification</h4>
+					<!-- CATEGORY 4: Validation / Certification -->
+					<div data-app-cat-section="documents" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px; display: none;">
+						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: #16a34a; flex-shrink: 0;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+							Validation / Certification
+						</h4>
 						<div style="display: flex; flex-direction: column; gap: 12px;">
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Declaration</div>
@@ -989,6 +1066,7 @@
 							</div>
 						</div>
 					</div>
+
 				</div>
 			</div>
 
@@ -1000,49 +1078,96 @@
 		</div>
 	</div>
 
-	<!-- Inquiry Details & Secretariat Response Modal (Spacious, Uncluttered & Certificate Attachment Ready) -->
+	<!-- Inquiry Details Modal -->
 	<div id="inquiry-detail-modal" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(5px); align-items: center; justify-content: center; padding: 24px; overflow-y: auto;">
-		<div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 1060px; width: 95vw; max-height: 92vh; display: flex; flex-direction: column; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35); overflow: hidden; margin: auto;">
+		<div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 860px; width: 100%; max-height: 92vh; display: flex; flex-direction: column; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35); overflow: hidden; margin: auto;">
 			<!-- Modal Header -->
 			<div style="padding: 20px 28px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--surface-soft); flex-wrap: wrap; gap: 14px;">
 				<div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
 					<div>
-						<div style="display: flex; align-items: center; gap: 8px;">
+						<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
 							<span style="font-size: 0.76rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;" id="modal-ticket-id">Ticket #INQ-1040</span>
-							<span id="modal-priority-badge" style="display: none; background: rgba(220, 38, 38, 0.1); color: #dc2626; border: 1px solid rgba(220, 38, 38, 0.25); padding: 2px 8px; border-radius: var(--radius-pill); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.03em;">HIGH PRIORITY</span>
-							<span id="modal-query-badge" style="background: rgba(22, 163, 74, 0.1); color: #16a34a; border: 1px solid rgba(22, 163, 74, 0.25); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 800;">Request for Certificate of Membership</span>
+							<span id="modal-inquirer-category-badge" style="background: rgba(22, 163, 74, 0.07); color: #15803d; border: 1px solid rgba(22, 163, 74, 0.2); padding: 1px 7px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">Member</span>
+							<span id="modal-query-badge" style="background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 2px 9px; border-radius: 4px; font-size: 0.73rem; font-weight: 600;">Request for Certificate of Membership</span>
 						</div>
 						<h2 style="font-size: 1.35rem; font-weight: 900; color: var(--accent-strong); margin: 4px 0 0 0;" id="modal-inquirer-name">Prof. Raymond C. Cruz</h2>
 					</div>
 				</div>
 				<div style="display: flex; align-items: center; gap: 12px;">
-					<span id="modal-status-badge" style="background: rgba(194, 125, 0, 0.12); color: var(--warn); border: 1px solid rgba(194, 125, 0, 0.3); padding: 5px 14px; border-radius: var(--radius-pill); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.04em;">UNDER REVIEW</span>
+					<span id="modal-status-badge" style="background: transparent; color: var(--text); border: 1px solid var(--border); padding: 4px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Under Review</span>
 					<button type="button" data-close-inquiry-modal style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; font-size: 1.3rem; color: var(--muted); cursor: pointer; padding: 4px 10px; line-height: 1; transition: color 0.15s ease;" aria-label="Close modal">&times;</button>
 				</div>
 			</div>
 
-			<!-- Modal Body: Spacious 2-Column Responsive Layout -->
-			<div style="padding: 26px 28px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 26px; align-items: start;">
-				
-				<!-- LEFT COLUMN: Submitted Inquiry Dossier -->
-				<div style="display: flex; flex-direction: column; gap: 18px;">
-					<!-- Inquirer Identity & Contact -->
-					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
-						<div style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); letter-spacing: 0.04em; margin-bottom: 10px;">Inquirer Profile &amp; Account Context</div>
+			<!-- Modal Body: Single-Column Layout -->
+			<div style="padding: 20px 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;">
+
+				<!-- Category Tab Navigation -->
+				<div style="display: flex; gap: 8px; flex-wrap: wrap;" role="tablist" aria-label="Inquirer Information Categories">
+					<button type="button" class="inquiry-cat-tab-btn active" data-inquiry-info-tab="profile">
+						Profile &amp; Contact
+					</button>
+					<button type="button" class="inquiry-cat-tab-btn" data-inquiry-info-tab="standing">
+						Membership Standing
+					</button>
+					<button type="button" class="inquiry-cat-tab-btn" data-inquiry-info-tab="questionnaire">
+						Questionnaire
+					</button>
+					<button type="button" class="inquiry-cat-tab-btn" data-inquiry-info-tab="remarks">
+						Remarks
+					</button>
+				</div>
+
+					<!-- CATEGORY 1: Inquirer Profile & Account Context -->
+					<div data-inquiry-cat-section="profile" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px; transition: all 0.2s ease;">
+						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+							<div style="display: flex; align-items: center; gap: 8px;">
+								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: var(--accent);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+								<span style="font-size: 0.76rem; font-weight: 800; text-transform: uppercase; color: var(--accent-strong); letter-spacing: 0.04em;">Category 1: Personal &amp; Contact Profile</span>
+							</div>
+							<span style="font-size: 0.7rem; font-weight: 800; background: var(--surface); color: var(--muted); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px;">Identity</span>
+						</div>
 						<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
 							<div>
-								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Registered Email</span>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-inquirer-email">raymond.cruz@dlsu.edu.ph</div>
+								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Inquirer Full Name</span>
+								<div style="font-size: 0.92rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-card-inquirer-name">Prof. Raymond C. Cruz</div>
 							</div>
 							<div>
-								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Affiliation</span>
+								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Classification</span>
+								<div style="margin-top: 2px;" id="modal-inquirer-class-wrap">
+									<span id="modal-inquirer-class-type" style="background: rgba(22, 163, 74, 0.12); color: #16a34a; border: 1px solid rgba(22, 163, 74, 0.25); padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 0.76rem;">Existing Member</span>
+								</div>
+							</div>
+							<div>
+								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Registered Email</span>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px; word-break: break-all;" id="modal-inquirer-email">raymond.cruz@dlsu.edu.ph</div>
+							</div>
+							<div>
+								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Current Affiliation / Institution</span>
 								<div style="font-size: 0.84rem; font-weight: 700; color: var(--text); margin-top: 2px;" id="modal-inquirer-institution">De La Salle University - Manila</div>
 							</div>
+						</div>
+					</div>
+
+					<!-- CATEGORY 2: Membership Standing & Application Context -->
+					<div data-inquiry-cat-section="standing" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px; transition: all 0.2s ease; display: none;">
+						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+							<div style="display: flex; align-items: center; gap: 8px;">
+								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: #9333ea;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+								<span style="font-size: 0.76rem; font-weight: 800; text-transform: uppercase; color: var(--accent-strong); letter-spacing: 0.04em;">Category 2: Membership &amp; Application Standing</span>
+							</div>
+							<span style="font-size: 0.7rem; font-weight: 800; background: var(--surface); color: var(--muted); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px;">Standing</span>
+						</div>
+						<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
 							<div>
 								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Membership Standing</span>
 								<div style="margin-top: 3px;">
 									<span style="background: var(--accent-soft); color: var(--accent-strong); border: 1px solid rgba(27, 122, 76, 0.25); padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 0.76rem;" id="modal-inquirer-tier">Regular Member</span>
 								</div>
+							</div>
+							<div>
+								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Application / Track Type</span>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 3px;" id="modal-application-type">New Application</div>
 							</div>
 							<div>
 								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Submission Date</span>
@@ -1051,10 +1176,13 @@
 						</div>
 					</div>
 
-					<!-- Submitted Questionnaire Answers -->
-					<div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
+					<!-- CATEGORY 3: Submitted Questionnaire Answers & Historical Records -->
+					<div data-inquiry-cat-section="questionnaire" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px; transition: all 0.2s ease; display: none;">
 						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
-							<span style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--muted); letter-spacing: 0.04em;">Questionnaire Responses</span>
+							<div style="display: flex; align-items: center; gap: 8px;">
+								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: #2563eb;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+								<span style="font-size: 0.76rem; font-weight: 800; text-transform: uppercase; color: var(--accent-strong); letter-spacing: 0.04em;">Category 3: Questionnaire &amp; Historical Records</span>
+							</div>
 							<span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-strong);" id="modal-query-type-label">Request for Certificate of Membership</span>
 						</div>
 
@@ -1064,100 +1192,61 @@
 						</div>
 					</div>
 
-					<!-- Inquirer Remarks / Context Message -->
-					<div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
-						<span style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--muted); letter-spacing: 0.04em; display: block; margin-bottom: 8px;" id="modal-inquiry-remarks-title">Inquirer's Remarks &amp; Context</span>
-						<div style="background: var(--surface-soft); border-left: 3px solid var(--accent); padding: 14px 16px; border-radius: var(--radius-sm); font-size: 0.9rem; color: var(--text); line-height: 1.6;" id="modal-inquiry-remarks">
+					<!-- CATEGORY 4: Inquirer Remarks / Context Message -->
+					<div data-inquiry-cat-section="remarks" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px; transition: all 0.2s ease; display: none;">
+						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+							<div style="display: flex; align-items: center; gap: 8px;">
+								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: #ea580c;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+								<span style="font-size: 0.76rem; font-weight: 800; text-transform: uppercase; color: var(--accent-strong); letter-spacing: 0.04em;" id="modal-inquiry-remarks-title">Category 4: Inquirer Statement &amp; Remarks</span>
+							</div>
+							<span style="font-size: 0.7rem; font-weight: 800; background: var(--surface); color: var(--muted); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px;">Statement</span>
+						</div>
+						<div style="background: var(--surface); border-left: 3px solid var(--accent); padding: 14px 16px; border-radius: var(--radius-sm); font-size: 0.9rem; color: var(--text); line-height: 1.6;" id="modal-inquiry-remarks">
 							Requesting an official digital Certificate of Good Standing and Active Membership...
 						</div>
 					</div>
-				</div>
 
-				<!-- RIGHT COLUMN: Secretariat Actions, Certificate Attachment & Response -->
-				<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 22px; display: flex; flex-direction: column; gap: 18px;">
-					<!-- Section Header -->
-					<div style="border-bottom: 1px solid var(--border); padding-bottom: 12px;">
-						<h4 style="font-size: 1rem; font-weight: 800; color: var(--accent-strong); margin: 0;">Secretariat Response</h4>
+				<!-- Admin Controls: Status & Certificate -->
+				<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 20px; display: flex; flex-direction: column; gap: 14px;">
+					<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+						<label style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--muted); white-space: nowrap;">Ticket Status</label>
+						<select id="modal-status-select" style="flex: 1; min-width: 180px; padding: 7px 12px; font-size: 0.84rem; font-weight: 700; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);">
+							<option value="Submitted">Submitted (Awaiting Action)</option>
+							<option value="Under Review">Under Review</option>
+							<option value="Responded">Responded (via Email)</option>
+							<option value="Closed">Closed (Resolved)</option>
+						</select>
+						<label style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--muted); white-space: nowrap;">Internal Notes</label>
+						<input type="text" id="modal-internal-notes" placeholder="Private notes for audit trail…" style="flex: 2; min-width: 200px; padding: 7px 12px; font-size: 0.82rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);" />
 					</div>
 
-					<!-- Status & Template Controls -->
-					<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-						<div>
-							<label style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px;">Ticket Status</label>
-							<select id="modal-status-select" style="width: 100%; padding: 8px 12px; font-size: 0.85rem; font-weight: 700; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);">
-								<option value="Submitted">Submitted (Awaiting Action)</option>
-								<option value="Under Review">Under Review (Investigating)</option>
-								<option value="Responded">Responded (Replied to Member)</option>
-								<option value="Closed">Closed (Resolved)</option>
-							</select>
-						</div>
-						<div>
-							<label style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px;">Response Template</label>
-							<select id="modal-template-select" style="width: 100%; padding: 8px 12px; font-size: 0.85rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);">
-								<option value="">Select pre-formatted template...</option>
-								<option value="cert_issued">Certificate of Membership Attached &amp; Available</option>
-								<option value="status_verified">Membership Status Verified &amp; Records Confirmed</option>
-								<option value="renewal_guidance">Renewal Guidelines &amp; Conference Discount Notice</option>
-								<option value="more_info">Additional Details Requested from Member</option>
-							</select>
-						</div>
-					</div>
-
-					<!-- ATTACH CERTIFICATE SECTION -->
-					<div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px;">
-						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-							<label style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--muted); margin: 0; letter-spacing: 0.04em;">Attach Certificate</label>
-							<span id="modal-cert-status-badge" style="font-size: 0.7rem; font-weight: 800; padding: 2px 7px; border-radius: 4px; background: rgba(22, 163, 74, 0.1); color: #16a34a;">Recommended</span>
-						</div>
-
-						<!-- Hidden native file input -->
+					<!-- Certificate Attachment -->
+					<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+						<span style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--muted); white-space: nowrap;">Attach Certificate</span>
+						<span id="modal-cert-status-badge" style="font-size: 0.7rem; font-weight: 800; padding: 2px 7px; border-radius: 4px; background: rgba(22, 163, 74, 0.1); color: #16a34a;">Recommended</span>
 						<input type="file" id="modal-cert-file-input" accept=".pdf,.doc,.docx" style="display: none;" />
-
-						<!-- State A: Empty State (Upload) -->
-						<div id="modal-cert-empty-state" style="display: flex; flex-direction: column; align-items: center; gap: 10px; border: 1px dashed var(--border); border-radius: var(--radius-sm); padding: 20px 14px; text-align: center; background: var(--surface-soft);">
-							<div style="font-size: 0.82rem; color: var(--muted);">No certificate attached yet</div>
-							<button type="button" class="button button-secondary" id="modal-cert-choose-btn" style="padding: 7px 16px; font-size: 0.82rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-								Upload Certificate (.PDF)
+						<div id="modal-cert-empty-state" style="display: flex; align-items: center; gap: 8px;">
+							<button type="button" class="button button-secondary" id="modal-cert-choose-btn" style="padding: 5px 14px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+								<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+								Upload PDF
 							</button>
 						</div>
-
-						<!-- State B: Certificate Attached Card -->
-						<div id="modal-cert-attached-state" style="display: none; background: rgba(22, 163, 74, 0.06); border: 1px solid rgba(22, 163, 74, 0.3); border-radius: var(--radius-sm); padding: 12px 14px; align-items: center; justify-content: space-between; gap: 10px;">
-							<div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
-								<div style="width: 32px; height: 32px; border-radius: 6px; background: rgba(22, 163, 74, 0.15); color: #16a34a; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-									<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-								</div>
-								<div style="min-width: 0;">
-									<div id="modal-cert-filename" style="font-size: 0.82rem; font-weight: 800; color: var(--accent-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">SPP_Cert_2025_RaymondCruz.pdf</div>
-									<div id="modal-cert-filesize" style="font-size: 0.72rem; color: var(--muted);">245 KB &bull; Certified Copy</div>
-								</div>
+						<div id="modal-cert-attached-state" style="display: none; background: rgba(22, 163, 74, 0.06); border: 1px solid rgba(22, 163, 74, 0.3); border-radius: var(--radius-sm); padding: 7px 12px; align-items: center; gap: 10px;">
+							<div style="min-width: 0;">
+								<div id="modal-cert-filename" style="font-size: 0.82rem; font-weight: 800; color: var(--accent-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">SPP_Cert_2025_RaymondCruz.pdf</div>
+								<div id="modal-cert-filesize" style="font-size: 0.72rem; color: var(--muted);">245 KB &bull; Certified Copy</div>
 							</div>
-							<div style="display: flex; gap: 6px; flex-shrink: 0;">
-								<button type="button" id="modal-cert-preview-btn" style="padding: 5px 10px; font-size: 0.74rem; font-weight: 700; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; color: var(--text);">Preview</button>
-								<button type="button" id="modal-cert-remove-btn" style="padding: 5px 10px; font-size: 0.74rem; font-weight: 700; background: none; border: none; cursor: pointer; color: #dc2626;">Remove</button>
-							</div>
+							<button type="button" id="modal-cert-preview-btn" style="padding: 4px 9px; font-size: 0.74rem; font-weight: 700; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; color: var(--text); white-space: nowrap;">Preview</button>
+							<button type="button" id="modal-cert-remove-btn" style="padding: 4px 9px; font-size: 0.74rem; font-weight: 700; background: none; border: none; cursor: pointer; color: #dc2626;">Remove</button>
 						</div>
-					</div>
-
-					<!-- Secretariat Response Message -->
-					<div>
-						<label style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 8px; letter-spacing: 0.04em;">Secretariat Response</label>
-						<textarea id="modal-response-text" rows="6" placeholder="Write your response to the member…" style="width: 100%; padding: 12px 14px; font-size: 0.88rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); resize: vertical; box-sizing: border-box; line-height: 1.6;"></textarea>
-					</div>
-
-					<!-- Internal Notes -->
-					<div>
-						<label style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px;">Internal Secretariat Notes (Private / Admin Only)</label>
-						<input type="text" id="modal-internal-notes" placeholder="Optional notes for Secretariat audit trail…" style="width: 100%; padding: 8px 12px; font-size: 0.82rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); box-sizing: border-box;" />
 					</div>
 				</div>
 			</div>
 
-			<!-- Modal Footer Actions -->
-			<div style="padding: 18px 28px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; background: var(--surface-soft);">
-				<button type="button" class="button button-quiet" data-close-inquiry-modal style="font-weight: 700; font-size: 0.85rem;">Cancel</button>
-				<button type="button" class="button button-primary" id="modal-send-response-btn" style="font-weight: 700; font-size: 0.85rem;">Save Response</button>
+			<!-- Modal Footer -->
+			<div style="padding: 14px 28px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; background: var(--surface-soft);">
+				<button type="button" class="button button-quiet" data-close-inquiry-modal style="font-weight: 700; font-size: 0.85rem;">Close</button>
+				<button type="button" class="button button-primary" id="modal-send-response-btn" style="font-weight: 700; font-size: 0.85rem;">Update Status</button>
 			</div>
 		</div>
 	</div>
@@ -1232,6 +1321,36 @@
 					}
 				});
 			}
+
+			// Application Review Modal — Category Tab Switcher
+			const appCatTabBtns = reviewModal ? reviewModal.querySelectorAll('[data-app-info-tab]') : [];
+			const appCatSections = reviewModal ? reviewModal.querySelectorAll('[data-app-cat-section]') : [];
+
+			function setAppInfoCategory(activeCat) {
+				appCatTabBtns.forEach(btn => {
+					const isTarget = btn.getAttribute('data-app-info-tab') === activeCat;
+					btn.classList.toggle('active', isTarget);
+					btn.setAttribute('aria-selected', String(isTarget));
+				});
+
+				appCatSections.forEach(section => {
+					const cat = section.getAttribute('data-app-cat-section');
+					section.style.display = (cat === activeCat) ? '' : 'none';
+				});
+			}
+
+			appCatTabBtns.forEach(btn => {
+				btn.addEventListener('click', function() {
+					setAppInfoCategory(this.getAttribute('data-app-info-tab'));
+				});
+			});
+
+			// Reset to first tab whenever the review modal is opened
+			openModalBtns.forEach(btn => {
+				btn.addEventListener('click', function() {
+					setAppInfoCategory('membership');
+				});
+			});
 
 			// Roster Tier Filters
 			const rosterFilterBtns = document.querySelectorAll('[data-roster-filter]');
@@ -1354,16 +1473,16 @@
 			const inquiryRows = document.querySelectorAll('[data-inquiry-row]');
 			const inquiryStatusFilterBtns = document.querySelectorAll('[data-inquiry-status-filter]');
 			const inquiryTypeFilterSelect = document.querySelector('[data-inquiry-type-filter]');
+			const inquiryCategoryFilterSelect = document.querySelector('[data-inquiry-category-filter]');
 			const inquirySearchInput = document.querySelector('[data-inquiry-search]');
 			const inquiriesEmptyState = document.getElementById('inquiries-empty-state');
 			const inquiryModal = document.getElementById('inquiry-detail-modal');
 			const closeInquiryModalBtns = document.querySelectorAll('[data-close-inquiry-modal]');
 			const sendResponseBtn = document.getElementById('modal-send-response-btn');
-			const templateSelect = document.getElementById('modal-template-select');
-			const responseTextarea = document.getElementById('modal-response-text');
 
 			let activeInquiryStatus = 'all';
 			let activeInquiryType = 'all';
+			let activeInquiryCategory = 'all';
 			let activeInquirySearch = '';
 			let currentActiveRow = null;
 
@@ -1378,14 +1497,19 @@
 					const inst = row.getAttribute('data-inquirer-institution') || '';
 					const remarks = row.getAttribute('data-remarks') || '';
 					const ticket = row.getAttribute('data-ticket-id') || '';
+					const appType = row.getAttribute('data-application-type') || '';
+					const isApplicant = appType === 'New Application';
 
 					const matchesStatus = (activeInquiryStatus === 'all' || status === activeInquiryStatus);
 					const matchesType = (activeInquiryType === 'all' || type === activeInquiryType);
+					const matchesCategory = (activeInquiryCategory === 'all')
+						|| (activeInquiryCategory === 'applicant' && isApplicant)
+						|| (activeInquiryCategory === 'member' && !isApplicant);
 
-					const fullText = `${name} ${email} ${inst} ${remarks} ${ticket} ${type}`.toLowerCase();
+					const fullText = `${name} ${email} ${inst} ${remarks} ${ticket} ${type} ${appType}`.toLowerCase();
 					const matchesSearch = !activeInquirySearch || fullText.includes(activeInquirySearch.toLowerCase());
 
-					const isVisible = matchesStatus && matchesType && matchesSearch;
+					const isVisible = matchesStatus && matchesType && matchesCategory && matchesSearch;
 					row.style.display = isVisible ? '' : 'none';
 					if (isVisible) visibleCount++;
 				});
@@ -1415,12 +1539,42 @@
 				});
 			}
 
+			if (inquiryCategoryFilterSelect) {
+				inquiryCategoryFilterSelect.addEventListener('change', function() {
+					activeInquiryCategory = this.value;
+					filterInquiries();
+				});
+			}
+
 			if (inquirySearchInput) {
 				inquirySearchInput.addEventListener('input', function() {
 					activeInquirySearch = this.value.trim();
 					filterInquiries();
 				});
 			}
+
+			// Inquirer Info Category Tab Switcher (Category 1, 2, 3, 4 vs All)
+			const inquiryCatTabBtns = inquiryModal ? inquiryModal.querySelectorAll('[data-inquiry-info-tab]') : [];
+			const inquiryCatSections = inquiryModal ? inquiryModal.querySelectorAll('[data-inquiry-cat-section]') : [];
+
+			function setInquiryInfoCategory(activeCat) {
+				inquiryCatTabBtns.forEach(btn => {
+					const isTarget = btn.getAttribute('data-inquiry-info-tab') === activeCat;
+					btn.classList.toggle('active', isTarget);
+					btn.setAttribute('aria-selected', String(isTarget));
+				});
+
+				inquiryCatSections.forEach(section => {
+					const cat = section.getAttribute('data-inquiry-cat-section');
+					section.style.display = (cat === activeCat) ? 'block' : 'none';
+				});
+			}
+
+			inquiryCatTabBtns.forEach(btn => {
+				btn.addEventListener('click', function() {
+					setInquiryInfoCategory(this.getAttribute('data-inquiry-info-tab'));
+				});
+			});
 
 			// Modal Open / Populate
 			document.querySelectorAll('[data-open-inquiry-modal]').forEach(btn => {
@@ -1439,7 +1593,6 @@
 					const queryType = row.getAttribute('data-query-type') || '';
 					const date = row.getAttribute('data-date') || '';
 					const status = row.getAttribute('data-status') || 'Submitted';
-					const priority = row.getAttribute('data-priority') || 'Normal';
 					const remarks = row.getAttribute('data-remarks') || '';
 					const response = row.getAttribute('data-response') || '';
 
@@ -1460,11 +1613,40 @@
 					// Populate header & contact
 					document.getElementById('modal-ticket-id').textContent = `Ticket #${ticketId}`;
 					document.getElementById('modal-inquirer-name').textContent = name;
+					const cardNameEl = document.getElementById('modal-card-inquirer-name');
+					if (cardNameEl) cardNameEl.textContent = name;
+
 					document.getElementById('modal-inquirer-email').textContent = email;
 					document.getElementById('modal-inquirer-institution').textContent = inst;
 					document.getElementById('modal-inquirer-tier').textContent = tier;
 					document.getElementById('modal-submitted-date').textContent = date;
 					document.getElementById('modal-inquiry-remarks').textContent = remarks;
+
+					// Inquirer Category Badges (Member vs Applicant)
+					const isApplicant = appType === 'New Application';
+					const headerCatBadge = document.getElementById('modal-inquirer-category-badge');
+					if (headerCatBadge) {
+						headerCatBadge.textContent = isApplicant ? 'Applicant' : 'Member';
+						if (isApplicant) {
+							headerCatBadge.style.cssText = 'background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 1px 7px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;';
+						} else {
+							headerCatBadge.style.cssText = 'background: rgba(22, 163, 74, 0.07); color: #15803d; border: 1px solid rgba(22, 163, 74, 0.2); padding: 1px 7px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;';
+						}
+					}
+
+					const classTypeEl = document.getElementById('modal-inquirer-class-type');
+					if (classTypeEl) {
+						classTypeEl.textContent = isApplicant ? 'New Applicant' : 'Existing Member';
+						classTypeEl.style.cssText = isApplicant
+							? 'background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.76rem;'
+							: 'background: rgba(22, 163, 74, 0.07); color: #15803d; border: 1px solid rgba(22, 163, 74, 0.2); padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.76rem;';
+					}
+
+					const appTypeEl = document.getElementById('modal-application-type');
+					if (appTypeEl) appTypeEl.textContent = appType;
+
+					// Reset category tab to first tab when modal opens
+					setInquiryInfoCategory('profile');
 
 					const targetEmailEl = document.getElementById('modal-response-target-email');
 					if (targetEmailEl) targetEmailEl.textContent = email;
@@ -1472,20 +1654,15 @@
 					const queryTypeLabel = document.getElementById('modal-query-type-label');
 					if (queryTypeLabel) queryTypeLabel.textContent = queryType;
 
-					const priorityBadge = document.getElementById('modal-priority-badge');
-					if (priorityBadge) {
-						priorityBadge.style.display = (priority === 'High') ? 'inline-block' : 'none';
-					}
-
 					const queryBadge = document.getElementById('modal-query-badge');
 					if (queryBadge) {
 						queryBadge.textContent = queryType;
 						if (queryType === 'Membership Status') {
-							queryBadge.style.cssText = 'background: rgba(147, 51, 234, 0.1); color: #9333ea; border: 1px solid rgba(147, 51, 234, 0.25); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 800;';
+							queryBadge.style.cssText = 'background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 2px 9px; border-radius: 4px; font-size: 0.73rem; font-weight: 600;';
 						} else if (queryType === 'Request for Certificate of Membership') {
-							queryBadge.style.cssText = 'background: rgba(22, 163, 74, 0.1); color: #16a34a; border: 1px solid rgba(22, 163, 74, 0.25); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 800;';
+							queryBadge.style.cssText = 'background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 2px 9px; border-radius: 4px; font-size: 0.73rem; font-weight: 600;';
 						} else {
-							queryBadge.style.cssText = 'background: rgba(107, 114, 128, 0.1); color: var(--muted); border: 1px solid var(--border); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 800;';
+							queryBadge.style.cssText = 'background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 2px 9px; border-radius: 4px; font-size: 0.73rem; font-weight: 600;';
 						}
 					}
 
@@ -1599,9 +1776,6 @@
 								currentAttachedCertSize = `${(file.size / 1024).toFixed(1)} KB &bull; Uploaded PDF`;
 								updateCertAttachmentUI();
 
-								if (responseTextarea && !responseTextarea.value.trim()) {
-									responseTextarea.value = `Dear ${name},\n\nPlease find attached your official SPP Certificate of Membership and Good Standing. A digital copy has also been synchronized to your Membership Portal dashboard.\n\nBest regards,\nSPP Secretariat`;
-								}
 								const statusSel = document.getElementById('modal-status-select');
 								if (statusSel && statusSel.value !== 'Responded') {
 									statusSel.value = 'Responded';
@@ -1630,23 +1804,20 @@
 
 					const statusBadge = document.getElementById('modal-status-badge');
 					if (statusBadge) {
-						statusBadge.textContent = status.toUpperCase();
+						statusBadge.textContent = status;
 						if (status === 'Submitted') {
-							statusBadge.style.cssText = 'background: rgba(245, 158, 11, 0.12); color: #b45309; border: 1px solid rgba(245, 158, 11, 0.3); padding: 5px 14px; border-radius: var(--radius-pill); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.04em;';
+							statusBadge.style.cssText = 'background: transparent; color: var(--text); border: 1px solid var(--border); padding: 4px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;';
 						} else if (status === 'Under Review') {
-							statusBadge.style.cssText = 'background: rgba(194, 125, 0, 0.12); color: var(--warn); border: 1px solid rgba(194, 125, 0, 0.3); padding: 5px 14px; border-radius: var(--radius-pill); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.04em;';
+							statusBadge.style.cssText = 'background: transparent; color: var(--text); border: 1px solid var(--border); padding: 4px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;';
 						} else if (status === 'Responded') {
-							statusBadge.style.cssText = 'background: rgba(27, 122, 76, 0.12); color: var(--success); border: 1px solid rgba(27, 122, 76, 0.3); padding: 5px 14px; border-radius: var(--radius-pill); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.04em;';
+							statusBadge.style.cssText = 'background: rgba(22, 163, 74, 0.07); color: #15803d; border: 1px solid rgba(22, 163, 74, 0.18); padding: 4px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;';
 						} else {
-							statusBadge.style.cssText = 'background: rgba(107, 114, 128, 0.12); color: var(--muted); border: 1px solid rgba(107, 114, 128, 0.25); padding: 5px 14px; border-radius: var(--radius-pill); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.04em;';
+							statusBadge.style.cssText = 'background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 4px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;';
 						}
 					}
 
 					const statusSelect = document.getElementById('modal-status-select');
 					if (statusSelect) statusSelect.value = status;
-
-					if (responseTextarea) responseTextarea.value = response;
-					if (templateSelect) templateSelect.value = '';
 
 					inquiryModal.style.display = 'flex';
 				});
@@ -1667,31 +1838,12 @@
 				});
 			}
 
-			// Template Selection
-			if (templateSelect && responseTextarea) {
-				templateSelect.addEventListener('change', function() {
-					const val = this.value;
-					if (val === 'cert_issued') {
-						responseTextarea.value = 'Dear Member, Your digital Certificate of Membership and Good Standing has been generated and validated by the SPP Secretariat. The official signed document is attached to this email and can also be downloaded directly from your Membership Portal.';
-						const statusSel = document.getElementById('modal-status-select');
-						if (statusSel) statusSel.value = 'Responded';
-					} else if (val === 'status_verified') {
-						responseTextarea.value = 'Dear Member, The SPP Secretariat has verified your membership records in our database. Your active status and tier standing have been confirmed.';
-					} else if (val === 'renewal_guidance') {
-						responseTextarea.value = 'Dear Member, Renewals for the upcoming membership cycle are active. Early renewal qualifies for discounted registration rates for the SPP Annual National Physics Conference.';
-					} else if (val === 'more_info') {
-						responseTextarea.value = 'Dear Member, To complete the evaluation of your query, please provide the required supplemental details by replying to this email or uploading via the portal.';
-					}
-				});
-			}
-
-			// Save / Update Response & Send Email
+			// Update Status & Certificate Attachment
 			if (sendResponseBtn) {
 				sendResponseBtn.addEventListener('click', function() {
 					if (!currentActiveRow) return;
 
 					const newStatus = document.getElementById('modal-status-select').value;
-					const newResponse = responseTextarea.value.trim();
 					const certFileName = document.getElementById('modal-cert-filename');
 					const certAttachedState = document.getElementById('modal-cert-attached-state');
 
@@ -1699,21 +1851,20 @@
 					const certName = isCertAttached && certFileName ? certFileName.textContent : '';
 
 					currentActiveRow.setAttribute('data-status', newStatus);
-					currentActiveRow.setAttribute('data-response', newResponse);
 					currentActiveRow.setAttribute('data-certificate-attached', certName);
 
 					// Update tag in row
 					const tag = currentActiveRow.querySelector('.inquiry-status-tag');
 					if (tag) {
-						tag.textContent = newStatus.toUpperCase();
+						tag.textContent = newStatus;
 						if (newStatus === 'Submitted') {
-							tag.style.cssText = 'background: rgba(245, 158, 11, 0.12); color: #b45309; border: 1px solid rgba(245, 158, 11, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;';
+							tag.style.cssText = 'background: transparent; color: var(--text); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;';
 						} else if (newStatus === 'Under Review') {
-							tag.style.cssText = 'background: rgba(194, 125, 0, 0.12); color: var(--warn); border: 1px solid rgba(194, 125, 0, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;';
+							tag.style.cssText = 'background: transparent; color: var(--text); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;';
 						} else if (newStatus === 'Responded') {
-							tag.style.cssText = 'background: rgba(27, 122, 76, 0.12); color: var(--success); border: 1px solid rgba(27, 122, 76, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;';
+							tag.style.cssText = 'background: rgba(22, 163, 74, 0.07); color: #15803d; border: 1px solid rgba(22, 163, 74, 0.18); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;';
 						} else {
-							tag.style.cssText = 'background: rgba(107, 114, 128, 0.12); color: var(--muted); border: 1px solid rgba(107, 114, 128, 0.25); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;';
+							tag.style.cssText = 'background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;';
 						}
 					}
 
@@ -1732,7 +1883,7 @@
 						rowCertBadge.remove();
 					}
 
-					alert(`Response saved successfully.`);
+					alert(`Status updated successfully.`);
 					inquiryModal.style.display = 'none';
 					filterInquiries();
 				});
