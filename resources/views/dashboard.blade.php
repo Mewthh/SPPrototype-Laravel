@@ -1130,7 +1130,6 @@
 						<div>
 							<p class="panel-kicker">Public Downloads</p>
 							<h2>Proceedings Template</h2>
-							<p>Configure the featured image and up to two download or link buttons.</p>
 						</div>
 					</div>
 					<form class="compose-form" data-proceedings-template-form>
@@ -1301,7 +1300,6 @@
 						<p class="panel-kicker">Resource Library</p>
 						<h2>Videos &amp; Webinars</h2>
 					</div>
-					<span class="video-admin-preview-badge">Managed</span>
 				</div>
 
 				<div class="video-admin-layout">

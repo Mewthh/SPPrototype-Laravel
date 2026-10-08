@@ -4,6 +4,7 @@ use App\Http\Controllers\AboutController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\Admin\AboutController as AdminAboutController;
 use App\Http\Controllers\Admin\ActivityController as AdminActivityController;
+use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
 use App\Http\Controllers\Admin\ConferenceController as AdminConferenceController;
 use App\Http\Controllers\Admin\DownloadCategoryController;
 use App\Http\Controllers\Admin\DownloadController as AdminDownloadController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\MembershipArticleController as AdminMembershipArticleController;
 use App\Http\Controllers\Admin\MembershipFaqController as AdminMembershipFaqController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
+use App\Http\Controllers\Admin\PortalManagerController as AdminPortalManagerController;
 use App\Http\Controllers\Admin\ProceedingsTemplateController;
 use App\Http\Controllers\Admin\VideoController as AdminVideoController;
 use App\Http\Controllers\DownloadController;
@@ -19,8 +21,10 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MembershipArticleController;
 use App\Http\Controllers\MembershipFaqController;
 use App\Http\Controllers\NewsController;
+use App\Http\Controllers\PortalAnnouncementController;
 use App\Http\Controllers\SppController;
 use App\Http\Controllers\VideoController;
+use App\Models\Announcement;
 use Illuminate\Support\Facades\Route;
 
 // ─── Public Routes ──────────────────────────────────────────────────────────
@@ -38,13 +42,21 @@ Route::get('downloads/{download}/file', [DownloadController::class, 'download'])
 Route::view('join-spp', 'join-spp')->name('join-spp');
 
 Route::prefix('membership-portal')->name('membership-portal.')->group(function () {
-    Route::view('/', 'portal.dashboard')->name('dashboard');
+    Route::get('/', function () {
+        $announcements = Announcement::query()->published()->latest()->take(3)->get();
+
+        return view('portal.dashboard', compact('announcements'));
+    })->name('dashboard');
     Route::view('application', 'portal.application')->name('application');
     Route::view('membership', 'portal.membership')->name('membership');
     Route::view('information', 'portal.information')->name('information');
     Route::view('inquiries', 'portal.inquiries')->name('inquiries');
-    Route::view('announcements', 'portal.announcements')->name('announcements');
-    Route::view('notifications', 'portal.notifications')->name('notifications');
+    Route::get('announcements', [PortalAnnouncementController::class, 'index'])->name('announcements');
+    Route::get('notifications', function () {
+        $announcements = Announcement::query()->published()->latest()->get();
+
+        return view('portal.notifications', compact('announcements'));
+    })->name('notifications');
     Route::view('settings', 'portal.settings')->name('settings');
 });
 
@@ -59,7 +71,7 @@ Route::redirect('AdminDashboard.html', '/admin', 301);
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::view('admin', 'dashboard')->name('admin');
     Route::view('dashboard', 'dashboard')->name('dashboard');
-    Route::view('admin/membership-portal', 'admin.portal-manager')->name('admin.membership-portal');
+    Route::get('admin/membership-portal', [AdminPortalManagerController::class, 'index'])->name('admin.membership-portal');
     Route::get('admin/about', [AdminAboutController::class, 'edit'])->name('admin.about.edit');
     Route::put('admin/about', [AdminAboutController::class, 'update'])->name('admin.about.update');
 
@@ -119,6 +131,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
         ->names('admin.api.downloads');
     Route::get('admin/api/proceedings-template', [ProceedingsTemplateController::class, 'show'])->name('admin.api.proceedings-template.show');
     Route::post('admin/api/proceedings-template', [ProceedingsTemplateController::class, 'update'])->name('admin.api.proceedings-template.update');
+
+    Route::apiResource('admin/api/announcements', AdminAnnouncementController::class)
+        ->names('admin.api.announcements');
+    Route::patch('admin/api/announcements/{announcement}/status', [AdminAnnouncementController::class, 'updateStatus'])
+        ->name('admin.api.announcements.status');
 });
 
 require __DIR__.'/settings.php';

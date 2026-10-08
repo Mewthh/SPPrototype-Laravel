@@ -88,6 +88,17 @@
 </head>
 
 <body>
+	<!-- Global Floating Toast Notification (Center Top) -->
+	<div id="admin-floating-toast" class="floating-toast-container is-hidden" role="status" aria-live="polite">
+		<div class="floating-toast-card">
+			<span class="floating-toast-icon" aria-hidden="true">&#x2714;</span>
+			<div class="floating-toast-content">
+				<span class="floating-toast-message" id="admin-floating-toast-message">Saved successfully.</span>
+			</div>
+			<button type="button" class="floating-toast-close" id="admin-floating-toast-close" aria-label="Dismiss notification">&times;</button>
+		</div>
+	</div>
+
 	<a class="skip-link" href="#main-content">Skip to content</a>
 
 	<div class="dashboard-shell">
@@ -641,22 +652,23 @@
 						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
 							<div>
 								<p class="panel-kicker" style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--muted); letter-spacing: 0.05em; margin: 0 0 2px;">Portal Announcements</p>
-								<h3 style="font-size: 1.25rem; font-weight: 800; color: var(--accent-strong); margin: 0;">New Announcement</h3>
+								<h3 style="font-size: 1.25rem; font-weight: 800; color: var(--accent-strong); margin: 0;" data-announce-form-title>New Announcement</h3>
 							</div>
 							<button type="button" class="button button-secondary" style="font-weight: 700; font-size: 0.85rem;" data-announce-show-posts>
-								View Posts (<span data-announce-count>7</span>)
+								View Posts (<span data-announce-count>{{ $announcementCounts['all'] ?? 0 }}</span>)
 							</button>
 						</div>
 
-						<form style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+						<form data-announce-form style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+							<input type="hidden" name="id" data-announce-id value="" />
 							<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
 								<label style="font-size: 0.8rem; font-weight: 700; color: var(--muted); display: flex; flex-direction: column; gap: 6px;">
 									<span>TITLE <span style="font-weight: 400; opacity: 0.6;">(max 100 chars)</span></span>
-									<input type="text" placeholder="Announcement title…" required maxlength="100" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); box-sizing: border-box;" />
+									<input type="text" name="title" data-announce-title placeholder="Announcement title…" required maxlength="100" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); box-sizing: border-box;" />
 								</label>
 								<label style="font-size: 0.8rem; font-weight: 700; color: var(--muted); display: flex; flex-direction: column; gap: 6px;">
 									<span>TARGET AUDIENCE</span>
-									<select style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); box-sizing: border-box;">
+									<select name="target_audience" data-announce-audience style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); box-sizing: border-box;">
 										<option value="all">All Applicants &amp; Members</option>
 										<option value="regular">Regular Members Only</option>
 										<option value="associate">Associate Members Only</option>
@@ -666,18 +678,19 @@
 							</div>
 
 							<label style="font-size: 0.8rem; font-weight: 700; color: var(--muted); display: flex; flex-direction: column; gap: 6px;">
-								<span>SUMMARY <span style="font-weight: 400; opacity: 0.6;">(Brief overview shown in feeds and notifications)</span></span>
-								<input type="text" placeholder="Brief summary of the announcement…" maxlength="200" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); box-sizing: border-box;" />
+								<span>SUMMARY <span style="font-weight: 400; opacity: 0.6;">(For portal notifications)</span></span>
+								<input type="text" name="summary" data-announce-summary placeholder="Brief summary of the announcement…" maxlength="200" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); box-sizing: border-box;" />
 							</label>
 
 							<label style="font-size: 0.8rem; font-weight: 700; color: var(--muted); display: flex; flex-direction: column; gap: 6px;">
 								<span>ANNOUNCEMENT BODY</span>
-								<textarea rows="6" placeholder="Write full announcement details…" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); resize: vertical; box-sizing: border-box;"></textarea>
+								<textarea name="content" data-announce-content rows="6" placeholder="Write full announcement details…" required style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); resize: vertical; box-sizing: border-box;"></textarea>
 							</label>
 
 							<div style="display: flex; gap: 10px; align-items: center; padding-top: 4px;">
-								<button type="button" class="button button-primary" style="font-weight: 700; padding: 9px 20px;">Publish Announcement</button>
-								<button type="button" class="button button-quiet" style="font-weight: 700; padding: 9px 16px;">Save as Draft</button>
+								<button type="button" class="button button-primary" data-announce-publish-btn style="font-weight: 700; padding: 9px 20px;">Publish</button>
+								<button type="button" class="button button-quiet" data-announce-draft-btn style="font-weight: 700; padding: 9px 16px;">Draft</button>
+								<button type="button" class="button button-quiet" data-announce-cancel-btn style="display: none; font-weight: 700; padding: 9px 16px;">Cancel</button>
 							</div>
 						</form>
 					</div>
@@ -699,16 +712,16 @@
 							<!-- Filter Toolbar -->
 							<div class="queue-toolbar">
 								<div class="queue-filters" aria-label="Announcement filters">
-									<button type="button" class="filter-tab active" data-announce-filter="all">All (<span data-announce-filter-all-count>7</span>)</button>
-									<button type="button" class="filter-tab" data-announce-filter="published">Published (<span data-announce-filter-published-count>6</span>)</button>
-									<button type="button" class="filter-tab" data-announce-filter="draft">Drafts (<span data-announce-filter-draft-count>1</span>)</button>
-									<button type="button" class="filter-tab" data-announce-filter="archived">Archived (<span data-announce-filter-archived-count>0</span>)</button>
+									<button type="button" class="filter-tab active" data-announce-filter="all">All (<span data-announce-filter-all-count>{{ $announcementCounts['all'] ?? 0 }}</span>)</button>
+									<button type="button" class="filter-tab" data-announce-filter="published">Published (<span data-announce-filter-published-count>{{ $announcementCounts['published'] ?? 0 }}</span>)</button>
+									<button type="button" class="filter-tab" data-announce-filter="draft">Drafts (<span data-announce-filter-draft-count>{{ $announcementCounts['draft'] ?? 0 }}</span>)</button>
+									<button type="button" class="filter-tab" data-announce-filter="archived">Archived (<span data-announce-filter-archived-count>{{ $announcementCounts['archived'] ?? 0 }}</span>)</button>
 								</div>
 							</div>
 
 							<!-- Table Header -->
 							<div class="queue-table-head" aria-hidden="true">
-								<span>Title &amp; Summary</span>
+								<span>Title &amp; Audience</span>
 								<span>Status</span>
 								<span>Date</span>
 								<span>Actions</span>
@@ -716,126 +729,40 @@
 
 							<!-- Summarized Posts List -->
 							<div class="queue-list" data-announce-list>
-
-								<!-- Post 1 -->
-								<article class="queue-row" data-announce-row data-status="published">
-									<div class="queue-cell queue-title">
-										<strong>Annual Conference 2025 – Registration Now Open</strong>
-										<span>We are pleased to announce that registration for the SPP Annual National Physics Conference 2025 is now open! Early-bird registration ends October 15, 2025.</span>
+								@forelse ($announcements ?? [] as $index => $post)
+									<article class="queue-row" data-announce-row data-id="{{ $post->id }}" data-status="{{ $post->status }}" style="{{ $index >= 5 ? 'display: none;' : '' }}">
+										<div class="queue-cell queue-title">
+											<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+												<strong>{{ $post->title }}</strong>
+												<span class="announce-audience-badge" style="font-size: 0.68rem; padding: 2px 7px; border-radius: 999px; background: color-mix(in srgb, var(--muted) 12%, transparent); border: 1px solid color-mix(in srgb, var(--muted) 25%, transparent); color: var(--muted); font-weight: 700;">
+													{{ $post->audience_label }}
+												</span>
+											</div>
+											<span>{{ $post->summary ?: \Illuminate\Support\Str::limit(strip_tags($post->content), 120) }}</span>
+										</div>
+										<div class="queue-cell queue-status">
+											<span class="post-tag" data-status="{{ $post->status }}">{{ ucfirst($post->status) }}</span>
+										</div>
+										<div class="queue-cell queue-date">{{ $post->created_at?->format('M d, Y') ?? '—' }}</div>
+										<div class="queue-cell queue-actions">
+											<button type="button" class="item-action" data-announce-edit="{{ $post->id }}">Edit</button>
+											<button type="button" class="item-action danger" data-announce-delete="{{ $post->id }}">Delete</button>
+										</div>
+									</article>
+								@empty
+									<div id="announce-empty-state" style="padding: 40px 20px; text-align: center; color: var(--muted); background: var(--surface-soft); border: 1px dashed var(--border); border-radius: var(--radius-md); margin-top: 14px;">
+										<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 10px; opacity: 0.5;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+										<p style="font-weight: 800; margin: 0; color: var(--accent-strong);">No announcements found</p>
+										<span style="font-size: 0.82rem; margin-top: 4px; display: block;">Create an announcement using the editor above.</span>
 									</div>
-									<div class="queue-cell queue-status">
-										<span class="post-tag" data-status="published">Published</span>
-									</div>
-									<div class="queue-cell queue-date">Sep 30, 2025</div>
-									<div class="queue-cell queue-actions">
-										<button type="button" class="item-action">Edit</button>
-										<button type="button" class="item-action danger">Delete</button>
-									</div>
-								</article>
-
-								<!-- Post 2 -->
-								<article class="queue-row" data-announce-row data-status="published">
-									<div class="queue-cell queue-title">
-										<strong>Membership Renewal for 2026</strong>
-										<span>Members are reminded that membership renewals for the year 2026 will begin on November 1, 2025. Please ensure contact details are updated.</span>
-									</div>
-									<div class="queue-cell queue-status">
-										<span class="post-tag" data-status="published">Published</span>
-									</div>
-									<div class="queue-cell queue-date">Sep 15, 2025</div>
-									<div class="queue-cell queue-actions">
-										<button type="button" class="item-action">Edit</button>
-										<button type="button" class="item-action danger">Delete</button>
-									</div>
-								</article>
-
-								<!-- Post 3 -->
-								<article class="queue-row" data-announce-row data-status="published">
-									<div class="queue-cell queue-title">
-										<strong>Call for Papers – SPP 2025</strong>
-										<span>The SPP invites submissions of abstracts for oral and poster presentations at the 2025 Annual Conference across multiple physics disciplines.</span>
-									</div>
-									<div class="queue-cell queue-status">
-										<span class="post-tag" data-status="published">Published</span>
-									</div>
-									<div class="queue-cell queue-date">Sep 01, 2025</div>
-									<div class="queue-cell queue-actions">
-										<button type="button" class="item-action">Edit</button>
-										<button type="button" class="item-action danger">Delete</button>
-									</div>
-								</article>
-
-								<!-- Post 4 -->
-								<article class="queue-row" data-announce-row data-status="published">
-									<div class="queue-cell queue-title">
-										<strong>Welcome to the SPP Membership Portal</strong>
-										<span>We are excited to launch the new SPP Membership Portal where you can track application status, view certificates, and manage records.</span>
-									</div>
-									<div class="queue-cell queue-status">
-										<span class="post-tag" data-status="published">Published</span>
-									</div>
-									<div class="queue-cell queue-date">Aug 20, 2025</div>
-									<div class="queue-cell queue-actions">
-										<button type="button" class="item-action">Edit</button>
-										<button type="button" class="item-action danger">Delete</button>
-									</div>
-								</article>
-
-								<!-- Post 5 -->
-								<article class="queue-row" data-announce-row data-status="published">
-									<div class="queue-cell queue-title">
-										<strong>SPP Research Grant Applications Open</strong>
-										<span>Applications for the 2025 Research Grant Program are officially open for student researchers and faculty-led initiatives.</span>
-									</div>
-									<div class="queue-cell queue-status">
-										<span class="post-tag" data-status="published">Published</span>
-									</div>
-									<div class="queue-cell queue-date">Jul 10, 2025</div>
-									<div class="queue-cell queue-actions">
-										<button type="button" class="item-action">Edit</button>
-										<button type="button" class="item-action danger">Delete</button>
-									</div>
-								</article>
-
-								<!-- Post 6 -->
-								<article class="queue-row" data-announce-row data-status="published" style="display: none;">
-									<div class="queue-cell queue-title">
-										<strong>New Partnership with National Research Council</strong>
-										<span>The SPP is proud to announce a new partnership with the National Research Council of the Philippines to expand opportunities.</span>
-									</div>
-									<div class="queue-cell queue-status">
-										<span class="post-tag" data-status="published">Published</span>
-									</div>
-									<div class="queue-cell queue-date">Jun 05, 2025</div>
-									<div class="queue-cell queue-actions">
-										<button type="button" class="item-action">Edit</button>
-										<button type="button" class="item-action danger">Delete</button>
-									</div>
-								</article>
-
-								<!-- Post 7 -->
-								<article class="queue-row" data-announce-row data-status="draft" style="display: none;">
-									<div class="queue-cell queue-title">
-										<strong>Physics Olympiad Coaching Program</strong>
-										<span>SPP will be conducting a coaching program for students joining the International Physics Olympiad (IPhO) 2026. Draft proposal awaiting review.</span>
-									</div>
-									<div class="queue-cell queue-status">
-										<span class="post-tag" data-status="draft">Draft</span>
-									</div>
-									<div class="queue-cell queue-date">May 18, 2025</div>
-									<div class="queue-cell queue-actions">
-										<button type="button" class="item-action">Edit</button>
-										<button type="button" class="item-action danger">Delete</button>
-									</div>
-								</article>
-
+								@endforelse
 							</div>
 
 							<!-- Pagination / Show More -->
-							<div class="queue-pagination" data-announce-pagination style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px;">
-								<span class="pagination-info" data-announce-pagination-info style="color: var(--muted); font-size: 0.85rem;">Showing 5 of 7 posts</span>
+							<div class="queue-pagination" data-announce-pagination style="display: {{ count($announcements ?? []) > 0 ? 'flex' : 'none' }}; justify-content: space-between; align-items: center; padding-top: 8px;">
+								<span class="pagination-info" data-announce-pagination-info style="color: var(--muted); font-size: 0.85rem;">Showing {{ min(5, count($announcements ?? [])) }} of {{ count($announcements ?? []) }} posts</span>
 								<div class="queue-pagination-actions" style="display: flex; gap: 10px; align-items: center;">
-									<button type="button" class="button button-secondary" data-announce-load-more style="font-size: 0.82rem; font-weight: 700;">Show More</button>
+									<button type="button" class="button button-secondary" data-announce-load-more style="display: {{ count($announcements ?? []) > 5 ? 'inline-flex' : 'none' }}; font-size: 0.82rem; font-weight: 700;">Show More</button>
 									<button type="button" class="button button-secondary" data-announce-show-less style="display: none; font-size: 0.82rem; font-weight: 700;">Show Less</button>
 								</div>
 							</div>
@@ -1373,12 +1300,81 @@
 				});
 			});
 
-			// Announcements View Toggle (Compose ↔ Posts List)
+			// Dedicated Admin Floating Toast Notification
+			function showAdminToast(message, isError = false) {
+				const toast = document.getElementById('admin-floating-toast');
+				const toastMessage = document.getElementById('admin-floating-toast-message');
+				const toastIcon = toast?.querySelector('.floating-toast-icon');
+
+				if (!toast || !toastMessage) return;
+
+				toastMessage.textContent = message;
+				if (isError) {
+					toast.classList.add('is-error');
+					if (toastIcon) toastIcon.innerHTML = '&#x2716;';
+				} else {
+					toast.classList.remove('is-error');
+					if (toastIcon) toastIcon.innerHTML = '&#x2714;';
+				}
+
+				toast.classList.remove('is-hidden');
+
+				if (window._adminToastTimeout) {
+					clearTimeout(window._adminToastTimeout);
+				}
+				window._adminToastTimeout = setTimeout(() => {
+					toast.classList.add('is-hidden');
+				}, 4000);
+			}
+
+			document.getElementById('admin-floating-toast-close')?.addEventListener('click', () => {
+				document.getElementById('admin-floating-toast')?.classList.add('is-hidden');
+			});
+
+			// Announcements Management Script
 			const announceEditorView = document.querySelector('[data-announce-view="editor"]');
 			const announcePostsView = document.querySelector('[data-announce-view="posts"]');
 			const showPostsBtn = document.querySelector('[data-announce-show-posts]');
 			const showEditorBtn = document.querySelector('[data-announce-show-editor]');
 
+			const announceForm = document.querySelector('[data-announce-form]');
+			const announceIdInput = document.querySelector('[data-announce-id]');
+			const announceTitleInput = document.querySelector('[data-announce-title]');
+			const announceAudienceSelect = document.querySelector('[data-announce-audience]');
+			const announceSummaryInput = document.querySelector('[data-announce-summary]');
+			const announceContentInput = document.querySelector('[data-announce-content]');
+			const announcePublishBtn = document.querySelector('[data-announce-publish-btn]');
+			const announceDraftBtn = document.querySelector('[data-announce-draft-btn]');
+			const announceCancelBtn = document.querySelector('[data-announce-cancel-btn]');
+			const announceFormTitle = document.querySelector('[data-announce-form-title]');
+
+			const announceList = document.querySelector('[data-announce-list]');
+			const announceCountEl = document.querySelector('[data-announce-count]');
+			const announceFilterBtns = document.querySelectorAll('[data-announce-filter]');
+			const announceLoadMore = document.querySelector('[data-announce-load-more]');
+			const announceShowLess = document.querySelector('[data-announce-show-less]');
+			const announcePagination = document.querySelector('[data-announce-pagination]');
+			const announcePaginationInfo = document.querySelector('[data-announce-pagination-info]');
+
+			const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+			const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
+
+			let currentFilter = 'all';
+			let isExpanded = false;
+			const PAGE_LIMIT = 5;
+
+			const audienceLabels = {
+				'all': 'All Applicants & Members',
+				'regular': 'Regular Members Only',
+				'associate': 'Associate Members Only',
+				'institutional': 'Institutional Members Only'
+			};
+
+			function getAudienceLabel(val) {
+				return audienceLabels[val] || 'All Applicants & Members';
+			}
+
+			// View Toggles
 			if (showPostsBtn && announceEditorView && announcePostsView) {
 				showPostsBtn.addEventListener('click', function() {
 					announceEditorView.style.display = 'none';
@@ -1388,31 +1384,43 @@
 
 			if (showEditorBtn && announceEditorView && announcePostsView) {
 				showEditorBtn.addEventListener('click', function() {
+					resetAnnounceForm();
 					announcePostsView.style.display = 'none';
 					announceEditorView.style.display = 'block';
 				});
 			}
 
-			// Announcements Filter & Pagination
-			const announceFilterBtns = document.querySelectorAll('[data-announce-filter]');
-			const announceRows = document.querySelectorAll('[data-announce-row]');
-			const announceLoadMore = document.querySelector('[data-announce-load-more]');
-			const announceShowLess = document.querySelector('[data-announce-show-less]');
-			const announcePaginationInfo = document.querySelector('[data-announce-pagination-info]');
+			function resetAnnounceForm() {
+				if (!announceForm) return;
+				announceForm.reset();
+				if (announceIdInput) announceIdInput.value = '';
+				if (announceFormTitle) announceFormTitle.textContent = 'New Announcement';
+				if (announcePublishBtn) announcePublishBtn.textContent = 'Publish';
+				if (announceDraftBtn) announceDraftBtn.textContent = 'Draft';
+				if (announceCancelBtn) announceCancelBtn.style.display = 'none';
+			}
 
-			let currentFilter = 'all';
-			let isExpanded = false;
-			const PAGE_LIMIT = 5;
+			if (announceCancelBtn) {
+				announceCancelBtn.addEventListener('click', function() {
+					resetAnnounceForm();
+					if (announceEditorView && announcePostsView) {
+						announceEditorView.style.display = 'none';
+						announcePostsView.style.display = 'block';
+					}
+				});
+			}
 
+			// Filter & Pagination Display
 			function updateAnnounceDisplay() {
-				const matchingRows = Array.from(announceRows).filter(row => {
+				const rows = document.querySelectorAll('[data-announce-row]');
+				const matchingRows = Array.from(rows).filter(row => {
 					return currentFilter === 'all' || row.getAttribute('data-status') === currentFilter;
 				});
 
 				const total = matchingRows.length;
 				const limit = isExpanded ? total : Math.min(PAGE_LIMIT, total);
 
-				announceRows.forEach(row => {
+				rows.forEach(row => {
 					row.style.display = 'none';
 				});
 
@@ -1421,6 +1429,10 @@
 						row.style.display = 'grid';
 					}
 				});
+
+				if (announcePagination) {
+					announcePagination.style.display = total > 0 ? 'flex' : 'none';
+				}
 
 				if (announcePaginationInfo) {
 					announcePaginationInfo.textContent = `Showing ${Math.min(limit, total)} of ${total} posts`;
@@ -1467,6 +1479,248 @@
 				});
 			}
 
+			// Save / Publish / Draft Handler
+			async function submitAnnouncement(status) {
+				const title = announceTitleInput ? announceTitleInput.value.trim() : '';
+				const audience = announceAudienceSelect ? announceAudienceSelect.value : 'all';
+				const summary = announceSummaryInput ? announceSummaryInput.value.trim() : '';
+				const content = announceContentInput ? announceContentInput.value.trim() : '';
+				const existingId = announceIdInput ? announceIdInput.value.trim() : '';
+
+				if (!title) {
+					showAdminToast('Please provide an announcement title.', true);
+					if (announceTitleInput) announceTitleInput.focus();
+					return;
+				}
+
+				if (!content) {
+					showAdminToast('Please enter announcement body details.', true);
+					if (announceContentInput) announceContentInput.focus();
+					return;
+				}
+
+				const isEdit = Boolean(existingId);
+				const url = isEdit ? `/admin/api/announcements/${existingId}` : '/admin/api/announcements';
+				const method = isEdit ? 'PUT' : 'POST';
+
+				const activeBtn = status === 'published' ? announcePublishBtn : announceDraftBtn;
+				const originalText = activeBtn ? activeBtn.textContent : '';
+				if (activeBtn) {
+					activeBtn.disabled = true;
+					activeBtn.textContent = status === 'published' ? 'Publishing…' : 'Saving…';
+				}
+
+				try {
+					const res = await fetch(url, {
+						method: method,
+						headers: {
+							'Content-Type': 'application/json',
+							'Accept': 'application/json',
+							'X-CSRF-TOKEN': csrfToken
+						},
+						body: JSON.stringify({
+							title: title,
+							target_audience: audience,
+							summary: summary,
+							content: content,
+							status: status
+						})
+					});
+
+					const data = await res.json();
+
+					if (!res.ok) {
+						const errMessage = data.message || (data.errors ? Object.values(data.errors).flat().join('\n') : 'Error saving announcement');
+						showAdminToast(errMessage, true);
+						return;
+					}
+
+					const successMsg = status === 'published'
+						? (isEdit ? 'Announcement updated and published.' : 'Announcement published successfully.')
+						: (isEdit ? 'Draft updated successfully.' : 'Announcement saved as draft.');
+					showAdminToast(data.message || successMsg);
+
+					resetAnnounceForm();
+					await reloadAnnouncements();
+
+					if (announceEditorView && announcePostsView) {
+						announceEditorView.style.display = 'none';
+						announcePostsView.style.display = 'block';
+					}
+				} catch (err) {
+					console.error('Save error:', err);
+					showAdminToast('Failed to save announcement. Please check your connection and try again.', true);
+				} finally {
+					if (activeBtn) {
+						activeBtn.disabled = false;
+						activeBtn.textContent = originalText;
+					}
+				}
+			}
+
+			if (announcePublishBtn) {
+				announcePublishBtn.addEventListener('click', () => submitAnnouncement('published'));
+			}
+
+			if (announceDraftBtn) {
+				announceDraftBtn.addEventListener('click', () => submitAnnouncement('draft'));
+			}
+
+			// Reload Announcements from API & re-render list
+			async function reloadAnnouncements() {
+				try {
+					const res = await fetch('/admin/api/announcements', {
+						headers: { 'Accept': 'application/json' }
+					});
+					if (!res.ok) return;
+
+					const json = await res.json();
+					const posts = json.data || [];
+					const counts = json.counts || { all: 0, published: 0, draft: 0, archived: 0 };
+
+					// Update counts in DOM
+					if (announceCountEl) announceCountEl.textContent = counts.all;
+					const allCountEl = document.querySelector('[data-announce-filter-all-count]');
+					const pubCountEl = document.querySelector('[data-announce-filter-published-count]');
+					const draftCountEl = document.querySelector('[data-announce-filter-draft-count]');
+					const archCountEl = document.querySelector('[data-announce-filter-archived-count]');
+
+					if (allCountEl) allCountEl.textContent = counts.all;
+					if (pubCountEl) pubCountEl.textContent = counts.published;
+					if (draftCountEl) draftCountEl.textContent = counts.draft;
+					if (archCountEl) archCountEl.textContent = counts.archived;
+
+					// Re-render list
+					if (!announceList) return;
+
+					if (posts.length === 0) {
+						announceList.innerHTML = `
+							<div id="announce-empty-state" style="padding: 40px 20px; text-align: center; color: var(--muted); background: var(--surface-soft); border: 1px dashed var(--border); border-radius: var(--radius-md); margin-top: 14px;">
+								<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 10px; opacity: 0.5;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+								<p style="font-weight: 800; margin: 0; color: var(--accent-strong);">No announcements found</p>
+								<span style="font-size: 0.82rem; margin-top: 4px; display: block;">Create an announcement using the editor above.</span>
+							</div>
+						`;
+					} else {
+						announceList.innerHTML = posts.map(post => {
+							const dateStr = post.created_at ? new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) : '—';
+							const audienceText = getAudienceLabel(post.target_audience);
+							const summaryText = post.summary || (post.content ? post.content.replace(/<[^>]*>?/gm, '').substring(0, 120) : '');
+							const statusCap = (post.status || 'published').charAt(0).toUpperCase() + (post.status || 'published').slice(1);
+
+							return `
+								<article class="queue-row" data-announce-row data-id="${post.id}" data-status="${post.status}" style="display: none;">
+									<div class="queue-cell queue-title">
+										<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+											<strong>${escapeHtml(post.title)}</strong>
+											<span class="announce-audience-badge" style="font-size: 0.68rem; padding: 2px 7px; border-radius: 999px; background: color-mix(in srgb, var(--muted) 12%, transparent); border: 1px solid color-mix(in srgb, var(--muted) 25%, transparent); color: var(--muted); font-weight: 700;">
+												${escapeHtml(audienceText)}
+											</span>
+										</div>
+										<span>${escapeHtml(summaryText)}</span>
+									</div>
+									<div class="queue-cell queue-status">
+										<span class="post-tag" data-status="${post.status}">${escapeHtml(statusCap)}</span>
+									</div>
+									<div class="queue-cell queue-date">${dateStr}</div>
+									<div class="queue-cell queue-actions">
+										<button type="button" class="item-action" data-announce-edit="${post.id}">Edit</button>
+										<button type="button" class="item-action danger" data-announce-delete="${post.id}">Delete</button>
+									</div>
+								</article>
+							`;
+						}).join('');
+					}
+
+					bindRowEvents();
+					updateAnnounceDisplay();
+				} catch (err) {
+					console.error('Reload error:', err);
+				}
+			}
+
+			function escapeHtml(str) {
+				if (!str) return '';
+				return String(str)
+					.replace(/&/g, '&amp;')
+					.replace(/</g, '&lt;')
+					.replace(/>/g, '&gt;')
+					.replace(/"/g, '&quot;');
+			}
+
+			// Edit & Delete row event bindings
+			function bindRowEvents() {
+				document.querySelectorAll('[data-announce-edit]').forEach(btn => {
+					btn.onclick = async function() {
+						const id = this.getAttribute('data-announce-edit');
+						try {
+							const res = await fetch(`/admin/api/announcements/${id}`, {
+								headers: { 'Accept': 'application/json' }
+							});
+							if (!res.ok) {
+								showAdminToast('Could not load announcement details.', true);
+								return;
+							}
+							const json = await res.json();
+							const item = json.data;
+							if (!item) return;
+
+							if (announceIdInput) announceIdInput.value = item.id;
+							if (announceTitleInput) announceTitleInput.value = item.title || '';
+							if (announceAudienceSelect) announceAudienceSelect.value = item.target_audience || 'all';
+							if (announceSummaryInput) announceSummaryInput.value = item.summary || '';
+							if (announceContentInput) announceContentInput.value = item.content || '';
+
+							if (announceFormTitle) announceFormTitle.textContent = 'Edit Announcement';
+							if (announcePublishBtn) announcePublishBtn.textContent = 'Publish';
+							if (announceDraftBtn) announceDraftBtn.textContent = 'Draft';
+							if (announceCancelBtn) announceCancelBtn.style.display = 'inline-flex';
+
+							if (announceEditorView && announcePostsView) {
+								announcePostsView.style.display = 'none';
+								announceEditorView.style.display = 'block';
+								announceTitleInput.focus();
+							}
+						} catch (err) {
+							console.error('Edit error:', err);
+							showAdminToast('Failed to load announcement for editing.', true);
+						}
+					};
+				});
+
+				document.querySelectorAll('[data-announce-delete]').forEach(btn => {
+					btn.onclick = async function() {
+						const id = this.getAttribute('data-announce-delete');
+						if (!confirm('Are you sure you want to delete this announcement? This action cannot be undone.')) {
+							return;
+						}
+
+						try {
+							const res = await fetch(`/admin/api/announcements/${id}`, {
+								method: 'DELETE',
+								headers: {
+									'Accept': 'application/json',
+									'X-CSRF-TOKEN': csrfToken
+								}
+							});
+
+							if (!res.ok) {
+								const err = await res.json().catch(() => ({}));
+								showAdminToast(err.message || 'Failed to delete announcement.', true);
+								return;
+							}
+
+							showAdminToast('Announcement deleted successfully.');
+							await reloadAnnouncements();
+						} catch (err) {
+							console.error('Delete error:', err);
+							showAdminToast('Error deleting announcement.', true);
+						}
+					};
+				});
+			}
+
+			bindRowEvents();
 			updateAnnounceDisplay();
 
 			// --- INQUIRIES MANAGEMENT SCRIPT ---
