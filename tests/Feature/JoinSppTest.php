@@ -24,6 +24,7 @@ test('join spp page displays all required question fields and placeholders', fun
         ->assertSee('Regular Member')
         ->assertSee('Associate Member')
         ->assertSee('Institutional Member')
+        ->assertSee(now()->format('m/d/Y'))
         ->assertSee('MM/DD/YYYY')
         // Stage 2
         ->assertSee('Primary Recommender')

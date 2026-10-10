@@ -95,7 +95,8 @@
         </nav>
 
         <!-- Multi-Step Form Container -->
-        <form id="join-spp-form" onsubmit="return false;">
+        <form id="join-spp-form" method="POST" action="{{ route('join-spp.store') }}" enctype="multipart/form-data">
+            @csrf
             <!-- STAGE 1: Membership Type -->
             <section class="join-step-pane is-active" data-step="1" aria-labelledby="step-1-heading">
                 <div class="join-form-card">
@@ -141,23 +142,12 @@
                     <div class="join-form-grid">
                         <div class="join-field-group">
                             <label class="join-field-label" for="application_type">Application Type</label>
-                            <select id="application_type" name="application_type" class="join-select">
-                                <option value="New Application" selected>New Application</option>
-                                <option value="Membership Renewal">Membership Renewal</option>
-                                <option value="Status Upgrade">Status Upgrade</option>
-                            </select>
+                            <input type="text" id="application_type" name="application_type" class="join-input" value="New Application" readonly />
                         </div>
 
                         <div class="join-field-group">
                             <label class="join-field-label" for="application_date">Application Date</label>
-                            <input type="text" id="application_date" name="application_date" class="join-input" value="MM/DD/YYYY" readonly />
-                        </div>
-
-                        <div class="join-field-group">
-                            <label class="join-field-label">Initial Status</label>
-                            <div style="padding-top: 6px;">
-                                <x-portal.status-badge status="Pending" />
-                            </div>
+                            <input type="text" id="application_date" name="application_date" class="join-input" value="{{ now()->format('m/d/Y') }}" readonly />
                         </div>
                     </div>
                 </div>
@@ -175,15 +165,15 @@
                     <div class="join-form-grid" style="margin-bottom: 24px;">
                         <div class="join-field-group">
                             <label class="join-field-label" for="recommender_name">Recommender Name</label>
-                            <input type="text" id="recommender_name" name="recommender_name" class="join-input" placeholder="Sample Name" value="Sample Name" />
+                            <input type="text" id="recommender_name" name="recommender_name" class="join-input" placeholder="e.g. Dr. Juan Luna" value="" />
                         </div>
                         <div class="join-field-group">
                             <label class="join-field-label" for="recommender_email">Recommender Email</label>
-                            <input type="email" id="recommender_email" name="recommender_email" class="join-input" placeholder="example@email.com" value="example@email.com" />
+                            <input type="email" id="recommender_email" name="recommender_email" class="join-input" placeholder="recommender@institution.edu" value="" />
                         </div>
                         <div class="join-field-group">
                             <label class="join-field-label" for="recommender_suffix">Suffix</label>
-                            <input type="text" id="recommender_suffix" name="recommender_suffix" class="join-input" placeholder="Sample" value="Sample" />
+                            <input type="text" id="recommender_suffix" name="recommender_suffix" class="join-input" placeholder="e.g. Jr., Ph.D." value="" />
                         </div>
                     </div>
 
@@ -191,22 +181,15 @@
                     <div class="join-form-grid" style="margin-bottom: 20px;">
                         <div class="join-field-group">
                             <label class="join-field-label" for="alt_recommender_name">Alternate Recommender Name</label>
-                            <input type="text" id="alt_recommender_name" name="alt_recommender_name" class="join-input" placeholder="Sample Name" value="Sample Name" />
+                            <input type="text" id="alt_recommender_name" name="alt_recommender_name" class="join-input" placeholder="e.g. Dr. Maria Santos" value="" />
                         </div>
                         <div class="join-field-group">
                             <label class="join-field-label" for="alt_recommender_email">Alternate Recommender Email</label>
-                            <input type="email" id="alt_recommender_email" name="alt_recommender_email" class="join-input" placeholder="example@email.com" value="example@email.com" />
+                            <input type="email" id="alt_recommender_email" name="alt_recommender_email" class="join-input" placeholder="alt.recommender@institution.edu" value="" />
                         </div>
                         <div class="join-field-group">
                             <label class="join-field-label" for="alt_recommender_suffix">Suffix</label>
-                            <input type="text" id="alt_recommender_suffix" name="alt_recommender_suffix" class="join-input" placeholder="Sample" value="Sample" />
-                        </div>
-                    </div>
-
-                    <div class="join-field-group" style="padding-top: 10px; border-top: 1px solid var(--portal-border);">
-                        <label class="join-field-label">Recommender Status</label>
-                        <div>
-                            <x-portal.status-badge status="Pending" />
+                            <input type="text" id="alt_recommender_suffix" name="alt_recommender_suffix" class="join-input" placeholder="e.g. Ph.D." value="" />
                         </div>
                     </div>
                 </div>
@@ -224,23 +207,23 @@
                     <div class="join-form-grid">
                         <div class="join-field-group">
                             <label class="join-field-label" for="surname">Surname</label>
-                            <input type="text" id="surname" name="surname" class="join-input" placeholder="Sample" value="Sample" />
+                            <input type="text" id="surname" name="surname" class="join-input" placeholder="e.g. Dela Cruz" value="" />
                         </div>
                         <div class="join-field-group">
                             <label class="join-field-label" for="first_name">First Name(s)</label>
-                            <input type="text" id="first_name" name="first_name" class="join-input" placeholder="Sample Name" value="Sample Name" />
+                            <input type="text" id="first_name" name="first_name" class="join-input" placeholder="e.g. Juan" value="" />
                         </div>
                         <div class="join-field-group">
                             <label class="join-field-label" for="middle_name">Middle Name(s)</label>
-                            <input type="text" id="middle_name" name="middle_name" class="join-input" placeholder="Sample" value="Sample" />
+                            <input type="text" id="middle_name" name="middle_name" class="join-input" placeholder="e.g. Mercado" value="" />
                         </div>
                         <div class="join-field-group">
                             <label class="join-field-label" for="mobile_number">Mobile Number</label>
-                            <input type="tel" id="mobile_number" name="mobile_number" class="join-input" placeholder="Sample" value="Sample" />
+                            <input type="tel" id="mobile_number" name="mobile_number" class="join-input" placeholder="e.g. +63 912 345 6789" value="" />
                         </div>
                         <div class="join-field-group">
                             <label class="join-field-label" for="personal_email">Personal Email Address</label>
-                            <input type="email" id="personal_email" name="personal_email" class="join-input" placeholder="example@email.com" value="example@email.com" />
+                            <input type="email" id="personal_email" name="personal_email" class="join-input" placeholder="personal@email.com" value="" />
                         </div>
                     </div>
                 </div>
@@ -253,15 +236,15 @@
                     <div class="join-form-grid">
                         <div class="join-field-group">
                             <label class="join-field-label" for="current_affiliation">Current Institutional Affiliation</label>
-                            <input type="text" id="current_affiliation" name="current_affiliation" class="join-input" placeholder="Sample Institution" value="Sample Institution" />
+                            <input type="text" id="current_affiliation" name="current_affiliation" class="join-input" placeholder="Sample Institution" value="" />
                         </div>
                         <div class="join-field-group">
                             <label class="join-field-label" for="current_position">Current Position</label>
-                            <input type="text" id="current_position" name="current_position" class="join-input" placeholder="Sample" value="Sample" />
+                            <input type="text" id="current_position" name="current_position" class="join-input" placeholder="e.g. Assistant Professor" value="" />
                         </div>
                         <div class="join-field-group">
                             <label class="join-field-label" for="professional_email">Professional / Institutional Email</label>
-                            <input type="email" id="professional_email" name="professional_email" class="join-input" placeholder="example@email.com" value="example@email.com" />
+                            <input type="email" id="professional_email" name="professional_email" class="join-input" placeholder="institutional@university.edu" value="" />
                         </div>
                     </div>
                 </div>
@@ -275,7 +258,7 @@
                         <div class="join-field-group">
                             <label class="join-field-label" for="highest_educational_attainment">Highest Educational Attainment</label>
                             <select id="highest_educational_attainment" name="highest_educational_attainment" class="join-select">
-                                <option value="Sample" selected>Sample</option>
+                                <option value="" disabled selected>Select educational attainment</option>
                                 <option value="Doctor of Philosophy (Ph.D.)">Doctor of Philosophy (Ph.D.)</option>
                                 <option value="Master of Science (M.S.)">Master of Science (M.S.)</option>
                                 <option value="Bachelor of Science (B.S.)">Bachelor of Science (B.S.)</option>
@@ -283,19 +266,19 @@
                         </div>
                         <div class="join-field-group">
                             <label class="join-field-label" for="degree">Degree</label>
-                            <input type="text" id="degree" name="degree" class="join-input" placeholder="Sample" value="Sample" />
+                            <input type="text" id="degree" name="degree" class="join-input" placeholder="e.g. B.S. Applied Physics" value="" />
                         </div>
                         <div class="join-field-group">
                             <label class="join-field-label" for="date_degree_obtained">Date Degree Obtained</label>
-                            <input type="text" id="date_degree_obtained" name="date_degree_obtained" class="join-input" placeholder="MM/DD/YYYY" value="MM/DD/YYYY" />
+                            <input type="text" id="date_degree_obtained" name="date_degree_obtained" class="join-input" placeholder="MM/DD/YYYY" value="" />
                         </div>
                         <div class="join-field-group">
                             <label class="join-field-label" for="institution">Institution</label>
-                            <input type="text" id="institution" name="institution" class="join-input" placeholder="Sample Institution" value="Sample Institution" />
+                            <input type="text" id="institution" name="institution" class="join-input" placeholder="Sample Institution" value="" />
                         </div>
                         <div class="join-field-group join-form-grid-full">
                             <label class="join-field-label" for="institution_address">Institution Address</label>
-                            <input type="text" id="institution_address" name="institution_address" class="join-input" placeholder="Sample" value="Sample" />
+                            <input type="text" id="institution_address" name="institution_address" class="join-input" placeholder="e.g. Diliman, Quezon City" value="" />
                         </div>
                     </div>
                 </div>
@@ -317,11 +300,12 @@
                                     <h3 style="font-size: 1rem; font-weight: 700; margin: 0; color: var(--portal-text);">Updated Curriculum Vitae (CV)</h3>
                                     <p style="font-size: 0.82rem; color: var(--portal-muted); margin: 2px 0 0;">Recent academic CV highlighting research, publications, and physics activities.</p>
                                 </div>
-                                <span class="portal-badge portal-badge-active">Submitted</span>
+                                <span class="portal-badge portal-badge-pending" id="badge-cv-file">Optional</span>
                             </div>
-                            <div class="join-upload-zone" onclick="showToast('Sample file selected: Updated_CV_Sample.pdf')">
+                            <input type="file" id="cv_file" name="cv_file" accept=".pdf" style="display: none;" />
+                            <div class="join-upload-zone" id="zone-cv-file" style="cursor: pointer;" onclick="document.getElementById('cv_file').click()">
                                 <span class="join-upload-icon">&#x1F4C4;</span>
-                                <div class="join-upload-text">Click to browse or drop Updated CV file here</div>
+                                <div class="join-upload-text" id="text-cv-file">Click to browse or drop Updated CV file here</div>
                                 <div class="join-upload-hint">Supported formats: PDF (Maximum 10 MB)</div>
                             </div>
                         </div>
@@ -333,11 +317,12 @@
                                     <h3 style="font-size: 1rem; font-weight: 700; margin: 0; color: var(--portal-text);">Proof of Employment / Enrollment</h3>
                                     <p style="font-size: 0.82rem; color: var(--portal-muted); margin: 2px 0 0;">Certificate of employment, department appointment, or recent student enrollment form.</p>
                                 </div>
-                                <span class="portal-badge portal-badge-active">Submitted</span>
+                                <span class="portal-badge portal-badge-pending" id="badge-proof-file">Optional</span>
                             </div>
-                            <div class="join-upload-zone" onclick="showToast('Sample file selected: Proof_Employment_Sample.pdf')">
+                            <input type="file" id="proof_file" name="proof_file" accept=".pdf,.jpg,.jpeg,.png" style="display: none;" />
+                            <div class="join-upload-zone" id="zone-proof-file" style="cursor: pointer;" onclick="document.getElementById('proof_file').click()">
                                 <span class="join-upload-icon">&#x1F4C1;</span>
-                                <div class="join-upload-text">Click to browse or drop Proof of Employment file here</div>
+                                <div class="join-upload-text" id="text-proof-file">Click to browse or drop Proof of Employment file here</div>
                                 <div class="join-upload-hint">Supported formats: PDF, JPG, PNG (Maximum 10 MB)</div>
                             </div>
                         </div>
@@ -382,17 +367,17 @@
                     <div class="join-form-grid">
                         <div class="join-field-group">
                             <label class="join-field-label" for="account_email">Account Email Address</label>
-                            <input type="email" id="account_email" name="account_email" class="join-input" placeholder="example@email.com" value="example@email.com" />
+                            <input type="email" id="account_email" name="account_email" class="join-input" placeholder="e.g. user@email.com" value="" />
                             <small style="color: var(--portal-muted); font-size: 0.78rem; margin-top: 4px;">This email will be your portal login username.</small>
                         </div>
                         <div class="join-field-group">
                             <label class="join-field-label" for="account_password">Password</label>
-                            <input type="password" id="account_password" name="account_password" class="join-input" placeholder="••••••••••••" value="password123" />
+                            <input type="password" id="account_password" name="account_password" class="join-input" placeholder="••••••••••••" value="" />
                             <small style="color: var(--portal-muted); font-size: 0.78rem; margin-top: 4px;">Minimum 8 characters with letters and numbers.</small>
                         </div>
                         <div class="join-field-group">
                             <label class="join-field-label" for="account_password_confirmation">Confirm Password</label>
-                            <input type="password" id="account_password_confirmation" name="account_password_confirmation" class="join-input" placeholder="••••••••••••" value="password123" />
+                            <input type="password" id="account_password_confirmation" name="account_password_confirmation" class="join-input" placeholder="••••••••••••" value="" />
                             <small style="color: var(--portal-muted); font-size: 0.78rem; margin-top: 4px;">Re-enter password to confirm.</small>
                         </div>
                     </div>
@@ -417,8 +402,7 @@
                             <dl class="join-review-dl">
                                 <div><dt>Membership Type</dt><dd id="review-membership-type">Regular Member</dd></div>
                                 <div><dt>Application Type</dt><dd id="review-application-type">New Application</dd></div>
-                                <div><dt>Application Date</dt><dd>MM/DD/YYYY</dd></div>
-                                <div><dt>Application Status</dt><dd><x-portal.status-badge status="Pending" /></dd></div>
+                                <div><dt>Application Date</dt><dd id="review-application-date">{{ now()->format('m/d/Y') }}</dd></div>
                             </dl>
                         </div>
 
@@ -429,11 +413,10 @@
                                 <button type="button" class="join-review-edit-btn" onclick="goToStep(2)">Edit</button>
                             </div>
                             <dl class="join-review-dl">
-                                <div><dt>Name</dt><dd id="review-recommender-name">Sample Name</dd></div>
-                                <div><dt>Email</dt><dd id="review-recommender-email">example@email.com</dd></div>
-                                <div><dt>Suffix</dt><dd>Sample</dd></div>
-                                <div><dt>Alternate Recommender</dt><dd id="review-alt-recommender-name">Sample Name</dd></div>
-                                <div><dt>Recommender Status</dt><dd><x-portal.status-badge status="Pending" /></dd></div>
+                                <div><dt>Name</dt><dd id="review-recommender-name">—</dd></div>
+                                <div><dt>Email</dt><dd id="review-recommender-email">—</dd></div>
+                                <div><dt>Suffix</dt><dd id="review-recommender-suffix">—</dd></div>
+                                <div><dt>Alternate Recommender</dt><dd id="review-alt-recommender-name">—</dd></div>
                             </dl>
                         </div>
 
@@ -444,18 +427,18 @@
                                 <button type="button" class="join-review-edit-btn" onclick="goToStep(3)">Edit</button>
                             </div>
                             <dl class="join-review-dl">
-                                <div><dt>Surname</dt><dd id="review-surname">Sample</dd></div>
-                                <div><dt>First Name(s)</dt><dd id="review-first-name">Sample Name</dd></div>
-                                <div><dt>Middle Name(s)</dt><dd>Sample</dd></div>
-                                <div><dt>Mobile Number</dt><dd>Sample</dd></div>
-                                <div><dt>Current Institutional Affiliation</dt><dd id="review-affiliation">Sample Institution</dd></div>
-                                <div><dt>Current Position</dt><dd>Sample</dd></div>
-                                <div><dt>Professional / Institutional Email</dt><dd>example@email.com</dd></div>
-                                <div><dt>Highest Educational Attainment</dt><dd>Sample</dd></div>
-                                <div><dt>Degree</dt><dd>Sample</dd></div>
-                                <div><dt>Date Degree Obtained</dt><dd>MM/DD/YYYY</dd></div>
-                                <div><dt>Institution</dt><dd>Sample Institution</dd></div>
-                                <div><dt>Institution Address</dt><dd>Sample</dd></div>
+                                <div><dt>Surname</dt><dd id="review-surname">—</dd></div>
+                                <div><dt>First Name(s)</dt><dd id="review-first-name">—</dd></div>
+                                <div><dt>Middle Name(s)</dt><dd id="review-middle-name">—</dd></div>
+                                <div><dt>Mobile Number</dt><dd id="review-mobile-number">—</dd></div>
+                                <div><dt>Current Institutional Affiliation</dt><dd id="review-affiliation">—</dd></div>
+                                <div><dt>Current Position</dt><dd id="review-position">—</dd></div>
+                                <div><dt>Professional / Institutional Email</dt><dd id="review-professional-email">—</dd></div>
+                                <div><dt>Highest Educational Attainment</dt><dd id="review-highest-ed">—</dd></div>
+                                <div><dt>Degree</dt><dd id="review-degree">—</dd></div>
+                                <div><dt>Date Degree Obtained</dt><dd id="review-degree-date">—</dd></div>
+                                <div><dt>Institution</dt><dd id="review-institution">—</dd></div>
+                                <div><dt>Institution Address</dt><dd id="review-institution-address">—</dd></div>
                             </dl>
                         </div>
 
@@ -466,8 +449,14 @@
                                 <button type="button" class="join-review-edit-btn" onclick="goToStep(4)">Edit</button>
                             </div>
                             <div style="display: grid; gap: 8px;">
-                                <x-portal.document-row label="Updated CV" />
-                                <x-portal.document-row label="Proof of Employment / Enrollment" />
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--portal-surface-soft); border: 1px solid var(--portal-border); border-radius: 8px;">
+                                    <span style="font-weight: 600; font-size: 0.88rem;">Updated CV</span>
+                                    <span id="review-cv-status" class="portal-badge portal-badge-pending" style="font-size: 0.72rem;">Not Uploaded</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--portal-surface-soft); border: 1px solid var(--portal-border); border-radius: 8px;">
+                                    <span style="font-weight: 600; font-size: 0.88rem;">Proof of Employment / Enrollment</span>
+                                    <span id="review-proof-status" class="portal-badge portal-badge-pending" style="font-size: 0.72rem;">Not Uploaded</span>
+                                </div>
                             </div>
                         </div>
 
@@ -478,8 +467,8 @@
                                 <button type="button" class="join-review-edit-btn" onclick="goToStep(5)">Edit</button>
                             </div>
                             <dl class="join-review-dl">
-                                <div><dt>Declaration</dt><dd>Agreed</dd></div>
-                                <div><dt>Certification</dt><dd>Confirmed</dd></div>
+                                <div><dt>Declaration</dt><dd id="review-declaration">Agreed</dd></div>
+                                <div><dt>Certification</dt><dd id="review-certification">Confirmed</dd></div>
                             </dl>
                         </div>
 
@@ -490,7 +479,7 @@
                                 <button type="button" class="join-review-edit-btn" onclick="goToStep(6)">Edit</button>
                             </div>
                             <dl class="join-review-dl">
-                                <div><dt>Account Login Email</dt><dd id="review-account-email">example@email.com</dd></div>
+                                <div><dt>Account Login Email</dt><dd id="review-account-email">—</dd></div>
                                 <div><dt>Password</dt><dd>••••••••••••</dd></div>
                                 <div><dt>Account Status</dt><dd><span class="portal-badge portal-badge-pending">Pending Creation</span></dd></div>
                             </dl>
@@ -508,26 +497,26 @@
                     </div>
 
                     <!-- Submission Success & Login Portal Card -->
-                    <div id="join-submission-success" hidden style="margin-top: 28px; padding: 32px 24px; background: var(--portal-surface); border: 2px solid #10b981; border-radius: 16px; text-align: center; box-shadow: 0 10px 28px rgba(16, 185, 129, 0.12);">
-                        <div style="width: 56px; height: 56px; border-radius: 50%; background: #10b981; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin: 0 auto 16px;">&#x2714;</div>
-                        <h3 style="font-size: 1.4rem; font-weight: 800; color: var(--portal-text); margin: 0 0 8px;">Application Submitted &amp; Account Created!</h3>
-                        <p style="font-size: 0.92rem; color: var(--portal-muted); max-width: 520px; margin: 0 auto 20px; line-height: 1.5;">
-                            Your membership application has been received and your new account has been created. You can now log in to the SPP Membership Portal to monitor evaluation progress.
+                    <div id="join-submission-success" hidden style="margin-top: 20px; padding: 20px 20px; background: var(--portal-surface); border: 1px solid var(--portal-border); border-radius: 12px; text-align: center; box-shadow: var(--portal-shadow, 0 4px 16px rgba(0,0,0,0.06));">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: #10b981; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; margin: 0 auto 10px;">&#x2714;</div>
+                        <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--portal-text); margin: 0 0 6px;">Application Submitted &amp; Account Created!</h3>
+                        <p style="font-size: 0.82rem; color: var(--portal-muted); max-width: 420px; margin: 0 auto 14px; line-height: 1.45;">
+                            Your application has been received and your account is ready. Log in to the portal to track evaluation progress.
                         </p>
-                        <div style="background: var(--portal-surface-soft); border: 1px solid var(--portal-border); border-radius: 12px; padding: 16px 24px; display: inline-block; margin-bottom: 24px; text-align: left;">
-                            <div style="font-size: 0.76rem; color: var(--portal-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">Portal Account Ready</div>
-                            <div style="font-size: 1.05rem; font-weight: 800; color: var(--portal-text); margin-top: 4px;" id="success-account-email">example@email.com</div>
-                            <div style="display: flex; gap: 8px; align-items: center; margin-top: 8px;">
-                                <span class="portal-badge portal-badge-active" style="font-size: 0.74rem;">Account Created</span>
-                                <span class="portal-badge portal-badge-pending" style="font-size: 0.74rem;">Application Under Evaluation</span>
+                        <div style="background: var(--portal-surface-soft); border: 1px solid var(--portal-border); border-radius: 8px; padding: 10px 16px; display: inline-block; margin-bottom: 16px; text-align: left;">
+                            <div style="font-size: 0.7rem; color: var(--portal-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">Portal Account Ready</div>
+                            <div style="font-size: 0.9rem; font-weight: 800; color: var(--portal-text); margin-top: 3px;" id="success-account-email">—</div>
+                            <div style="display: flex; gap: 6px; align-items: center; margin-top: 6px; flex-wrap: wrap;">
+                                <span class="portal-badge portal-badge-active" style="font-size: 0.7rem;">Account Created</span>
+                                <span class="portal-badge portal-badge-pending" style="font-size: 0.7rem;">Under Evaluation</span>
                             </div>
                         </div>
-                        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-                            <a href="{{ route('membership-portal.dashboard') }}" class="join-btn join-btn-primary" style="padding: 12px 28px; font-size: 1rem; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                            <a href="{{ route('membership-portal.dashboard') }}" class="join-btn join-btn-primary" style="padding: 8px 20px; font-size: 0.88rem; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
                                 <span>Log In to Portal Dashboard</span>
                                 <span aria-hidden="true">&rarr;</span>
                             </a>
-                            <a href="{{ route('home') }}" class="join-btn join-btn-secondary" style="padding: 12px 20px; font-size: 0.95rem; text-decoration: none;">
+                            <a href="{{ route('home') }}" class="join-btn join-btn-secondary" style="padding: 8px 16px; font-size: 0.85rem; text-decoration: none;">
                                 Return to Home
                             </a>
                         </div>
@@ -541,9 +530,6 @@
                     &larr; Previous Step
                 </button>
                 <div style="display: flex; gap: 10px; align-items: center;">
-                    <button type="button" class="join-btn join-btn-secondary" onclick="showToast('Draft progress saved (Mock)')">
-                        Save as Draft
-                    </button>
                     <button type="button" id="btn-next-step" class="join-btn join-btn-primary">
                         Next Step &rarr;
                     </button>
@@ -552,10 +538,15 @@
         </form>
     </main>
 
-    <!-- Floating Toast Notification -->
-    <div id="join-toast" class="join-toast" role="status" aria-live="polite">
-        <span aria-hidden="true">&#x2714;</span>
-        <span id="join-toast-text">Notification message</span>
+    <!-- Floating Toast Notification (matches admin style) -->
+    <div id="join-toast" class="floating-toast-container is-hidden" role="status" aria-live="polite">
+        <div class="floating-toast-card">
+            <span class="floating-toast-icon" id="join-toast-icon" aria-hidden="true">&#x2714;</span>
+            <div class="floating-toast-content">
+                <span class="floating-toast-message" id="join-toast-text">Notification message</span>
+            </div>
+            <button type="button" class="floating-toast-close" id="join-toast-close" aria-label="Dismiss notification">&times;</button>
+        </div>
     </div>
 
     <script>
@@ -623,58 +614,184 @@
             if (appType) {
                 document.getElementById('review-application-type').textContent = appType.value;
             }
+            const appDate = document.getElementById('application_date');
+            if (appDate) {
+                const reviewAppDate = document.getElementById('review-application-date');
+                if (reviewAppDate) {
+                    reviewAppDate.textContent = appDate.value;
+                }
+            }
             const recName = document.getElementById('recommender_name');
             if (recName) {
-                document.getElementById('review-recommender-name').textContent = recName.value || 'Sample Name';
+                document.getElementById('review-recommender-name').textContent = recName.value.trim() || '—';
             }
             const recEmail = document.getElementById('recommender_email');
             if (recEmail) {
-                document.getElementById('review-recommender-email').textContent = recEmail.value || 'example@email.com';
+                document.getElementById('review-recommender-email').textContent = recEmail.value.trim() || '—';
+            }
+            const recSuffix = document.getElementById('recommender_suffix');
+            if (recSuffix) {
+                const el = document.getElementById('review-recommender-suffix');
+                if (el) el.textContent = recSuffix.value.trim() || '—';
             }
             const altRecName = document.getElementById('alt_recommender_name');
             if (altRecName) {
-                document.getElementById('review-alt-recommender-name').textContent = altRecName.value || 'Sample Name';
+                document.getElementById('review-alt-recommender-name').textContent = altRecName.value.trim() || '—';
             }
             const surname = document.getElementById('surname');
             if (surname) {
-                document.getElementById('review-surname').textContent = surname.value || 'Sample';
+                document.getElementById('review-surname').textContent = surname.value.trim() || '—';
             }
             const firstName = document.getElementById('first_name');
             if (firstName) {
-                document.getElementById('review-first-name').textContent = firstName.value || 'Sample Name';
+                document.getElementById('review-first-name').textContent = firstName.value.trim() || '—';
+            }
+            const middleName = document.getElementById('middle_name');
+            if (middleName) {
+                const el = document.getElementById('review-middle-name');
+                if (el) el.textContent = middleName.value.trim() || '—';
+            }
+            const mobile = document.getElementById('mobile_number');
+            if (mobile) {
+                const el = document.getElementById('review-mobile-number');
+                if (el) el.textContent = mobile.value.trim() || '—';
+            }
+            const affil = document.getElementById('current_affiliation');
+            if (affil) {
+                document.getElementById('review-affiliation').textContent = affil.value.trim() || '—';
+            }
+            const pos = document.getElementById('current_position');
+            if (pos) {
+                const el = document.getElementById('review-position');
+                if (el) el.textContent = pos.value.trim() || '—';
+            }
+            const profEmail = document.getElementById('professional_email');
+            if (profEmail) {
+                const el = document.getElementById('review-professional-email');
+                if (el) el.textContent = profEmail.value.trim() || '—';
+            }
+            const highEd = document.getElementById('highest_educational_attainment');
+            if (highEd) {
+                const el = document.getElementById('review-highest-ed');
+                if (el) el.textContent = highEd.value || '—';
+            }
+            const degree = document.getElementById('degree');
+            if (degree) {
+                const el = document.getElementById('review-degree');
+                if (el) el.textContent = degree.value.trim() || '—';
+            }
+            const degreeDate = document.getElementById('date_degree_obtained');
+            if (degreeDate) {
+                const el = document.getElementById('review-degree-date');
+                if (el) el.textContent = degreeDate.value.trim() || '—';
+            }
+            const institution = document.getElementById('institution');
+            if (institution) {
+                const el = document.getElementById('review-institution');
+                if (el) el.textContent = institution.value.trim() || '—';
+            }
+            const instAddress = document.getElementById('institution_address');
+            if (instAddress) {
+                const el = document.getElementById('review-institution-address');
+                if (el) el.textContent = instAddress.value.trim() || '—';
             }
             const accEmail = document.getElementById('account_email');
             if (accEmail) {
                 const reviewAcc = document.getElementById('review-account-email');
                 if (reviewAcc) {
-                    reviewAcc.textContent = accEmail.value || 'example@email.com';
+                    reviewAcc.textContent = accEmail.value.trim() || '—';
                 }
-            }
-            const affil = document.getElementById('current_affiliation');
-            if (affil) {
-                document.getElementById('review-affiliation').textContent = affil.value || 'Sample Institution';
             }
         }
 
-        function showToast(message) {
+        function showToast(message, isError = false) {
             const toast = document.getElementById('join-toast');
-            const text = document.getElementById('join-toast-text');
-            if (toast && text) {
-                text.textContent = message;
-                toast.classList.add('is-visible');
-                setTimeout(() => {
-                    toast.classList.remove('is-visible');
-                }, 3500);
+            const toastText = document.getElementById('join-toast-text');
+            const toastIcon = document.getElementById('join-toast-icon');
+            if (!toast || !toastText) return;
+
+            // Position toast just below the sticky header dynamically
+            const header = document.querySelector('.portal-topbar');
+            if (header) {
+                toast.style.top = (header.offsetHeight + 10) + 'px';
             }
+
+            toastText.textContent = message;
+            if (isError) {
+                toast.classList.add('is-error');
+                if (toastIcon) toastIcon.innerHTML = '&#x2716;';
+            } else {
+                toast.classList.remove('is-error');
+                if (toastIcon) toastIcon.innerHTML = '&#x2714;';
+            }
+            toast.classList.remove('is-hidden');
+
+            if (window._joinToastTimeout) clearTimeout(window._joinToastTimeout);
+            window._joinToastTimeout = setTimeout(() => {
+                toast.classList.add('is-hidden');
+            }, 7000);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            const appDateInput = document.getElementById('application_date');
+            if (appDateInput) {
+                const today = new Date();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                const yyyy = today.getFullYear();
+                appDateInput.value = `${mm}/${dd}/${yyyy}`;
+            }
+
+            // File upload listeners
+            const cvInput = document.getElementById('cv_file');
+            cvInput?.addEventListener('change', () => {
+                if (cvInput.files && cvInput.files[0]) {
+                    const name = cvInput.files[0].name;
+                    const textEl = document.getElementById('text-cv-file');
+                    if (textEl) textEl.textContent = name;
+                    const badge = document.getElementById('badge-cv-file');
+                    if (badge) {
+                        badge.className = 'portal-badge portal-badge-active';
+                        badge.textContent = 'Selected';
+                    }
+                    const reviewBadge = document.getElementById('review-cv-status');
+                    if (reviewBadge) {
+                        reviewBadge.className = 'portal-badge portal-badge-active';
+                        reviewBadge.textContent = name;
+                    }
+                }
+            });
+
+            const proofInput = document.getElementById('proof_file');
+            proofInput?.addEventListener('change', () => {
+                if (proofInput.files && proofInput.files[0]) {
+                    const name = proofInput.files[0].name;
+                    const textEl = document.getElementById('text-proof-file');
+                    if (textEl) textEl.textContent = name;
+                    const badge = document.getElementById('badge-proof-file');
+                    if (badge) {
+                        badge.className = 'portal-badge portal-badge-active';
+                        badge.textContent = 'Selected';
+                    }
+                    const reviewBadge = document.getElementById('review-proof-status');
+                    if (reviewBadge) {
+                        reviewBadge.className = 'portal-badge portal-badge-active';
+                        reviewBadge.textContent = name;
+                    }
+                }
+            });
+
             // Stepper item clicks
             document.querySelectorAll('.join-step-item').forEach(item => {
                 item.addEventListener('click', () => {
                     const target = parseInt(item.getAttribute('data-step-target'), 10);
                     goToStep(target);
                 });
+            });
+
+            // Toast dismiss button
+            document.getElementById('join-toast-close')?.addEventListener('click', () => {
+                document.getElementById('join-toast')?.classList.add('is-hidden');
             });
 
             // Prev & Next buttons
@@ -690,23 +807,82 @@
                 }
             });
 
-            // Mock submit & create account
+            // Real submit & create account
             document.getElementById('btn-submit-application')?.addEventListener('click', () => {
-                const emailInput = document.getElementById('account_email');
-                if (emailInput && emailInput.value) {
+                const form = document.getElementById('join-spp-form');
+                const surname = document.getElementById('surname')?.value.trim();
+                const firstName = document.getElementById('first_name')?.value.trim();
+                const email = document.getElementById('account_email')?.value.trim();
+                const password = document.getElementById('account_password')?.value;
+                const passwordConfirm = document.getElementById('account_password_confirmation')?.value;
+
+                if (!surname || !firstName) {
+                    showToast('Please provide your First Name and Surname in Stage 3.', true);
+                    goToStep(3);
+                    return;
+                }
+                if (!email) {
+                    showToast('Please provide your Account Email in Stage 6.', true);
+                    goToStep(6);
+                    return;
+                }
+                if (!password || password.length < 8) {
+                    showToast('Password must be at least 8 characters.', true);
+                    goToStep(6);
+                    return;
+                }
+                if (password !== passwordConfirm) {
+                    showToast('Passwords do not match.', true);
+                    goToStep(6);
+                    return;
+                }
+
+                const submitBtn = document.getElementById('btn-submit-application');
+                submitBtn.disabled = true;
+                const origText = submitBtn.textContent;
+                submitBtn.textContent = 'Submitting Application...';
+
+                const formData = new FormData(form);
+
+                fetch('{{ route('join-spp.store') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                })
+                .then(async response => {
+                    const data = await response.json().catch(() => ({}));
+                    if (!response.ok) {
+                        const err = data.errors ? Object.values(data.errors)[0][0] : (data.message || 'Validation error');
+                        throw new Error(err);
+                    }
+                    return data;
+                })
+                .then(data => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = origText;
+
                     const successEmail = document.getElementById('success-account-email');
-                    if (successEmail) successEmail.textContent = emailInput.value;
-                }
-                const submitArea = document.getElementById('join-submit-area');
-                const successCard = document.getElementById('join-submission-success');
-                const actionBar = document.querySelector('.join-action-bar');
-                if (submitArea && successCard) {
-                    submitArea.style.display = 'none';
-                    if (actionBar) actionBar.style.display = 'none';
-                    successCard.hidden = false;
-                    successCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-                showToast('Account created & application submitted! You can now log in to the portal.');
+                    if (successEmail) successEmail.textContent = email;
+
+                    const submitArea = document.getElementById('join-submit-area');
+                    const successCard = document.getElementById('join-submission-success');
+                    const actionBar = document.querySelector('.join-action-bar');
+                    if (submitArea && successCard) {
+                        submitArea.style.display = 'none';
+                        if (actionBar) actionBar.style.display = 'none';
+                        successCard.hidden = false;
+                        successCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    showToast('Account created & application submitted! You can now log in to the portal.');
+                })
+                .catch(err => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = origText;
+                    showToast(err.message || 'Submission failed. Please check required fields.', true);
+                });
             });
 
             // Theme toggle

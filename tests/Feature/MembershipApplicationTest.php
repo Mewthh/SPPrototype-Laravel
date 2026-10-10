@@ -1,0 +1,153 @@
+<?php
+
+use App\Models\MembershipApplication;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+
+uses(RefreshDatabase::class);
+
+test('join spp page renders cleanly with empty inputs and no temporary values', function () {
+    $response = $this->get(route('join-spp'));
+
+    $response->assertOk()
+        ->assertDontSee('value="Sample"')
+        ->assertDontSee('value="Sample Name"')
+        ->assertDontSee('value="example@email.com"')
+        ->assertDontSee('value="password123"');
+});
+
+test('guest can submit join-spp form and create member account and application', function () {
+    Storage::fake('public');
+
+    $cvFile = UploadedFile::fake()->create('curriculum_vitae.pdf', 500, 'application/pdf');
+    $proofFile = UploadedFile::fake()->create('employment_certificate.pdf', 300, 'application/pdf');
+
+    $postData = [
+        'membership_type' => 'Regular Member',
+        'application_type' => 'New Application',
+        'application_date' => now()->format('m/d/Y'),
+        'recommender_name' => 'Dr. Maria Santos',
+        'recommender_email' => 'msantos@physics.edu.ph',
+        'recommender_suffix' => 'Ph.D.',
+        'alt_recommender_name' => 'Dr. Jose Rizal',
+        'surname' => 'Dela Cruz',
+        'first_name' => 'Juan',
+        'middle_name' => 'Mercado',
+        'mobile_number' => '+63 912 345 6789',
+        'personal_email' => 'juan.delacruz@gmail.com',
+        'current_affiliation' => 'National Institute of Physics',
+        'current_position' => 'Associate Professor',
+        'professional_email' => 'juan@nip.upd.edu.ph',
+        'highest_educational_attainment' => 'Doctor of Philosophy (Ph.D.)',
+        'degree' => 'Ph.D. in Physics',
+        'date_degree_obtained' => '06/15/2020',
+        'institution' => 'University of the Philippines Diliman',
+        'institution_address' => 'Quezon City, Philippines',
+        'declaration_agree' => '1',
+        'certification_confirm' => '1',
+        'account_email' => 'juan.delacruz@portal.ph',
+        'account_password' => 'SecurePass123!',
+        'account_password_confirmation' => 'SecurePass123!',
+        'cv_file' => $cvFile,
+        'proof_file' => $proofFile,
+    ];
+
+    $response = $this->postJson(route('join-spp.store'), $postData);
+
+    $response->assertCreated()
+        ->assertJson([
+            'success' => true,
+        ]);
+
+    $this->assertDatabaseHas('users', [
+        'email' => 'juan.delacruz@portal.ph',
+        'name' => 'Juan Dela Cruz',
+        'role' => 'member',
+    ]);
+
+    $this->assertDatabaseHas('membership_applications', [
+        'account_email' => 'juan.delacruz@portal.ph',
+        'surname' => 'Dela Cruz',
+        'first_name' => 'Juan',
+        'membership_type' => 'Regular Member',
+        'status' => 'Under Evaluation',
+        'current_affiliation' => 'National Institute of Physics',
+    ]);
+});
+
+test('admin can view applications and roster in portal manager', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+
+    $application = MembershipApplication::factory()->create([
+        'surname' => 'Einstein',
+        'first_name' => 'Albert',
+        'membership_type' => 'Regular Member',
+        'account_email' => 'albert@princeton.edu',
+        'current_affiliation' => 'Institute for Advanced Study',
+        'status' => 'Under Evaluation',
+    ]);
+
+    $response = $this->actingAs($admin)->get(route('admin.membership-portal'));
+
+    $response->assertOk()
+        ->assertSee('Albert Einstein')
+        ->assertSee('albert@princeton.edu')
+        ->assertSee('Regular Member')
+        ->assertSee('Under Evaluation');
+});
+
+test('admin can inspect application details and update status via api', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+
+    $application = MembershipApplication::factory()->create([
+        'surname' => 'Curie',
+        'first_name' => 'Marie',
+        'account_email' => 'marie.curie@radium.org',
+        'status' => 'Under Evaluation',
+    ]);
+
+    // Inspect via API
+    $showResponse = $this->actingAs($admin)->getJson(route('admin.api.membership-applications.show', $application));
+
+    $showResponse->assertOk()
+        ->assertJsonPath('data.surname', 'Curie')
+        ->assertJsonPath('data.first_name', 'Marie');
+
+    // Update status to Approved
+    $patchResponse = $this->actingAs($admin)->patchJson(
+        route('admin.api.membership-applications.status', $application),
+        ['status' => 'Approved']
+    );
+
+    $patchResponse->assertOk()
+        ->assertJsonPath('data.status', 'Approved');
+
+    $this->assertDatabaseHas('membership_applications', [
+        'id' => $application->id,
+        'status' => 'Approved',
+    ]);
+
+    // When status is Approved, member shows up in portal manager roster
+    $portalResponse = $this->actingAs($admin)->get(route('admin.membership-portal'));
+    $portalResponse->assertOk()
+        ->assertSee('SPP-MEM-'.str_pad($application->id, 4, '0', STR_PAD_LEFT))
+        ->assertSee('Marie Curie');
+});
+
+test('guests and regular members cannot manage applications via admin api', function () {
+    $application = MembershipApplication::factory()->create();
+
+    // Guest cannot fetch
+    $this->getJson(route('admin.api.membership-applications.show', $application))
+        ->assertUnauthorized();
+
+    // Regular member cannot update
+    $member = User::factory()->create(['role' => 'member']);
+
+    $this->actingAs($member)->patchJson(
+        route('admin.api.membership-applications.status', $application),
+        ['status' => 'Approved']
+    )->assertForbidden();
+});

@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\DownloadCategoryController;
 use App\Http\Controllers\Admin\DownloadController as AdminDownloadController;
 use App\Http\Controllers\Admin\HeroBannerController as AdminHeroBannerController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
+use App\Http\Controllers\Admin\MembershipApplicationController as AdminMembershipApplicationController;
 use App\Http\Controllers\Admin\MembershipArticleController as AdminMembershipArticleController;
 use App\Http\Controllers\Admin\MembershipFaqController as AdminMembershipFaqController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\Admin\ProceedingsTemplateController;
 use App\Http\Controllers\Admin\VideoController as AdminVideoController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\JoinSppController;
 use App\Http\Controllers\MembershipArticleController;
 use App\Http\Controllers\MembershipFaqController;
 use App\Http\Controllers\NewsController;
@@ -39,7 +41,8 @@ Route::get('videos', [VideoController::class, 'index'])->name('videos.index');
 Route::get('membership-faq', [MembershipFaqController::class, 'index'])->name('membership-faq');
 Route::get('membership/articles/{slug}', [MembershipArticleController::class, 'show'])->name('membership-articles.show');
 Route::get('downloads/{download}/file', [DownloadController::class, 'download'])->name('downloads.download');
-Route::view('join-spp', 'join-spp')->name('join-spp');
+Route::get('join-spp', [JoinSppController::class, 'create'])->name('join-spp');
+Route::post('join-spp', [JoinSppController::class, 'store'])->name('join-spp.store');
 
 Route::prefix('membership-portal')->name('membership-portal.')->group(function () {
     Route::get('/', function () {
@@ -136,6 +139,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
         ->names('admin.api.announcements');
     Route::patch('admin/api/announcements/{announcement}/status', [AdminAnnouncementController::class, 'updateStatus'])
         ->name('admin.api.announcements.status');
+
+    Route::prefix('admin/api/membership-applications')->name('admin.api.membership-applications.')->group(function () {
+        Route::get('/', [AdminMembershipApplicationController::class, 'index'])->name('index');
+        Route::get('{application}', [AdminMembershipApplicationController::class, 'show'])->name('show');
+        Route::patch('{application}/status', [AdminMembershipApplicationController::class, 'updateStatus'])->name('status');
+        Route::delete('{application}', [AdminMembershipApplicationController::class, 'destroy'])->name('destroy');
+    });
 });
 
 require __DIR__.'/settings.php';

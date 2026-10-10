@@ -148,7 +148,7 @@
 						</svg>
 					</span>
 					<span class="nav-text">Applications</span>
-					<span class="nav-badge">4</span>
+					<span class="nav-badge" id="nav-applications-count">{{ $applicationCounts['all'] ?? 0 }}</span>
 				</a>
 
 				<a href="#roster" class="nav-item" data-portal-tab="roster">
@@ -240,11 +240,11 @@
 
 					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
 						<h3 style="font-size: 1.1rem; font-weight: 800; color: var(--accent-strong); margin: 0;">Membership Applications</h3>
-						<div style="display: flex; gap: 8px; align-items: center;">
-							<button type="button" class="button button-quiet" style="font-weight: 700; background: var(--surface-soft); font-size: 0.8rem;">All Statuses</button>
-							<button type="button" class="button button-primary" style="font-weight: 700; font-size: 0.8rem;">Under Evaluation (1)</button>
-							<button type="button" class="button button-quiet" style="font-weight: 700; font-size: 0.8rem;">Pending</button>
-							<button type="button" class="button button-quiet" style="font-weight: 700; font-size: 0.8rem;">Approved</button>
+						<div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;" data-app-filter-buttons>
+							<button type="button" class="button button-primary" data-app-filter="all" style="font-weight: 700; font-size: 0.8rem;">All Statuses (<span id="app-count-all">{{ $applicationCounts['all'] ?? 0 }}</span>)</button>
+							<button type="button" class="button button-quiet" data-app-filter="Under Evaluation" style="font-weight: 700; font-size: 0.8rem;">Under Evaluation (<span id="app-count-under-eval">{{ $applicationCounts['under_evaluation'] ?? 0 }}</span>)</button>
+							<button type="button" class="button button-quiet" data-app-filter="Pending" style="font-weight: 700; font-size: 0.8rem;">Pending (<span id="app-count-pending">{{ $applicationCounts['pending'] ?? 0 }}</span>)</button>
+							<button type="button" class="button button-quiet" data-app-filter="Approved" style="font-weight: 700; font-size: 0.8rem;">Approved (<span id="app-count-approved">{{ $applicationCounts['approved'] ?? 0 }}</span>)</button>
 						</div>
 					</div>
 
@@ -260,21 +260,41 @@
 									<th style="padding: 12px 16px; text-align: right;">Actions</th>
 								</tr>
 							</thead>
-							<tbody>
-								<tr style="border-bottom: 1px solid var(--border);">
-									<td style="padding: 14px 16px;">
-										<div style="font-weight: 700; color: var(--accent-strong);">Sample Name</div>
-										<div style="font-size: 0.78rem; color: var(--muted);">example@email.com</div>
-									</td>
-									<td style="padding: 14px 16px;"><span style="background: var(--accent-soft); color: var(--accent-strong); border: 1px solid rgba(27, 122, 76, 0.25); padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 0.78rem;">Regular Member</span></td>
-									<td style="padding: 14px 16px; color: var(--text);">Sample Institution</td>
-									<td style="padding: 14px 16px; color: var(--muted);">MM/DD/YYYY</td>
-									<td style="padding: 14px 16px;"><span style="background: rgba(194, 125, 0, 0.12); color: var(--warn); border: 1px solid rgba(194, 125, 0, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">Under Evaluation</span></td>
-									<td style="padding: 14px 16px; text-align: right;">
-										<button type="button" class="button button-primary" style="padding: 5px 10px; font-size: 0.78rem;" data-open-review-modal>Review</button>
-										<button type="button" class="button button-secondary" style="padding: 5px 10px; font-size: 0.78rem;">Approve</button>
-									</td>
-								</tr>
+							<tbody id="applications-table-body">
+								@forelse ($applications ?? [] as $app)
+									<tr style="border-bottom: 1px solid var(--border);" data-app-row data-app-id="{{ $app->id }}" data-status="{{ $app->status }}">
+										<td style="padding: 14px 16px;">
+											<div style="font-weight: 700; color: var(--accent-strong);" class="app-row-name">{{ $app->first_name }} {{ $app->surname }}</div>
+											<div style="font-size: 0.78rem; color: var(--muted);" class="app-row-email">{{ $app->account_email }}</div>
+										</td>
+										<td style="padding: 14px 16px;"><span style="background: var(--accent-soft); color: var(--accent-strong); border: 1px solid rgba(27, 122, 76, 0.25); padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 0.78rem;">{{ $app->membership_type }}</span></td>
+										<td style="padding: 14px 16px; color: var(--text);">{{ $app->current_affiliation ?: '—' }}</td>
+										<td style="padding: 14px 16px; color: var(--muted);">{{ $app->created_at?->format('m/d/Y') ?? $app->application_date }}</td>
+										<td style="padding: 14px 16px;">
+											@if ($app->status === 'Approved')
+												<span class="app-status-badge" style="background: rgba(22, 163, 74, 0.12); color: #16a34a; border: 1px solid rgba(22, 163, 74, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">Approved</span>
+											@elseif ($app->status === 'Pending')
+												<span class="app-status-badge" style="background: rgba(234, 179, 8, 0.12); color: #ca8a04; border: 1px solid rgba(234, 179, 8, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">Pending</span>
+											@elseif ($app->status === 'Rejected')
+												<span class="app-status-badge" style="background: rgba(239, 68, 68, 0.12); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">Rejected</span>
+											@else
+												<span class="app-status-badge" style="background: rgba(194, 125, 0, 0.12); color: var(--warn); border: 1px solid rgba(194, 125, 0, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">Under Evaluation</span>
+											@endif
+										</td>
+										<td style="padding: 14px 16px; text-align: right;">
+											<button type="button" class="button button-primary" style="padding: 5px 10px; font-size: 0.78rem;" data-open-review-modal data-app-id="{{ $app->id }}">Review</button>
+											@if ($app->status !== 'Approved')
+												<button type="button" class="button button-secondary" style="padding: 5px 10px; font-size: 0.78rem;" data-quick-approve data-app-id="{{ $app->id }}">Approve</button>
+											@endif
+										</td>
+									</tr>
+								@empty
+									<tr id="no-applications-row">
+										<td colspan="6" style="padding: 32px 16px; text-align: center; color: var(--muted); font-size: 0.9rem;">
+											No membership applications found.
+										</td>
+									</tr>
+								@endforelse
 							</tbody>
 						</table>
 					</div>
@@ -309,20 +329,28 @@
 									<th style="padding: 12px 16px; text-align: right;">Action</th>
 								</tr>
 							</thead>
-							<tbody>
-								<tr style="border-bottom: 1px solid var(--border);" data-member-tier="regular">
-									<td style="padding: 14px 16px; font-weight: 800; font-family: monospace; color: var(--accent-strong);">SPP-SAMPLE-001</td>
-									<td style="padding: 14px 16px;">
-										<div style="font-weight: 700; color: var(--accent-strong);">Sample Name</div>
-										<div style="font-size: 0.78rem; color: var(--muted);">example@email.com</div>
-									</td>
-									<td style="padding: 14px 16px;"><span style="background: var(--accent-soft); color: var(--accent-strong); border: 1px solid rgba(27, 122, 76, 0.25); padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 0.78rem;">Regular Member</span></td>
-									<td style="padding: 14px 16px; color: var(--text);">Sample Institution</td>
-									<td style="padding: 14px 16px; color: var(--muted);">MM/DD/YYYY</td>
-									<td style="padding: 14px 16px; text-align: right;">
-										<button type="button" class="button button-quiet" style="padding: 5px 10px; font-size: 0.78rem;">View Profile</button>
-									</td>
-								</tr>
+							<tbody id="roster-table-body">
+								@forelse ($approvedMembers ?? [] as $member)
+									<tr style="border-bottom: 1px solid var(--border);" data-member-tier="{{ strtolower(str_replace(' Member', '', $member->membership_type)) }}">
+										<td style="padding: 14px 16px; font-weight: 800; font-family: monospace; color: var(--accent-strong);">SPP-MEM-{{ str_pad($member->id, 4, '0', STR_PAD_LEFT) }}</td>
+										<td style="padding: 14px 16px;">
+											<div style="font-weight: 700; color: var(--accent-strong);">{{ $member->first_name }} {{ $member->surname }}</div>
+											<div style="font-size: 0.78rem; color: var(--muted);">{{ $member->account_email ?: $member->personal_email }}</div>
+										</td>
+										<td style="padding: 14px 16px;"><span style="background: var(--accent-soft); color: var(--accent-strong); border: 1px solid rgba(27, 122, 76, 0.25); padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 0.78rem;">{{ $member->membership_type }}</span></td>
+										<td style="padding: 14px 16px; color: var(--text);">{{ $member->current_affiliation ?: '—' }}</td>
+										<td style="padding: 14px 16px; color: var(--muted);">{{ $member->updated_at?->addYear()->format('m/d/Y') ?? '—' }}</td>
+										<td style="padding: 14px 16px; text-align: right;">
+											<button type="button" class="button button-quiet" style="padding: 5px 10px; font-size: 0.78rem;" data-open-review-modal data-app-id="{{ $member->id }}">View Details</button>
+										</td>
+									</tr>
+								@empty
+									<tr id="no-roster-row">
+										<td colspan="6" style="padding: 32px 16px; text-align: center; color: var(--muted); font-size: 0.9rem;">
+											No active members in roster yet.
+										</td>
+									</tr>
+								@endforelse
 							</tbody>
 						</table>
 					</div>
@@ -793,7 +821,7 @@
 			<div style="padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--surface-soft);">
 				<div>
 					<span style="font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;">Membership Application Review</span>
-					<h2 style="font-size: 1.3rem; font-weight: 900; color: var(--accent-strong); margin: 2px 0 0 0;">Sample Name</h2>
+					<h2 style="font-size: 1.3rem; font-weight: 900; color: var(--accent-strong); margin: 2px 0 0 0;" id="modal-applicant-name">—</h2>
 				</div>
 				<button type="button" data-close-review-modal style="background: none; border: none; font-size: 1.5rem; color: var(--muted); cursor: pointer; padding: 4px 8px; line-height: 1;" aria-label="Close modal">&times;</button>
 			</div>
@@ -829,19 +857,19 @@
 						<div style="display: flex; flex-direction: column; gap: 12px;">
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Membership Type</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Regular Member</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-membership-type">—</div>
 							</div>
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Application Type</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample Application</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-application-type">New Application</div>
 							</div>
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Application Date</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">MM/DD/YYYY</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-application-date">—</div>
 							</div>
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted); margin-bottom: 4px;">Application Status</div>
-								<span style="background: transparent; color: var(--text); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">Under Evaluation</span>
+								<span id="modal-application-status" style="background: transparent; color: var(--text); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">Under Evaluation</span>
 							</div>
 						</div>
 					</div>
@@ -855,23 +883,19 @@
 						<div style="display: flex; flex-direction: column; gap: 12px;">
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Name</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample Name</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-recommender-name">—</div>
 							</div>
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Email</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">example@email.com</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-recommender-email">—</div>
 							</div>
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Suffix</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-recommender-suffix">—</div>
 							</div>
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Alternate Recommender</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample Name</div>
-							</div>
-							<div>
-								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted); margin-bottom: 4px;">Recommender Status</div>
-								<span style="background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">Pending</span>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-alt-recommender-name">—</div>
 							</div>
 						</div>
 					</div>
@@ -885,23 +909,23 @@
 						<div style="display: flex; flex-direction: column; gap: 12px;">
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Surname</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-surname">—</div>
 							</div>
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">First Name(s)</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample Name</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-first-name">—</div>
 							</div>
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Middle Name(s)</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-middle-name">—</div>
 							</div>
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Mobile Number</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-mobile-number">—</div>
 							</div>
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Email Address</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">example@email.com</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-personal-email">—</div>
 							</div>
 						</div>
 					</div>
@@ -915,15 +939,15 @@
 						<div style="display: flex; flex-direction: column; gap: 12px;">
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Current Institutional Affiliation</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample Institution</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-current-affiliation">—</div>
 							</div>
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Current Position</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-current-position">—</div>
 							</div>
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Professional / Institutional Email</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">example@email.com</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-institutional-email">—</div>
 							</div>
 						</div>
 					</div>
@@ -937,23 +961,23 @@
 						<div style="display: flex; flex-direction: column; gap: 12px;">
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Highest Educational Attainment</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-highest-education">—</div>
 							</div>
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Degree</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-degree">—</div>
 							</div>
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Date Degree Obtained</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">MM/DD/YYYY</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-date-degree-obtained">—</div>
 							</div>
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Institution</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample Institution</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-institution">—</div>
 							</div>
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Institution Address</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Sample</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-institution-address">—</div>
 							</div>
 						</div>
 					</div>
@@ -967,11 +991,11 @@
 						<div style="display: flex; flex-direction: column; gap: 14px;">
 							<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border); padding-bottom: 10px;">
 								<span style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong);">Updated CV</span>
-								<span style="background: rgba(27, 122, 76, 0.12); color: var(--success); border: 1px solid rgba(27, 122, 76, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">Submitted</span>
+								<span id="modal-cv-status" style="background: rgba(27, 122, 76, 0.12); color: var(--success); border: 1px solid rgba(27, 122, 76, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">None</span>
 							</div>
 							<div style="display: flex; justify-content: space-between; align-items: center;">
 								<span style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong);">Proof of Employment / Enrollment</span>
-								<span style="background: rgba(27, 122, 76, 0.12); color: var(--success); border: 1px solid rgba(27, 122, 76, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">Submitted</span>
+								<span id="modal-proof-status" style="background: rgba(27, 122, 76, 0.12); color: var(--success); border: 1px solid rgba(27, 122, 76, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">None</span>
 							</div>
 						</div>
 					</div>
@@ -985,11 +1009,11 @@
 						<div style="display: flex; flex-direction: column; gap: 12px;">
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Declaration</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Agreed</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-declaration">Agreed</div>
 							</div>
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Certification</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;">Confirmed</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-certification">Confirmed</div>
 							</div>
 						</div>
 					</div>
@@ -1000,7 +1024,8 @@
 			<!-- Modal Footer Actions -->
 			<div style="padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; background: var(--surface-soft);">
 				<button type="button" class="button button-secondary" data-close-review-modal style="font-weight: 700; font-size: 0.85rem;">Close</button>
-				<button type="button" class="button button-primary" style="font-weight: 700; font-size: 0.85rem;" onclick="alert('Application approved successfully.'); document.getElementById('review-application-modal').style.display='none';">Approve Application</button>
+				<button type="button" id="modal-reject-app-btn" class="button button-danger" style="font-weight: 700; font-size: 0.85rem; background: #dc2626; color: white; border: none; padding: 6px 14px; border-radius: 6px;">Reject Application</button>
+				<button type="button" id="modal-approve-app-btn" class="button button-primary" style="font-weight: 700; font-size: 0.85rem;">Approve Application</button>
 			</div>
 		</div>
 	</div>
@@ -1222,14 +1247,178 @@
 
 			// Review Modal Handlers
 			const reviewModal = document.getElementById('review-application-modal');
-			const openModalBtns = document.querySelectorAll('[data-open-review-modal]');
 			const closeModalBtns = document.querySelectorAll('[data-close-review-modal]');
+			let currentReviewAppId = null;
 
-			openModalBtns.forEach(btn => {
-				btn.addEventListener('click', function() {
-					if (reviewModal) {
-						reviewModal.style.display = 'flex';
+			async function openApplicationModal(appId) {
+				currentReviewAppId = appId;
+				setAppInfoCategory('membership');
+				if (reviewModal) reviewModal.style.display = 'flex';
+
+				try {
+					const res = await fetch(`/admin/api/membership-applications/${appId}`, {
+						headers: { 'Accept': 'application/json' }
+					});
+					const json = await res.json();
+					const app = json.data;
+					if (!app) return;
+
+					const name = `${app.first_name || ''} ${app.surname || ''}`.trim() || 'Applicant';
+					const titleEl = document.getElementById('modal-applicant-name');
+					if (titleEl) titleEl.textContent = name;
+
+					document.getElementById('modal-membership-type').textContent = app.membership_type || '—';
+					document.getElementById('modal-application-type').textContent = app.application_type || 'New Application';
+					document.getElementById('modal-application-date').textContent = app.application_date || '—';
+					document.getElementById('modal-application-status').textContent = app.status || 'Under Evaluation';
+
+					document.getElementById('modal-recommender-name').textContent = app.recommender_name || '—';
+					document.getElementById('modal-recommender-email').textContent = app.recommender_email || '—';
+					document.getElementById('modal-recommender-suffix').textContent = app.recommender_suffix || '—';
+					document.getElementById('modal-alt-recommender-name').textContent = app.alt_recommender_name || '—';
+
+					document.getElementById('modal-surname').textContent = app.surname || '—';
+					document.getElementById('modal-first-name').textContent = app.first_name || '—';
+					document.getElementById('modal-middle-name').textContent = app.middle_name || '—';
+					document.getElementById('modal-mobile-number').textContent = app.mobile_number || '—';
+					document.getElementById('modal-personal-email').textContent = app.account_email || '—';
+
+					document.getElementById('modal-current-affiliation').textContent = app.current_affiliation || '—';
+					document.getElementById('modal-current-position').textContent = app.current_position || '—';
+					document.getElementById('modal-institutional-email').textContent = app.institutional_email || '—';
+
+					document.getElementById('modal-highest-education').textContent = app.highest_educational_attainment || '—';
+					document.getElementById('modal-degree').textContent = app.degree || '—';
+					document.getElementById('modal-date-degree-obtained').textContent = app.date_degree_obtained || '—';
+					document.getElementById('modal-institution').textContent = app.institution_name || app.current_affiliation || '—';
+					document.getElementById('modal-institution-address').textContent = app.institution_address || '—';
+
+					const cvBadge = document.getElementById('modal-cv-status');
+					if (cvBadge) {
+						cvBadge.textContent = app.cv_path ? 'Uploaded' : 'None';
+						cvBadge.style.color = app.cv_path ? 'var(--success)' : 'var(--muted)';
 					}
+					const proofBadge = document.getElementById('modal-proof-status');
+					if (proofBadge) {
+						proofBadge.textContent = app.proof_path ? 'Uploaded' : 'None';
+						proofBadge.style.color = app.proof_path ? 'var(--success)' : 'var(--muted)';
+					}
+
+					document.getElementById('modal-declaration').textContent = app.declaration_agree ? 'Agreed' : 'No';
+					document.getElementById('modal-certification').textContent = app.certification_confirm ? 'Confirmed' : 'No';
+				} catch (err) {
+					console.error('Error fetching application details:', err);
+				}
+			}
+
+			async function updateApplicationStatus(appId, newStatus) {
+				const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+				try {
+					const res = await fetch(`/admin/api/membership-applications/${appId}/status`, {
+						method: 'PATCH',
+						headers: {
+							'Content-Type': 'application/json',
+							'Accept': 'application/json',
+							'X-CSRF-TOKEN': csrfToken
+						},
+						body: JSON.stringify({ status: newStatus })
+					});
+					const json = await res.json();
+					if (res.ok) {
+						const row = document.querySelector(`tr[data-app-id="${appId}"]`);
+						if (row) {
+							row.setAttribute('data-status', newStatus);
+							const badge = row.querySelector('.app-status-badge');
+							if (badge) {
+								badge.textContent = newStatus;
+								if (newStatus === 'Approved') {
+									badge.style.background = 'rgba(22, 163, 74, 0.12)';
+									badge.style.color = '#16a34a';
+									badge.style.border = '1px solid rgba(22, 163, 74, 0.3)';
+								} else if (newStatus === 'Rejected') {
+									badge.style.background = 'rgba(239, 68, 68, 0.12)';
+									badge.style.color = '#dc2626';
+									badge.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+								}
+							}
+							const quickApproveBtn = row.querySelector('[data-quick-approve]');
+							if (quickApproveBtn && newStatus === 'Approved') {
+								quickApproveBtn.remove();
+							}
+						}
+						if (reviewModal) reviewModal.style.display = 'none';
+						refreshApplicationCounts();
+						alert(`Application ${newStatus.toLowerCase()} successfully.`);
+					} else {
+						alert(json.message || 'Error updating status');
+					}
+				} catch (err) {
+					alert('Network error updating status');
+				}
+			}
+
+			async function refreshApplicationCounts() {
+				try {
+					const res = await fetch('/admin/api/membership-applications', {
+						headers: { 'Accept': 'application/json' }
+					});
+					const json = await res.json();
+					if (json.counts) {
+						document.getElementById('app-count-all').textContent = json.counts.all;
+						document.getElementById('app-count-under-eval').textContent = json.counts.under_evaluation;
+						document.getElementById('app-count-pending').textContent = json.counts.pending;
+						document.getElementById('app-count-approved').textContent = json.counts.approved;
+						const navCount = document.getElementById('nav-applications-count');
+						if (navCount) navCount.textContent = json.counts.all;
+					}
+				} catch (e) {}
+			}
+
+			// Open modal listener on table delegation
+			document.getElementById('applications-table-body')?.addEventListener('click', function(e) {
+				const reviewBtn = e.target.closest('[data-open-review-modal]');
+				if (reviewBtn) {
+					const appId = reviewBtn.getAttribute('data-app-id');
+					if (appId) openApplicationModal(appId);
+					return;
+				}
+				const approveBtn = e.target.closest('[data-quick-approve]');
+				if (approveBtn) {
+					const appId = approveBtn.getAttribute('data-app-id');
+					if (appId && confirm('Approve this membership application?')) {
+						updateApplicationStatus(appId, 'Approved');
+					}
+				}
+			});
+
+			// Modal Approve & Reject action buttons
+			document.getElementById('modal-approve-app-btn')?.addEventListener('click', function() {
+				if (currentReviewAppId) {
+					updateApplicationStatus(currentReviewAppId, 'Approved');
+				}
+			});
+
+			document.getElementById('modal-reject-app-btn')?.addEventListener('click', function() {
+				if (currentReviewAppId && confirm('Reject this membership application?')) {
+					updateApplicationStatus(currentReviewAppId, 'Rejected');
+				}
+			});
+
+			// Filter buttons
+			document.querySelectorAll('[data-app-filter]').forEach(btn => {
+				btn.addEventListener('click', function() {
+					const filter = this.getAttribute('data-app-filter');
+					document.querySelectorAll('[data-app-filter]').forEach(b => {
+						b.className = (b === this) ? 'button button-primary' : 'button button-quiet';
+					});
+					document.querySelectorAll('[data-app-row]').forEach(row => {
+						const rowStatus = row.getAttribute('data-status');
+						if (filter === 'all' || rowStatus === filter) {
+							row.style.display = '';
+						} else {
+							row.style.display = 'none';
+						}
+					});
 				});
 			});
 
