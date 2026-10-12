@@ -913,6 +913,46 @@
 							</div>
 						</div>
 
+						<!-- Conference Handbook Section -->
+						<div class="field-row field-row-wide" style="border-top: 1px solid var(--border); padding-top: 16px; margin-top: 8px;">
+							<span class="field-label" style="font-size: 0.95rem; font-weight: 700; display: block;">Conference Handbook</span>
+						</div>
+
+						<label class="field-row">
+							<span>Handbook Name / Label <small style="font-weight: 400; opacity: 0.6;">(e.g. SPP 2026 Conference Handbook)</small></span>
+							<input type="text" name="handbook_name" placeholder="e.g. SPP 2026 Conference Handbook" />
+						</label>
+
+						<div class="field-row field-row-wide">
+							<span class="field-label">Handbook File</span>
+							<div class="image-upload-zone" id="conference-handbook-zone" data-upload-zone="conference-handbook"
+								tabindex="0" role="button" aria-label="Click or drag a file to upload conference handbook">
+								<div class="image-upload-placeholder" data-upload-placeholder="conference-handbook">
+									<span class="upload-icon" aria-hidden="true" style="display: inline-flex; align-items: center; justify-content: center;">
+										<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+											<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+											<polyline points="14 2 14 8 20 8"></polyline>
+											<line x1="16" y1="13" x2="8" y2="13"></line>
+											<line x1="16" y1="17" x2="8" y2="17"></line>
+											<polyline points="10 9 9 9 8 9"></polyline>
+										</svg>
+									</span>
+									<span>Click to upload handbook document or drag &amp; drop</span>
+									<small>PDF, DOC, DOCX, ZIP &mdash; max 50 MB</small>
+								</div>
+								<input type="file" name="handbookFile" accept=".pdf,.doc,.docx,.zip,application/pdf" class="image-upload-input"
+									data-upload-input="conference-handbook" aria-label="Upload conference handbook file" />
+							</div>
+							<div class="image-upload-actions is-hidden" data-upload-actions="conference-handbook" style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding: 6px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px;">
+								<span class="image-upload-filename" data-upload-filename="conference-handbook" style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 600; color: var(--text);">
+									<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+									<span data-handbook-filename-text></span>
+								</span>
+								<input type="hidden" name="removeHandbook" value="false" data-remove-handbook-flag />
+								<button type="button" class="item-action danger" data-upload-clear="conference-handbook" style="font-size: 0.75rem; padding: 2px 8px;">Remove handbook</button>
+							</div>
+						</div>
+
 						<div class="form-actions">
 							<button type="submit" class="button button-primary" data-conference-submit-primary>Save</button>
 							<button type="submit" class="button button-secondary" data-status-override="draft"

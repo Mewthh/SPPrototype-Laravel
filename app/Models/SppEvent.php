@@ -20,6 +20,9 @@ use Illuminate\Support\Facades\Storage;
  * @property string $description
  * @property string|null $image
  * @property-read string|null $image_url
+ * @property string|null $handbook_name
+ * @property string|null $handbook_file
+ * @property-read string|null $handbook_url
  * @property Carbon|null $event_date
  * @property string|null $dates
  * @property string|null $location
@@ -29,7 +32,7 @@ use Illuminate\Support\Facades\Storage;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['year', 'title', 'slug', 'theme', 'description', 'image', 'event_date', 'dates', 'location', 'summary', 'tabs', 'status'])]
+#[Fillable(['year', 'title', 'slug', 'theme', 'description', 'image', 'handbook_name', 'handbook_file', 'event_date', 'dates', 'location', 'summary', 'tabs', 'status'])]
 class SppEvent extends Model
 {
     /** @use HasFactory<SppEventFactory> */
@@ -42,6 +45,7 @@ class SppEvent extends Model
      */
     protected $appends = [
         'image_url',
+        'handbook_url',
     ];
 
     /**
@@ -100,6 +104,34 @@ class SppEvent extends Model
                 $diskName = is_string($disk) && $disk !== 'local' ? $disk : 'public';
 
                 return Storage::disk($diskName)->url($this->image);
+            }
+        );
+    }
+
+    /**
+     * Get the resolved public URL for the handbook file.
+     *
+     * @return Attribute<string|null, void>
+     */
+    protected function handbookUrl(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                if ($this->handbook_file === null || $this->handbook_file === '') {
+                    return null;
+                }
+
+                if (
+                    str_starts_with($this->handbook_file, 'http://') ||
+                    str_starts_with($this->handbook_file, 'https://')
+                ) {
+                    return $this->handbook_file;
+                }
+
+                $disk = config('filesystems.default', 'public');
+                $diskName = is_string($disk) && $disk !== 'local' ? $disk : 'public';
+
+                return Storage::disk($diskName)->url($this->handbook_file);
             }
         );
     }

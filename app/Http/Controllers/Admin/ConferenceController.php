@@ -57,6 +57,10 @@ class ConferenceController extends Controller
             'status' => ['required', 'in:draft,published,archived'],
             'coverImage' => ['nullable'],
             'image' => ['nullable'],
+            'handbook_name' => ['nullable', 'string', 'max:255'],
+            'handbookFile' => ['nullable', 'file', 'mimes:pdf,doc,docx,zip,epub', 'max:51200'],
+            'handbook_file' => ['nullable'],
+            'removeHandbook' => ['nullable', 'string', 'in:true,false,1,0'],
             'tabs' => ['nullable'],
         ]);
 
@@ -68,6 +72,7 @@ class ConferenceController extends Controller
         $status = $validated['status'];
 
         $imagePath = $this->handleImageUpload($request);
+        $handbookPath = $this->handleHandbookUpload($request);
         $tabs = $this->normalizeTabs($request->input('tabs'));
 
         $conference = SppEvent::create([
@@ -81,6 +86,8 @@ class ConferenceController extends Controller
             'dates' => $validated['dates'] ?? null,
             'tabs' => $tabs,
             'image' => $imagePath,
+            'handbook_name' => $validated['handbook_name'] ?? null,
+            'handbook_file' => $handbookPath,
             'status' => $status,
         ]);
 
@@ -117,6 +124,10 @@ class ConferenceController extends Controller
             'status' => ['required', 'in:draft,published,archived'],
             'coverImage' => ['nullable'],
             'image' => ['nullable'],
+            'handbook_name' => ['nullable', 'string', 'max:255'],
+            'handbookFile' => ['nullable', 'file', 'mimes:pdf,doc,docx,zip,epub', 'max:51200'],
+            'handbook_file' => ['nullable'],
+            'removeHandbook' => ['nullable', 'string', 'in:true,false,1,0'],
             'tabs' => ['nullable'],
         ]);
 
@@ -133,6 +144,7 @@ class ConferenceController extends Controller
         }
 
         $imagePath = $this->handleImageUpload($request, $conference->image);
+        $handbookPath = $this->handleHandbookUpload($request, $conference->handbook_file);
         $tabs = $this->normalizeTabs($request->input('tabs'));
 
         $conference->update([
@@ -146,6 +158,8 @@ class ConferenceController extends Controller
             'dates' => $validated['dates'] ?? null,
             'tabs' => $tabs,
             'image' => $imagePath,
+            'handbook_name' => array_key_exists('handbook_name', $validated) ? $validated['handbook_name'] : $conference->handbook_name,
+            'handbook_file' => $handbookPath,
             'status' => $status,
         ]);
 
@@ -160,11 +174,18 @@ class ConferenceController extends Controller
      */
     public function destroy(SppEvent $conference): JsonResponse
     {
+        $disk = config('filesystems.default', 'public');
+        $diskName = is_string($disk) && $disk !== 'local' ? $disk : 'public';
+
         if ($conference->image) {
-            $disk = config('filesystems.default', 'public');
-            $diskName = is_string($disk) && $disk !== 'local' ? $disk : 'public';
             if (Storage::disk($diskName)->exists($conference->image)) {
                 Storage::disk($diskName)->delete($conference->image);
+            }
+        }
+
+        if ($conference->handbook_file) {
+            if (Storage::disk($diskName)->exists($conference->handbook_file)) {
+                Storage::disk($diskName)->delete($conference->handbook_file);
             }
         }
 
@@ -292,5 +313,37 @@ class ConferenceController extends Controller
         }
 
         return $currentImage;
+    }
+
+    /**
+     * Handle conference handbook upload or removal.
+     */
+    private function handleHandbookUpload(Request $request, ?string $currentFile = null): ?string
+    {
+        $disk = config('filesystems.default', 'public');
+        $diskName = is_string($disk) && $disk !== 'local' ? $disk : 'public';
+
+        if ($request->hasFile('handbookFile') || $request->hasFile('handbook_file')) {
+            $file = $request->file('handbookFile') ?? $request->file('handbook_file');
+            if ($file && $file->isValid()) {
+                if ($currentFile && Storage::disk($diskName)->exists($currentFile)) {
+                    Storage::disk($diskName)->delete($currentFile);
+                }
+
+                $path = $file->store('conferences/handbooks', $diskName);
+
+                return is_string($path) ? $path : null;
+            }
+        }
+
+        if ($request->input('removeHandbook') === 'true' || $request->input('removeHandbook') === '1') {
+            if ($currentFile && Storage::disk($diskName)->exists($currentFile)) {
+                Storage::disk($diskName)->delete($currentFile);
+            }
+
+            return null;
+        }
+
+        return $currentFile;
     }
 }

@@ -2,6 +2,8 @@
 
 use App\Models\SppEvent;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 test('public conference page displays published conference with custom tabs', function () {
     $event = SppEvent::create([
@@ -29,6 +31,126 @@ test('public conference page displays published conference with custom tabs', fu
         ->assertSee('Important Dates')
         ->assertSee('Registration Fees')
         ->assertSee('Abstract submission: July 31, 2027');
+});
+
+test('public conference page displays handbook download button when handbook is attached', function () {
+    $event = SppEvent::create([
+        'year' => '2027',
+        'title' => '45th National Physics Conference',
+        'slug' => 'spp-2027',
+        'description' => 'Detailed description of the 2027 conference.',
+        'status' => 'published',
+        'handbook_name' => 'SPP 2027 Official Handbook',
+        'handbook_file' => 'conferences/handbooks/spp2027-handbook.pdf',
+    ]);
+
+    $response = $this->get('/spp?year=2027');
+
+    $response->assertOk()
+        ->assertSee('SPP 2027 Official Handbook')
+        ->assertSee('conference-handbook-download-btn')
+        ->assertSee(route('spp.handbook.download', $event));
+});
+
+test('public conference page does not display handbook button when handbook is not attached', function () {
+    SppEvent::create([
+        'year' => '2027',
+        'title' => '45th National Physics Conference',
+        'slug' => 'spp-2027',
+        'description' => 'Detailed description of the 2027 conference.',
+        'status' => 'published',
+    ]);
+
+    $response = $this->get('/spp?year=2027');
+
+    $response->assertOk()
+        ->assertDontSee('conference-handbook-download-btn');
+});
+
+test('user can download conference handbook via download route', function () {
+    Storage::fake('public');
+    config(['filesystems.default' => 'public']);
+
+    Storage::disk('public')->put('conferences/handbooks/sample-handbook.pdf', 'PDF content');
+
+    $event = SppEvent::create([
+        'year' => '2027',
+        'title' => '45th National Physics Conference',
+        'slug' => 'spp-2027',
+        'description' => 'Conference description',
+        'status' => 'published',
+        'handbook_name' => 'SPP 2027 Official Handbook',
+        'handbook_file' => 'conferences/handbooks/sample-handbook.pdf',
+    ]);
+
+    $response = $this->get(route('spp.handbook.download', $event));
+
+    $response->assertOk()
+        ->assertDownload('spp-2027-official-handbook.pdf');
+});
+
+test('admin can create conference with handbook via API', function () {
+    Storage::fake('public');
+    config(['filesystems.default' => 'public']);
+
+    $admin = User::factory()->create(['role' => 'admin']);
+    $file = UploadedFile::fake()->create('conference-handbook.pdf', 300, 'application/pdf');
+
+    $response = $this->actingAs($admin)->postJson('/admin/api/conferences', [
+        'year' => '2030',
+        'title' => '48th National Physics Conference',
+        'status' => 'published',
+        'handbook_name' => 'SPP 2030 Conference Handbook',
+        'handbookFile' => $file,
+    ]);
+
+    $response->assertCreated()
+        ->assertJsonPath('data.handbook_name', 'SPP 2030 Conference Handbook');
+
+    $created = SppEvent::where('year', '2030')->first();
+    expect($created->handbook_file)->not->toBeNull();
+    Storage::disk('public')->assertExists($created->handbook_file);
+});
+
+test('admin can update conference handbook and remove handbook via API', function () {
+    Storage::fake('public');
+    config(['filesystems.default' => 'public']);
+
+    $admin = User::factory()->create(['role' => 'admin']);
+    Storage::disk('public')->put('conferences/handbooks/initial.pdf', 'dummy');
+
+    $event = SppEvent::create([
+        'year' => '2031',
+        'title' => '49th National Physics Conference',
+        'slug' => 'spp-2031',
+        'description' => 'Conference description',
+        'status' => 'published',
+        'handbook_name' => 'Initial Handbook',
+        'handbook_file' => 'conferences/handbooks/initial.pdf',
+    ]);
+
+    // Update name
+    $response = $this->actingAs($admin)->putJson("/admin/api/conferences/{$event->id}", [
+        'title' => '49th National Physics Conference',
+        'status' => 'published',
+        'handbook_name' => 'Updated Handbook Title',
+    ]);
+
+    $response->assertOk()
+        ->assertJsonPath('data.handbook_name', 'Updated Handbook Title');
+
+    expect($event->fresh()->handbook_file)->toBe('conferences/handbooks/initial.pdf');
+
+    // Remove handbook
+    $removeResponse = $this->actingAs($admin)->putJson("/admin/api/conferences/{$event->id}", [
+        'title' => '49th National Physics Conference',
+        'status' => 'published',
+        'removeHandbook' => 'true',
+    ]);
+
+    $removeResponse->assertOk();
+    expect($event->fresh()->handbook_file)->toBeNull();
+    Storage::disk('public')->assertMissing('conferences/handbooks/initial.pdf');
 });
 
 test('admin can create conference with custom tabs via API', function () {

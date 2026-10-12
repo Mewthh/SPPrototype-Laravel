@@ -37,6 +37,7 @@ Route::get('news/{slug}', [NewsController::class, 'show'])->name('news.show');
 Route::get('activities', [ActivityController::class, 'index'])->name('activities.index');
 Route::get('activities/{slug}', [ActivityController::class, 'show'])->name('activities.show');
 Route::get('spp', [SppController::class, 'show'])->name('spp.show');
+Route::get('spp/{conference}/handbook', [SppController::class, 'downloadHandbook'])->name('spp.handbook.download');
 Route::get('videos', [VideoController::class, 'index'])->name('videos.index');
 Route::get('membership-faq', [MembershipFaqController::class, 'index'])->name('membership-faq');
 Route::get('membership/articles/{slug}', [MembershipArticleController::class, 'show'])->name('membership-articles.show');

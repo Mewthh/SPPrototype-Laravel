@@ -2547,6 +2547,7 @@ function renderConferences() {
             ${conf.location ? `<span><strong>Location:</strong> ${escapeHtml(conf.location)}</span>` : ''}
             ${conf.dates ? `<span><strong>Dates:</strong> ${escapeHtml(conf.dates)}</span>` : ''}
             ${conf.year ? `<span><strong>Year:</strong> ${escapeHtml(conf.year)}</span>` : ''}
+            ${conf.handbook_file ? `<span><strong>Handbook:</strong> 📄 ${escapeHtml(conf.handbook_name || 'Attached')}</span>` : ''}
           </div>
           ${conf.summary ? `<p class="conference-card-summary">${escapeHtml(conf.summary)}</p>` : ''}
           <div class="conference-card-actions">
@@ -2855,12 +2856,97 @@ async function fetchConferencesFromDatabase() {
       body: item.description || '',
       status: item.status || 'draft',
       coverImage: item.image_url || item.image || null,
+      handbook_name: item.handbook_name || '',
+      handbook_file: item.handbook_file || '',
+      handbook_url: item.handbook_url || null,
       tabs: Array.isArray(item.tabs) ? item.tabs : (typeof item.tabs === 'string' ? (JSON.parse(item.tabs || '[]')) : []),
     }));
     renderConferences();
   } catch (err) {
     console.error('Failed to fetch conferences from database:', err);
   }
+}
+
+function clearConferenceHandbook() {
+  if (conferenceForm?.elements?.handbook_name) {
+    conferenceForm.elements.handbook_name.value = '';
+  }
+  const handbookActions = document.querySelector('[data-upload-actions="conference-handbook"]');
+  const handbookLabel = document.querySelector('[data-handbook-filename-text]');
+  const handbookInput = document.querySelector('[data-upload-input="conference-handbook"]');
+  const removeHandbookFlag = document.querySelector('[data-remove-handbook-flag]');
+  if (removeHandbookFlag) removeHandbookFlag.value = 'false';
+  if (handbookInput) handbookInput.value = '';
+  if (handbookLabel) handbookLabel.textContent = '';
+  handbookActions?.classList.add('is-hidden');
+}
+
+function setupConferenceHandbookUpload() {
+  const zone = document.getElementById('conference-handbook-zone');
+  const input = document.querySelector('[data-upload-input="conference-handbook"]');
+  const actions = document.querySelector('[data-upload-actions="conference-handbook"]');
+  const filenameText = document.querySelector('[data-handbook-filename-text]');
+  const clearBtn = document.querySelector('[data-upload-clear="conference-handbook"]');
+  const removeFlag = document.querySelector('[data-remove-handbook-flag]');
+
+  if (!zone || !input) return;
+
+  zone.addEventListener('click', (e) => {
+    if (e.target === clearBtn || e.target.closest('[data-upload-clear="conference-handbook"]')) return;
+    input.click();
+  });
+
+  zone.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      input.click();
+    }
+  });
+
+  input.addEventListener('change', () => {
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      if (file.size > 50 * 1024 * 1024) {
+        alert('Handbook file is too large. Maximum allowed size is 50 MB.');
+        input.value = '';
+        return;
+      }
+      if (filenameText) filenameText.textContent = `Attached: ${file.name}`;
+      if (removeFlag) removeFlag.value = 'false';
+      actions?.classList.remove('is-hidden');
+
+      const nameInput = conferenceForm?.elements?.handbook_name;
+      if (nameInput && !nameInput.value.trim()) {
+        const baseName = file.name.replace(/\.[^/.]+$/, '');
+        nameInput.value = baseName;
+      }
+    }
+  });
+
+  clearBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    input.value = '';
+    if (filenameText) filenameText.textContent = '';
+    if (removeFlag) removeFlag.value = 'true';
+    actions?.classList.add('is-hidden');
+  });
+
+  zone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    zone.classList.add('is-dragover');
+  });
+  zone.addEventListener('dragleave', () => {
+    zone.classList.remove('is-dragover');
+  });
+  zone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    zone.classList.remove('is-dragover');
+    if (e.dataTransfer?.files?.length) {
+      input.files = e.dataTransfer.files;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  });
 }
 
 async function saveConferenceFromEditor(submitter, options = {}) {
@@ -2924,6 +3010,7 @@ async function saveConferenceFromEditor(submitter, options = {}) {
       state.editingConferenceId = null;
       conferenceForm.reset();
       clearConferenceTabs();
+      clearConferenceHandbook();
       document.querySelector('[data-upload-zone="conference"]')?._clearImage?.();
       updateConferenceEditorUI();
       setConferenceView('list');
@@ -2951,6 +3038,24 @@ function startEditingConference(confId) {
   if (conferenceForm.elements.location) conferenceForm.elements.location.value = conf.location || '';
   if (conferenceForm.elements.dates) conferenceForm.elements.dates.value = conf.dates || '';
   if (conferenceForm.elements.summary) conferenceForm.elements.summary.value = conf.summary || '';
+  if (conferenceForm.elements.handbook_name) conferenceForm.elements.handbook_name.value = conf.handbook_name || '';
+
+  // Setup handbook file state
+  const handbookActions = document.querySelector('[data-upload-actions="conference-handbook"]');
+  const handbookLabel = document.querySelector('[data-handbook-filename-text]');
+  const handbookInput = document.querySelector('[data-upload-input="conference-handbook"]');
+  const removeHandbookFlag = document.querySelector('[data-remove-handbook-flag]');
+  if (removeHandbookFlag) removeHandbookFlag.value = 'false';
+  if (handbookInput) handbookInput.value = '';
+
+  if (conf.handbook_file) {
+    const filename = conf.handbook_name || conf.handbook_file.split('/').pop() || 'Handbook document';
+    if (handbookLabel) handbookLabel.textContent = `Attached: ${filename}`;
+    handbookActions?.classList.remove('is-hidden');
+  } else {
+    if (handbookLabel) handbookLabel.textContent = '';
+    handbookActions?.classList.add('is-hidden');
+  }
 
   // Set body / description
   const bodyEl = conferenceForm.elements.body;
@@ -2982,6 +3087,7 @@ function cancelEditingConference() {
   state.editingConferenceId = null;
   conferenceForm?.reset();
   clearConferenceTabs();
+  clearConferenceHandbook();
   document.querySelector('[data-upload-zone="conference"]')?._clearImage?.();
   updateConferenceEditorUI();
   setConferenceView('list');
@@ -3397,6 +3503,7 @@ checkNewsDraft(null);
 setupImageUpload('news');
 setupImageUpload('activity');
 setupImageUpload('conference');
+setupConferenceHandbookUpload();
 setupImageUpload('hero-banner');
 
 // ─── Hero Banner Settings & Link Handling ─────────────────────────────────────
@@ -3773,6 +3880,7 @@ activityForm?.addEventListener('reset', () => {
 conferenceForm?.addEventListener('reset', () => {
   window.setTimeout(() => {
     document.querySelector('[data-upload-zone="conference"]')?._clearImage?.();
+    clearConferenceHandbook();
   }, 0);
 });
 
