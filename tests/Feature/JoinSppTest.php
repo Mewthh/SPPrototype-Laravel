@@ -5,7 +5,6 @@ test('public users can visit the join spp prototype route without authentication
 
     $response->assertOk()
         ->assertSee('Join SPP Membership')
-        ->assertSee('Membership Type')
         ->assertSee('Recommender')
         ->assertSee('Member Information')
         ->assertSee('Documents')
@@ -20,31 +19,40 @@ test('join spp page displays all required question fields and placeholders', fun
     $response = $this->get(route('join-spp'));
 
     $response->assertOk()
-        // Stage 1
-        ->assertSee('Regular Member')
-        ->assertSee('Associate Member')
-        ->assertSee('Institutional Member')
-        ->assertSee(now()->format('m/d/Y'))
-        ->assertSee('MM/DD/YYYY')
-        // Stage 2
+        // Notices
+        ->assertSee('This is an online version of SPP Membership')
+        ->assertSee('Membership fee is incorporated (waived) into the Conference Fee')
+        // Removal of Membership Category choice
+        ->assertDontSee('Choose Membership Category')
+        // Stage 1: Recommender & Primary Email
+        ->assertSee('Stage 1: Recommender Details')
+        ->assertSee('primary_email')
         ->assertSee('Primary Recommender')
-        ->assertSee('Alternate Recommender')
+        ->assertSee('recommender_surname')
+        ->assertSee('recommender_first_name')
+        ->assertSee('Alternate Recommender (alt1)')
         ->assertSee('recommender_email')
-        // Stage 3
+        // Stage 2: Member Info
+        ->assertSee('Stage 2: Member Information')
         ->assertSee('Current Institutional Affiliation')
-        ->assertSee('Highest Educational Attainment')
+        ->assertSee('Highest completed educational attainment (Degree)')
         ->assertSee('Sample Institution')
-        // Stage 4
+        ->assertDontSee('personal_email')
+        // Stage 3: Documents
+        ->assertSee('Stage 3: Documents')
         ->assertSee('Updated Curriculum Vitae (CV)')
-        ->assertSee('Proof of Employment / Enrollment')
-        // Stage 5
-        ->assertSee('Declaration: Agreed')
-        ->assertSee('Certification: Confirmed')
-        // Stage 6 (Account Setup after Validation)
-        ->assertSee('Stage 6: Account Setup')
+        ->assertSee('Proof of Employment or Enrollment')
+        // Stage 4: Validation / Certification
+        ->assertSee('Stage 4: VALIDATION &amp; CERTIFICATION', false)
+        ->assertSee('VALIDATION')
+        ->assertSee('Declaration: Agree')
+        ->assertSee('CERTIFICATION')
+        ->assertSee('certification_email')
+        // Stage 5: Account Setup
+        ->assertSee('Stage 5: Account Setup')
         ->assertSee('Account Email Address')
-        // Stage 7 (Review & Submit)
-        ->assertSee('Stage 7: Review &amp; Submit', false)
+        // Stage 6: Review & Submit
+        ->assertSee('Stage 6: Review &amp; Submit', false)
         ->assertSee('Portal Account Credentials');
 });
 

@@ -253,7 +253,6 @@
 							<thead>
 								<tr style="background: var(--surface-soft); border-bottom: 1px solid var(--border); font-size: 0.78rem; text-transform: uppercase; color: var(--muted); letter-spacing: 0.04em;">
 									<th style="padding: 12px 16px;">Applicant</th>
-									<th style="padding: 12px 16px;">Membership Type</th>
 									<th style="padding: 12px 16px;">Institution</th>
 									<th style="padding: 12px 16px;">Submitted</th>
 									<th style="padding: 12px 16px;">Status</th>
@@ -267,7 +266,6 @@
 											<div style="font-weight: 700; color: var(--accent-strong);" class="app-row-name">{{ $app->first_name }} {{ $app->surname }}</div>
 											<div style="font-size: 0.78rem; color: var(--muted);" class="app-row-email">{{ $app->account_email }}</div>
 										</td>
-										<td style="padding: 14px 16px;"><span style="background: var(--accent-soft); color: var(--accent-strong); border: 1px solid rgba(27, 122, 76, 0.25); padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 0.78rem;">{{ $app->membership_type }}</span></td>
 										<td style="padding: 14px 16px; color: var(--text);">{{ $app->current_affiliation ?: '—' }}</td>
 										<td style="padding: 14px 16px; color: var(--muted);">{{ $app->created_at?->format('m/d/Y') ?? $app->application_date }}</td>
 										<td style="padding: 14px 16px;">
@@ -856,10 +854,6 @@
 						</h4>
 						<div style="display: flex; flex-direction: column; gap: 12px;">
 							<div>
-								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Membership Type</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-membership-type">—</div>
-							</div>
-							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Application Type</div>
 								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-application-type">New Application</div>
 							</div>
@@ -882,20 +876,24 @@
 						</h4>
 						<div style="display: flex; flex-direction: column; gap: 12px;">
 							<div>
-								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Name</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-recommender-name">—</div>
-							</div>
-							<div>
-								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Email</div>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-recommender-email">—</div>
-							</div>
-							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Suffix</div>
 								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-recommender-suffix">—</div>
 							</div>
 							<div>
-								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Alternate Recommender</div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Primary Recommender Name</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-recommender-name">—</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Primary Recommender Email</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-recommender-email">—</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Alternate Recommender (alt1)</div>
 								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-alt-recommender-name">—</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Alternate Recommender Email</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-alt-recommender-email">—</div>
 							</div>
 						</div>
 					</div>
@@ -920,8 +918,12 @@
 								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-middle-name">—</div>
 							</div>
 							<div>
-								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Mobile Number</div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Mobile Number (Primary)</div>
 								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-mobile-number">—</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Mobile Number (Optional / Viber)</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-alt-mobile-number">—</div>
 							</div>
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Email Address</div>
@@ -1008,12 +1010,16 @@
 						</h4>
 						<div style="display: flex; flex-direction: column; gap: 12px;">
 							<div>
-								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Declaration</div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Declaration (Agreed to By-Laws)</div>
 								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-declaration">Agreed</div>
 							</div>
 							<div>
 								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Certification</div>
 								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-certification">Confirmed</div>
+							</div>
+							<div>
+								<div style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Certification Email</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-certification-email">—</div>
 							</div>
 						</div>
 					</div>
@@ -1272,15 +1278,22 @@
 					document.getElementById('modal-application-date').textContent = app.application_date || '—';
 					document.getElementById('modal-application-status').textContent = app.status || 'Under Evaluation';
 
-					document.getElementById('modal-recommender-name').textContent = app.recommender_name || '—';
+					const recSurname = app.recommender_surname || '';
+					const recFirst = app.recommender_first_name || '';
+					const recFull = (recFirst || recSurname) ? `${recFirst} ${recSurname}`.trim() : (app.recommender_name || '—');
+					document.getElementById('modal-recommender-name').textContent = recFull;
 					document.getElementById('modal-recommender-email').textContent = app.recommender_email || '—';
 					document.getElementById('modal-recommender-suffix').textContent = app.recommender_suffix || '—';
 					document.getElementById('modal-alt-recommender-name').textContent = app.alt_recommender_name || '—';
+					const altRecEmailEl = document.getElementById('modal-alt-recommender-email');
+					if (altRecEmailEl) altRecEmailEl.textContent = app.alt_recommender_email || '—';
 
 					document.getElementById('modal-surname').textContent = app.surname || '—';
 					document.getElementById('modal-first-name').textContent = app.first_name || '—';
 					document.getElementById('modal-middle-name').textContent = app.middle_name || '—';
 					document.getElementById('modal-mobile-number').textContent = app.mobile_number || '—';
+					const altMobEl = document.getElementById('modal-alt-mobile-number');
+					if (altMobEl) altMobEl.textContent = app.alt_mobile_number || '—';
 					document.getElementById('modal-personal-email').textContent = app.account_email || '—';
 
 					document.getElementById('modal-current-affiliation').textContent = app.current_affiliation || '—';
@@ -1295,17 +1308,27 @@
 
 					const cvBadge = document.getElementById('modal-cv-status');
 					if (cvBadge) {
-						cvBadge.textContent = app.cv_path ? 'Uploaded' : 'None';
-						cvBadge.style.color = app.cv_path ? 'var(--success)' : 'var(--muted)';
+						if (app.cv_path) {
+							cvBadge.innerHTML = `<a href="/storage/${app.cv_path}" target="_blank" style="color: var(--success); text-decoration: underline;">View Uploaded CV</a>`;
+						} else {
+							cvBadge.textContent = 'None';
+							cvBadge.style.color = 'var(--muted)';
+						}
 					}
 					const proofBadge = document.getElementById('modal-proof-status');
 					if (proofBadge) {
-						proofBadge.textContent = app.proof_path ? 'Uploaded' : 'None';
-						proofBadge.style.color = app.proof_path ? 'var(--success)' : 'var(--muted)';
+						if (app.proof_path) {
+							proofBadge.innerHTML = `<a href="/storage/${app.proof_path}" target="_blank" style="color: var(--success); text-decoration: underline;">View Uploaded Proof</a>`;
+						} else {
+							proofBadge.textContent = 'None';
+							proofBadge.style.color = 'var(--muted)';
+						}
 					}
 
 					document.getElementById('modal-declaration').textContent = app.declaration_agree ? 'Agreed' : 'No';
 					document.getElementById('modal-certification').textContent = app.certification_confirm ? 'Confirmed' : 'No';
+					const certEmailEl = document.getElementById('modal-certification-email');
+					if (certEmailEl) certEmailEl.textContent = app.certification_email || (app.certification_confirm ? 'Confirmed' : '—');
 				} catch (err) {
 					console.error('Error fetching application details:', err);
 				}

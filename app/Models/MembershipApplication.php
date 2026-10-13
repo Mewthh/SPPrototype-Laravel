@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $application_type
  * @property string $application_date
  * @property string|null $recommender_name
+ * @property string|null $recommender_surname
+ * @property string|null $recommender_first_name
  * @property string|null $recommender_email
  * @property string|null $recommender_suffix
  * @property string|null $alt_recommender_name
@@ -28,6 +30,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $middle_name
  * @property string|null $suffix
  * @property string|null $mobile_number
+ * @property string|null $alt_mobile_number
  * @property string|null $birthdate
  * @property string|null $sex
  * @property string|null $civil_status
@@ -45,6 +48,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $proof_path
  * @property bool $declaration_agree
  * @property bool $certification_confirm
+ * @property string|null $certification_email
  * @property string $account_email
  * @property string $status
  * @property string|null $remarks
@@ -59,6 +63,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'application_type',
     'application_date',
     'recommender_name',
+    'recommender_surname',
+    'recommender_first_name',
     'recommender_email',
     'recommender_suffix',
     'alt_recommender_name',
@@ -69,6 +75,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'middle_name',
     'suffix',
     'mobile_number',
+    'alt_mobile_number',
     'birthdate',
     'sex',
     'civil_status',
@@ -86,6 +93,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'proof_path',
     'declaration_agree',
     'certification_confirm',
+    'certification_email',
     'account_email',
     'status',
     'remarks',

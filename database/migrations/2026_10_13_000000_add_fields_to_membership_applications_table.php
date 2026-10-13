@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('membership_applications', function (Blueprint $table) {
+            $table->string('recommender_surname')->nullable()->after('recommender_name');
+            $table->string('recommender_first_name')->nullable()->after('recommender_surname');
+            $table->string('alt_mobile_number')->nullable()->after('mobile_number');
+            $table->string('certification_email')->nullable()->after('certification_confirm');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('membership_applications', function (Blueprint $table) {
+            $table->dropColumn([
+                'recommender_surname',
+                'recommender_first_name',
+                'alt_mobile_number',
+                'certification_email',
+            ]);
+        });
+    }
+};
