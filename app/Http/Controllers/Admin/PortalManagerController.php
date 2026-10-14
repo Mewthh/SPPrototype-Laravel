@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Announcement;
 use App\Models\MembershipApplication;
+use App\Models\MembershipInquiry;
 use Illuminate\View\View;
 
 class PortalManagerController extends Controller
 {
     /**
-     * Display the portal manager view with announcement and application data.
+     * Display the portal manager view with announcement, application, and inquiry data.
      */
     public function index(): View
     {
@@ -38,12 +39,24 @@ class PortalManagerController extends Controller
             ->latest('updated_at')
             ->get();
 
+        $inquiries = MembershipInquiry::query()->latest('created_at')->latest('id')->get();
+
+        $inquiryCounts = [
+            'all' => $inquiries->count(),
+            'submitted' => $inquiries->where('status', 'Submitted')->count(),
+            'under_review' => $inquiries->where('status', 'Under Review')->count(),
+            'responded' => $inquiries->where('status', 'Responded')->count(),
+            'closed' => $inquiries->where('status', 'Closed')->count(),
+        ];
+
         return view('admin.portal-manager', compact(
             'announcements',
             'announcementCounts',
             'applications',
             'applicationCounts',
-            'approvedMembers'
+            'approvedMembers',
+            'inquiries',
+            'inquiryCounts'
         ));
     }
 }

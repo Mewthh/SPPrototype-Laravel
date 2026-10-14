@@ -1,3 +1,12 @@
+@php
+	/** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\MembershipApplication> $applications */
+	/** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\MembershipApplication> $approvedMembers */
+	/** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\MembershipInquiry> $inquiries */
+	/** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\Announcement> $announcements */
+	/** @var array<string, int> $applicationCounts */
+	/** @var array<string, int> $inquiryCounts */
+	/** @var array<string, int> $announcementCounts */
+@endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="light">
 
@@ -137,7 +146,7 @@
 
 			<nav class="dashboard-nav" aria-label="Portal Admin sections">
 				<div class="nav-section-label">Portal Management</div>
-				
+
 				<a href="#applications" class="nav-item active" data-portal-tab="applications">
 					<span class="nav-icon" aria-hidden="true">
 						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -168,7 +177,7 @@
 						</svg>
 					</span>
 					<span class="nav-text">Inquiries</span>
-					<span class="nav-badge">6</span>
+					<span class="nav-badge" id="nav-inquiries-count">{{ $inquiryCounts['all'] ?? 0 }}</span>
 				</a>
 
 				<a href="#broadcasts" class="nav-item" data-portal-tab="broadcasts">
@@ -228,9 +237,6 @@
 					<p class="panel-kicker" style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--muted); letter-spacing: 0.05em; margin: 0 0 4px 0;">Membership System &amp; Self-Service Administration</p>
 					<h1 style="font-size: 1.75rem; font-weight: 900; color: var(--accent-strong); margin: 0;">Member Portal Management</h1>
 				</div>
-				<div style="display: flex; gap: 10px; align-items: center;">
-					<span style="font-size: 0.75rem; background: rgba(27, 122, 76, 0.12); color: #1b7a4c; border: 1px solid rgba(27, 122, 76, 0.3); padding: 4px 10px; border-radius: var(--radius-pill); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">Dedicated Admin View</span>
-				</div>
 			</div>
 
 			<!-- Main Content Panels Container -->
@@ -260,7 +266,8 @@
 								</tr>
 							</thead>
 							<tbody id="applications-table-body">
-								@forelse ($applications ?? [] as $app)
+								@forelse ($applications as $app)
+									@php /** @var \App\Models\MembershipApplication $app */ @endphp
 									<tr style="border-bottom: 1px solid var(--border);" data-app-row data-app-id="{{ $app->id }}" data-status="{{ $app->status }}">
 										<td style="padding: 14px 16px;">
 											<div style="font-weight: 700; color: var(--accent-strong);" class="app-row-name">{{ $app->first_name }} {{ $app->surname }}</div>
@@ -288,7 +295,7 @@
 									</tr>
 								@empty
 									<tr id="no-applications-row">
-										<td colspan="6" style="padding: 32px 16px; text-align: center; color: var(--muted); font-size: 0.9rem;">
+										<td colspan="5" style="padding: 32px 16px; text-align: center; color: var(--muted); font-size: 0.9rem;">
 											No membership applications found.
 										</td>
 									</tr>
@@ -328,7 +335,8 @@
 								</tr>
 							</thead>
 							<tbody id="roster-table-body">
-								@forelse ($approvedMembers ?? [] as $member)
+								@forelse ($approvedMembers as $member)
+									@php /** @var \App\Models\MembershipApplication $member */ @endphp
 									<tr style="border-bottom: 1px solid var(--border);" data-member-tier="{{ strtolower(str_replace(' Member', '', $member->membership_type)) }}">
 										<td style="padding: 14px 16px; font-weight: 800; font-family: monospace; color: var(--accent-strong);">SPP-MEM-{{ str_pad($member->id, 4, '0', STR_PAD_LEFT) }}</td>
 										<td style="padding: 14px 16px;">
@@ -365,11 +373,11 @@
 
 						<!-- Status Filter Tabs -->
 						<div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-							<button type="button" class="button button-primary" style="font-weight: 700; font-size: 0.8rem;" data-inquiry-status-filter="all" aria-pressed="true">All (6)</button>
-							<button type="button" class="button button-quiet" style="font-weight: 700; font-size: 0.8rem;" data-inquiry-status-filter="Submitted" aria-pressed="false">Submitted (1)</button>
-							<button type="button" class="button button-quiet" style="font-weight: 700; font-size: 0.8rem;" data-inquiry-status-filter="Under Review" aria-pressed="false">Under Review (2)</button>
-							<button type="button" class="button button-quiet" style="font-weight: 700; font-size: 0.8rem;" data-inquiry-status-filter="Responded" aria-pressed="false">Responded (2)</button>
-							<button type="button" class="button button-quiet" style="font-weight: 700; font-size: 0.8rem;" data-inquiry-status-filter="Closed" aria-pressed="false">Closed (1)</button>
+							<button type="button" class="button button-primary" style="font-weight: 700; font-size: 0.8rem;" data-inquiry-status-filter="all" aria-pressed="true">All (<span id="inquiry-count-all">{{ $inquiryCounts['all'] ?? 0 }}</span>)</button>
+							<button type="button" class="button button-quiet" style="font-weight: 700; font-size: 0.8rem;" data-inquiry-status-filter="Submitted" aria-pressed="false">Submitted (<span id="inquiry-count-submitted">{{ $inquiryCounts['submitted'] ?? 0 }}</span>)</button>
+							<button type="button" class="button button-quiet" style="font-weight: 700; font-size: 0.8rem;" data-inquiry-status-filter="Under Review" aria-pressed="false">Under Review (<span id="inquiry-count-under-review">{{ $inquiryCounts['under_review'] ?? 0 }}</span>)</button>
+							<button type="button" class="button button-quiet" style="font-weight: 700; font-size: 0.8rem;" data-inquiry-status-filter="Responded" aria-pressed="false">Responded (<span id="inquiry-count-responded">{{ $inquiryCounts['responded'] ?? 0 }}</span>)</button>
+							<button type="button" class="button button-quiet" style="font-weight: 700; font-size: 0.8rem;" data-inquiry-status-filter="Closed" aria-pressed="false">Closed (<span id="inquiry-count-closed">{{ $inquiryCounts['closed'] ?? 0 }}</span>)</button>
 						</div>
 					</div>
 
@@ -420,246 +428,84 @@
 								</tr>
 							</thead>
 							<tbody id="inquiries-table-body">
-								<!-- Ticket 1 -->
-								<tr style="border-bottom: 1px solid var(--border);"
-									data-inquiry-row
-									data-ticket-id="INQ-1042"
-									data-inquirer-name="Dr. Aris C. Morales"
-									data-inquirer-email="a.morales@nip.upd.edu.ph"
-									data-inquirer-institution="National Institute of Physics, UP Diliman"
-									data-inquirer-tier="Regular Member"
-									data-application-type="Status Upgrade"
-									data-query-type="Membership Status"
-									data-last-known-membership="Regular member"
-									data-last-attendance-year="2022"
-									data-last-attendance-place="National Institute of Physics, UP Diliman"
-									data-date="10/01/2025"
-									data-status="Submitted"
-									data-priority="High"
-									data-remarks="Verifying official membership number and regular membership standing for university faculty tenure and promotion evaluation."
-									data-response="">
-									<td style="padding: 14px 16px;">
-										<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-											<span style="font-weight: 700; color: var(--accent-strong);">Dr. Aris C. Morales</span>
-											<span class="inquiry-cat-tag" style="background: rgba(22, 163, 74, 0.07); color: #15803d; border: 1px solid rgba(22, 163, 74, 0.2); padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 600;">Member</span>
-										</div>
-										<div style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">a.morales@nip.upd.edu.ph</div>
-									</td>
-									<td style="padding: 14px 16px; color: var(--text);">
-										Membership Status
-									</td>
-									<td style="padding: 14px 16px; color: var(--muted);">
-										10/01/2025
-									</td>
-									<td style="padding: 14px 16px;">
-										<span class="inquiry-status-tag" style="background: transparent; color: var(--text); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">Submitted</span>
-									</td>
-									<td style="padding: 14px 16px; text-align: right;">
-										<button type="button" class="button button-primary" style="padding: 5px 12px; font-size: 0.78rem;" data-open-inquiry-modal>View</button>
-									</td>
-								</tr>
-
-								<!-- Ticket 2 -->
-								<tr style="border-bottom: 1px solid var(--border);"
-									data-inquiry-row
-									data-ticket-id="INQ-1041"
-									data-inquirer-name="Maria Elena Santos"
-									data-inquirer-email="mesantos@admu.edu.ph"
-									data-inquirer-institution="Department of Physics, Ateneo de Manila University"
-									data-inquirer-tier="Associate Member"
-									data-application-type="Membership Renewal"
-									data-query-type="Membership Status"
-									data-last-known-membership="Associate member"
-									data-last-attendance-year="2023"
-									data-last-attendance-place="Tagbilaran City, Bohol"
-									data-date="09/29/2025"
-									data-status="Under Review"
-									data-priority="Normal"
-									data-remarks="I would like to inquire about the renewal procedure for 2026 Associate Membership and if early renewals qualify for the annual conference registration discount."
-									data-response="Secretariat reviewing renewal schedule. Advised member that early renewal window opens Nov 1 with early-bird conference rates.">
-									<td style="padding: 14px 16px;">
-										<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-											<span style="font-weight: 700; color: var(--accent-strong);">Maria Elena Santos</span>
-											<span class="inquiry-cat-tag" style="background: rgba(22, 163, 74, 0.07); color: #15803d; border: 1px solid rgba(22, 163, 74, 0.2); padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 600;">Member</span>
-										</div>
-										<div style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">mesantos@admu.edu.ph</div>
-									</td>
-									<td style="padding: 14px 16px; color: var(--text);">
-										Membership Status
-									</td>
-									<td style="padding: 14px 16px; color: var(--muted);">
-										09/29/2025
-									</td>
-									<td style="padding: 14px 16px;">
-										<span class="inquiry-status-tag" style="background: transparent; color: var(--text); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">Under Review</span>
-									</td>
-									<td style="padding: 14px 16px; text-align: right;">
-										<button type="button" class="button button-primary" style="padding: 5px 12px; font-size: 0.78rem;" data-open-inquiry-modal>View</button>
-									</td>
-								</tr>
-
-								<!-- Ticket 3 -->
-								<tr style="border-bottom: 1px solid var(--border);"
-									data-inquiry-row
-									data-ticket-id="INQ-1040"
-									data-inquirer-name="Prof. Raymond C. Cruz"
-									data-inquirer-email="raymond.cruz@dlsu.edu.ph"
-									data-inquirer-institution="De La Salle University - Manila"
-									data-inquirer-tier="Regular Member"
-									data-application-type="New Application"
-									data-query-type="Request for Certificate of Membership"
-									data-oath-year="2018"
-									data-oath-venue="Ateneo de Davao University, Davao City"
-									data-known-membership-type="Regular"
-									data-last-attendance-year="2024"
-									data-last-attendance-place="Iloilo City"
-									data-purpose="Faculty promotion dossier and CHED research grant submission at DLSU."
-									data-certificate-attached="SPP_Cert_2025_RaymondCruz.pdf"
-									data-certificate-size="245 KB &bull; Certified Copy"
-									data-date="09/26/2025"
-									data-status="Under Review"
-									data-priority="High"
-									data-remarks="Requesting an official digital Certificate of Good Standing and Active Membership for faculty promotion and research grant dossier submission at DLSU."
-									data-response="Certificate generated and queued for officer digital signature.">
-									<td style="padding: 14px 16px;">
-										<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-											<span style="font-weight: 700; color: var(--accent-strong);">Prof. Raymond C. Cruz</span>
-											<span class="inquiry-cat-tag" style="background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 600;">Applicant</span>
-										</div>
-										<div style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">raymond.cruz@dlsu.edu.ph</div>
-									</td>
-									<td style="padding: 14px 16px; color: var(--text);">
-										<div>Request for Certificate of Membership</div>
-										<div class="row-cert-badge" style="margin-top: 4px; font-size: 0.72rem; color: #16a34a; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; background: rgba(22, 163, 74, 0.08); padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(22, 163, 74, 0.2);">
-											<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-											Certificate Attached
-										</div>
-									</td>
-									<td style="padding: 14px 16px; color: var(--muted);">
-										09/26/2025
-									</td>
-									<td style="padding: 14px 16px;">
-										<span class="inquiry-status-tag" style="background: transparent; color: var(--text); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">Under Review</span>
-									</td>
-									<td style="padding: 14px 16px; text-align: right;">
-										<button type="button" class="button button-primary" style="padding: 5px 12px; font-size: 0.78rem;" data-open-inquiry-modal>View</button>
-									</td>
-								</tr>
-
-								<!-- Ticket 4 -->
-								<tr style="border-bottom: 1px solid var(--border);"
-									data-inquiry-row
-									data-ticket-id="INQ-1039"
-									data-inquirer-name="Engr. Gabriel Tan"
-									data-inquirer-email="gabriel.tan@ust.edu.ph"
-									data-inquirer-institution="University of Santo Tomas"
-									data-inquirer-tier="Associate Member"
-									data-application-type="New Application"
-									data-query-type="Membership Status"
-									data-last-known-membership="Associate member"
-									data-last-attendance-year="2023"
-									data-last-attendance-place="Online"
-									data-date="09/22/2025"
-									data-status="Responded"
-									data-priority="Normal"
-									data-remarks="Verifying if previous 2023 associate attendance qualifies towards regular membership transition requirements."
-									data-response="Dear Engr. Tan, The secretariat confirms your 2023 associate participation is recorded and eligible for regular membership upgrade.">
-									<td style="padding: 14px 16px;">
-										<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-											<span style="font-weight: 700; color: var(--accent-strong);">Engr. Gabriel Tan</span>
-											<span class="inquiry-cat-tag" style="background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 600;">Applicant</span>
-										</div>
-										<div style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">gabriel.tan@ust.edu.ph</div>
-									</td>
-									<td style="padding: 14px 16px; color: var(--text);">
-										Membership Status
-									</td>
-									<td style="padding: 14px 16px; color: var(--muted);">
-										09/22/2025
-									</td>
-									<td style="padding: 14px 16px;">
-										<span class="inquiry-status-tag" style="background: rgba(22, 163, 74, 0.07); color: #15803d; border: 1px solid rgba(22, 163, 74, 0.18); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">Responded</span>
-									</td>
-									<td style="padding: 14px 16px; text-align: right;">
-										<button type="button" class="button button-primary" style="padding: 5px 12px; font-size: 0.78rem;" data-open-inquiry-modal>View</button>
-									</td>
-								</tr>
-
-								<!-- Ticket 5 -->
-								<tr style="border-bottom: 1px solid var(--border);"
-									data-inquiry-row
-									data-ticket-id="INQ-1038"
-									data-inquirer-name="Dr. Patricia Gomez"
-									data-inquirer-email="pgomez@clsu.edu.ph"
-									data-inquirer-institution="Central Luzon State University"
-									data-inquirer-tier="Institutional Member"
-									data-application-type="Membership Renewal"
-									data-query-type="Other"
-									data-keywords="fee, institutional roster"
-									data-date="09/18/2025"
-									data-status="Responded"
-									data-priority="Normal"
-									data-remarks="We need to update our institutional primary representative contact and add two junior faculty researchers to our institutional membership roster."
-									data-response="Representative update form sent. Roster additions processed under Institutional tier limit.">
-									<td style="padding: 14px 16px;">
-										<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-											<span style="font-weight: 700; color: var(--accent-strong);">Dr. Patricia Gomez</span>
-											<span class="inquiry-cat-tag" style="background: rgba(22, 163, 74, 0.07); color: #15803d; border: 1px solid rgba(22, 163, 74, 0.2); padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 600;">Member</span>
-										</div>
-										<div style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">pgomez@clsu.edu.ph</div>
-									</td>
-									<td style="padding: 14px 16px; color: var(--text);">
-										Other
-									</td>
-									<td style="padding: 14px 16px; color: var(--muted);">
-										09/18/2025
-									</td>
-									<td style="padding: 14px 16px;">
-										<span class="inquiry-status-tag" style="background: rgba(22, 163, 74, 0.07); color: #15803d; border: 1px solid rgba(22, 163, 74, 0.18); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">Responded</span>
-									</td>
-									<td style="padding: 14px 16px; text-align: right;">
-										<button type="button" class="button button-primary" style="padding: 5px 12px; font-size: 0.78rem;" data-open-inquiry-modal>View</button>
-									</td>
-								</tr>
-
-								<!-- Ticket 6 -->
-								<tr style="border-bottom: 1px solid var(--border);"
-									data-inquiry-row
-									data-ticket-id="INQ-1035"
-									data-inquirer-name="Kevin Lee"
-									data-inquirer-email="klee@mapua.edu.ph"
-									data-inquirer-institution="Mapúa University"
-									data-inquirer-tier="Associate Member"
-									data-application-type="New Application"
-									data-query-type="Other"
-									data-keywords="password reset, 2FA recovery"
-									data-date="09/10/2025"
-									data-status="Closed"
-									data-priority="Low"
-									data-remarks="Inquiry regarding password reset link and 2FA recovery code for the portal account. Resolved via automated link."
-									data-response="Automated one-time authentication code sent to registered university email. User successfully logged into the Membership Portal. Ticket closed.">
-									<td style="padding: 14px 16px;">
-										<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-											<span style="font-weight: 700; color: var(--accent-strong);">Kevin Lee</span>
-											<span class="inquiry-cat-tag" style="background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 600;">Applicant</span>
-										</div>
-										<div style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">klee@mapua.edu.ph</div>
-									</td>
-									<td style="padding: 14px 16px; color: var(--text);">
-										Other
-									</td>
-									<td style="padding: 14px 16px; color: var(--muted);">
-										09/10/2025
-									</td>
-									<td style="padding: 14px 16px;">
-										<span class="inquiry-status-tag" style="background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">Closed</span>
-									</td>
-									<td style="padding: 14px 16px; text-align: right;">
-										<button type="button" class="button button-primary" style="padding: 5px 12px; font-size: 0.78rem;" data-open-inquiry-modal>View</button>
-									</td>
-								</tr>
+								@forelse ($inquiries as $inq)
+									@php /** @var \App\Models\MembershipInquiry $inq */ @endphp
+									<tr style="border-bottom: 1px solid var(--border);"
+										data-inquiry-row
+										data-inquiry-id="{{ $inq->id }}"
+										data-ticket-id="{{ $inq->ticket_id }}"
+										data-inquirer-name="{{ $inq->inquirer_name }}"
+										data-inquirer-email="{{ $inq->inquirer_email }}"
+										data-inquirer-institution="{{ $inq->inquirer_institution }}"
+										data-inquirer-tier="{{ $inq->inquirer_tier ?? 'Regular Member' }}"
+										data-application-type="{{ $inq->application_type ?? 'New Application' }}"
+										data-query-type="{{ $inq->query_type }}"
+										data-last-known-membership="{{ $inq->last_known_membership }}"
+										data-last-attendance-year="{{ $inq->last_attendance_year }}"
+										data-last-attendance-place="{{ $inq->last_attendance_place }}"
+										data-oath-year="{{ $inq->oath_year }}"
+										data-oath-venue="{{ $inq->oath_venue }}"
+										data-known-membership-type="{{ $inq->known_membership_type }}"
+										data-purpose="{{ $inq->purpose }}"
+										data-keywords="{{ $inq->keywords }}"
+										data-certificate-attached="{{ $inq->certificate_attached }}"
+										data-certificate-size="{{ $inq->certificate_size }}"
+										data-date="{{ $inq->created_at?->format('m/d/Y') ?? now()->format('m/d/Y') }}"
+										data-status="{{ $inq->status }}"
+										data-priority="{{ $inq->priority ?? 'Normal' }}"
+										data-remarks="{{ $inq->remarks }}"
+										data-response="{{ $inq->admin_response }}">
+										<td style="padding: 14px 16px;">
+											<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+												<span style="font-weight: 700; color: var(--accent-strong);">{{ $inq->inquirer_name }}</span>
+												@if ($inq->application_type === 'New Application')
+													<span class="inquiry-cat-tag" style="background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 600;">Applicant</span>
+												@else
+													<span class="inquiry-cat-tag" style="background: rgba(22, 163, 74, 0.07); color: #15803d; border: 1px solid rgba(22, 163, 74, 0.2); padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 600;">Member</span>
+												@endif
+											</div>
+											<div style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">{{ $inq->inquirer_email }}</div>
+										</td>
+										<td style="padding: 14px 16px; color: var(--text);">
+											<div>{{ $inq->query_type }}</div>
+											@if ($inq->certificate_attached)
+												<div class="row-cert-badge" style="margin-top: 4px; font-size: 0.72rem; color: #16a34a; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; background: rgba(22, 163, 74, 0.08); padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(22, 163, 74, 0.2);">
+													<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+													Certificate Attached
+												</div>
+											@endif
+										</td>
+										<td style="padding: 14px 16px; color: var(--muted);">
+											{{ $inq->created_at?->format('m/d/Y') ?? now()->format('m/d/Y') }}
+										</td>
+										<td style="padding: 14px 16px;">
+											@if ($inq->status === 'Responded')
+												<span class="inquiry-status-tag" style="background: rgba(22, 163, 74, 0.07); color: #15803d; border: 1px solid rgba(22, 163, 74, 0.18); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">{{ $inq->status }}</span>
+											@elseif ($inq->status === 'Closed')
+												<span class="inquiry-status-tag" style="background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">{{ $inq->status }}</span>
+											@else
+												<span class="inquiry-status-tag" style="background: transparent; color: var(--text); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">{{ $inq->status }}</span>
+											@endif
+										</td>
+										<td style="padding: 14px 16px; text-align: right;">
+											<button type="button" class="button button-primary" style="padding: 5px 12px; font-size: 0.78rem;" data-open-inquiry-modal>View</button>
+										</td>
+									</tr>
+								@empty
+									<tr id="inquiries-no-records">
+										<td colspan="5" style="padding: 32px 16px; text-align: center; color: var(--muted); font-size: 0.9rem;">
+											No inquiries found.
+										</td>
+									</tr>
+								@endforelse
 							</tbody>
 						</table>
+					</div>
+
+					<!-- Inquiry History Pagination (Max 3, Show more / Show less) -->
+					<div id="admin-inquiry-toggle-wrap" style="display: none; justify-content: center; gap: 8px; margin-top: 14px;">
+						<button type="button" class="button button-secondary" id="admin-inquiry-show-more" style="font-size: 0.82rem; font-weight: 700; padding: 6px 18px;">Show more</button>
+						<button type="button" class="button button-secondary" id="admin-inquiry-show-less" style="display: none; font-size: 0.82rem; font-weight: 700; padding: 6px 18px;">Show less</button>
 					</div>
 
 					<!-- Empty State (when search/filters return 0) -->
@@ -755,7 +601,8 @@
 
 							<!-- Summarized Posts List -->
 							<div class="queue-list" data-announce-list>
-								@forelse ($announcements ?? [] as $index => $post)
+								@forelse ($announcements as $index => $post)
+									@php /** @var \App\Models\Announcement $post */ @endphp
 									<article class="queue-row" data-announce-row data-id="{{ $post->id }}" data-status="{{ $post->status }}" style="{{ $index >= 5 ? 'display: none;' : '' }}">
 										<div class="queue-cell queue-title">
 											<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
@@ -1044,15 +891,15 @@
 				<div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
 					<div>
 						<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-							<span style="font-size: 0.76rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;" id="modal-ticket-id">Ticket #INQ-1040</span>
-							<span id="modal-inquirer-category-badge" style="background: rgba(22, 163, 74, 0.07); color: #15803d; border: 1px solid rgba(22, 163, 74, 0.2); padding: 1px 7px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">Member</span>
-							<span id="modal-query-badge" style="background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 2px 9px; border-radius: 4px; font-size: 0.73rem; font-weight: 600;">Request for Certificate of Membership</span>
+							<span style="font-size: 0.76rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;" id="modal-ticket-id">Ticket #</span>
+							<span id="modal-inquirer-category-badge" style="background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 1px 7px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">—</span>
+							<span id="modal-query-badge" style="background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 2px 9px; border-radius: 4px; font-size: 0.73rem; font-weight: 600;">—</span>
 						</div>
-						<h2 style="font-size: 1.35rem; font-weight: 900; color: var(--accent-strong); margin: 4px 0 0 0;" id="modal-inquirer-name">Prof. Raymond C. Cruz</h2>
+						<h2 style="font-size: 1.35rem; font-weight: 900; color: var(--accent-strong); margin: 4px 0 0 0;" id="modal-inquirer-name">—</h2>
 					</div>
 				</div>
 				<div style="display: flex; align-items: center; gap: 12px;">
-					<span id="modal-status-badge" style="background: transparent; color: var(--text); border: 1px solid var(--border); padding: 4px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Under Review</span>
+					<span id="modal-status-badge" style="background: transparent; color: var(--text); border: 1px solid var(--border); padding: 4px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">—</span>
 					<button type="button" data-close-inquiry-modal style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; font-size: 1.3rem; color: var(--muted); cursor: pointer; padding: 4px 10px; line-height: 1; transition: color 0.15s ease;" aria-label="Close modal">&times;</button>
 				</div>
 			</div>
@@ -1088,21 +935,21 @@
 						<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
 							<div>
 								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Inquirer Full Name</span>
-								<div style="font-size: 0.92rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-card-inquirer-name">Prof. Raymond C. Cruz</div>
+								<div style="font-size: 0.92rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-card-inquirer-name">—</div>
 							</div>
 							<div>
 								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Classification</span>
 								<div style="margin-top: 2px;" id="modal-inquirer-class-wrap">
-									<span id="modal-inquirer-class-type" style="background: rgba(22, 163, 74, 0.12); color: #16a34a; border: 1px solid rgba(22, 163, 74, 0.25); padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 0.76rem;">Existing Member</span>
+									<span id="modal-inquirer-class-type" style="background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 0.76rem;">—</span>
 								</div>
 							</div>
 							<div>
 								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Registered Email</span>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px; word-break: break-all;" id="modal-inquirer-email">raymond.cruz@dlsu.edu.ph</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px; word-break: break-all;" id="modal-inquirer-email">—</div>
 							</div>
 							<div>
 								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Current Affiliation / Institution</span>
-								<div style="font-size: 0.84rem; font-weight: 700; color: var(--text); margin-top: 2px;" id="modal-inquirer-institution">De La Salle University - Manila</div>
+								<div style="font-size: 0.84rem; font-weight: 700; color: var(--text); margin-top: 2px;" id="modal-inquirer-institution">—</div>
 							</div>
 						</div>
 					</div>
@@ -1120,16 +967,16 @@
 							<div>
 								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Membership Standing</span>
 								<div style="margin-top: 3px;">
-									<span style="background: var(--accent-soft); color: var(--accent-strong); border: 1px solid rgba(27, 122, 76, 0.25); padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 0.76rem;" id="modal-inquirer-tier">Regular Member</span>
+									<span style="background: var(--accent-soft); color: var(--accent-strong); border: 1px solid rgba(27, 122, 76, 0.25); padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 0.76rem;" id="modal-inquirer-tier">—</span>
 								</div>
 							</div>
 							<div>
 								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Application / Track Type</span>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 3px;" id="modal-application-type">New Application</div>
+								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 3px;" id="modal-application-type">—</div>
 							</div>
 							<div>
 								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Submission Date</span>
-								<div style="font-size: 0.84rem; font-weight: 700; color: var(--text); margin-top: 2px;" id="modal-submitted-date">09/26/2025</div>
+								<div style="font-size: 0.84rem; font-weight: 700; color: var(--text); margin-top: 2px;" id="modal-submitted-date">—</div>
 							</div>
 						</div>
 					</div>
@@ -1141,7 +988,7 @@
 								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: #2563eb;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
 								<span style="font-size: 0.76rem; font-weight: 800; text-transform: uppercase; color: var(--accent-strong); letter-spacing: 0.04em;">Category 3: Questionnaire &amp; Historical Records</span>
 							</div>
-							<span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-strong);" id="modal-query-type-label">Request for Certificate of Membership</span>
+							<span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-strong);" id="modal-query-type-label">—</span>
 						</div>
 
 						<!-- Dynamic questionnaire items injected via JS -->
@@ -1160,7 +1007,7 @@
 							<span style="font-size: 0.7rem; font-weight: 800; background: var(--surface); color: var(--muted); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px;">Statement</span>
 						</div>
 						<div style="background: var(--surface); border-left: 3px solid var(--accent); padding: 14px 16px; border-radius: var(--radius-sm); font-size: 0.9rem; color: var(--text); line-height: 1.6;" id="modal-inquiry-remarks">
-							Requesting an official digital Certificate of Good Standing and Active Membership...
+							—
 						</div>
 					</div>
 
@@ -1191,8 +1038,8 @@
 						</div>
 						<div id="modal-cert-attached-state" style="display: none; background: rgba(22, 163, 74, 0.06); border: 1px solid rgba(22, 163, 74, 0.3); border-radius: var(--radius-sm); padding: 7px 12px; align-items: center; gap: 10px;">
 							<div style="min-width: 0;">
-								<div id="modal-cert-filename" style="font-size: 0.82rem; font-weight: 800; color: var(--accent-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">SPP_Cert_2025_RaymondCruz.pdf</div>
-								<div id="modal-cert-filesize" style="font-size: 0.72rem; color: var(--muted);">245 KB &bull; Certified Copy</div>
+								<div id="modal-cert-filename" style="font-size: 0.82rem; font-weight: 800; color: var(--accent-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;"></div>
+								<div id="modal-cert-filesize" style="font-size: 0.72rem; color: var(--muted);"></div>
 							</div>
 							<button type="button" id="modal-cert-preview-btn" style="padding: 4px 9px; font-size: 0.74rem; font-weight: 700; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; color: var(--text); white-space: nowrap;">Preview</button>
 							<button type="button" id="modal-cert-remove-btn" style="padding: 4px 9px; font-size: 0.74rem; font-weight: 700; background: none; border: none; cursor: pointer; color: #dc2626;">Remove</button>
@@ -1936,7 +1783,7 @@
 			updateAnnounceDisplay();
 
 			// --- INQUIRIES MANAGEMENT SCRIPT ---
-			const inquiryRows = document.querySelectorAll('[data-inquiry-row]');
+			const getInquiryRows = () => document.querySelectorAll('#inquiries-table-body [data-inquiry-row]');
 			const inquiryStatusFilterBtns = document.querySelectorAll('[data-inquiry-status-filter]');
 			const inquiryTypeFilterSelect = document.querySelector('[data-inquiry-type-filter]');
 			const inquiryCategoryFilterSelect = document.querySelector('[data-inquiry-category-filter]');
@@ -1946,16 +1793,47 @@
 			const closeInquiryModalBtns = document.querySelectorAll('[data-close-inquiry-modal]');
 			const sendResponseBtn = document.getElementById('modal-send-response-btn');
 
+			const adminInquiryShowMoreBtn = document.getElementById('admin-inquiry-show-more');
+			const adminInquiryShowLessBtn = document.getElementById('admin-inquiry-show-less');
+			const adminInquiryToggleWrap = document.getElementById('admin-inquiry-toggle-wrap');
+
 			let activeInquiryStatus = 'all';
 			let activeInquiryType = 'all';
 			let activeInquiryCategory = 'all';
 			let activeInquirySearch = '';
 			let currentActiveRow = null;
+			let adminInquiryExpanded = false;
 
-			function filterInquiries() {
-				let visibleCount = 0;
+			function updateInquiryCounts() {
+				const allRows = getInquiryRows();
+				let counts = { all: allRows.length, Submitted: 0, 'Under Review': 0, Responded: 0, Closed: 0 };
+				allRows.forEach(r => {
+					const s = r.getAttribute('data-status');
+					if (counts[s] !== undefined) counts[s]++;
+				});
+				const cAll = document.getElementById('inquiry-count-all');
+				const cSub = document.getElementById('inquiry-count-submitted');
+				const cRev = document.getElementById('inquiry-count-under-review');
+				const cRes = document.getElementById('inquiry-count-responded');
+				const cClo = document.getElementById('inquiry-count-closed');
+				const navCount = document.getElementById('nav-inquiries-count');
+				if (cAll) cAll.textContent = counts.all;
+				if (cSub) cSub.textContent = counts.Submitted;
+				if (cRev) cRev.textContent = counts['Under Review'];
+				if (cRes) cRes.textContent = counts.Responded;
+				if (cClo) cClo.textContent = counts.Closed;
+				if (navCount) navCount.textContent = counts.all;
+			}
 
-				inquiryRows.forEach(row => {
+			function filterInquiries(resetExpansion = false) {
+				if (resetExpansion) {
+					adminInquiryExpanded = false;
+				}
+
+				const allRows = getInquiryRows();
+				let matchingRows = [];
+
+				allRows.forEach(row => {
 					const status = row.getAttribute('data-status') || '';
 					const type = row.getAttribute('data-query-type') || '';
 					const name = row.getAttribute('data-inquirer-name') || '';
@@ -1975,15 +1853,47 @@
 					const fullText = `${name} ${email} ${inst} ${remarks} ${ticket} ${type} ${appType}`.toLowerCase();
 					const matchesSearch = !activeInquirySearch || fullText.includes(activeInquirySearch.toLowerCase());
 
-					const isVisible = matchesStatus && matchesType && matchesCategory && matchesSearch;
-					row.style.display = isVisible ? '' : 'none';
-					if (isVisible) visibleCount++;
+					const isMatch = matchesStatus && matchesType && matchesCategory && matchesSearch;
+					if (isMatch) {
+						matchingRows.push(row);
+					} else {
+						row.style.display = 'none';
+					}
 				});
 
+				const totalMatching = matchingRows.length;
 				if (inquiriesEmptyState) {
-					inquiriesEmptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+					inquiriesEmptyState.style.display = totalMatching === 0 ? 'block' : 'none';
+				}
+
+				if (totalMatching <= 3) {
+					if (adminInquiryToggleWrap) adminInquiryToggleWrap.style.display = 'none';
+					matchingRows.forEach(r => r.style.display = '');
+				} else {
+					if (adminInquiryToggleWrap) adminInquiryToggleWrap.style.display = 'flex';
+					if (!adminInquiryExpanded) {
+						matchingRows.forEach((r, idx) => {
+							r.style.display = idx < 3 ? '' : 'none';
+						});
+						if (adminInquiryShowMoreBtn) adminInquiryShowMoreBtn.style.display = '';
+						if (adminInquiryShowLessBtn) adminInquiryShowLessBtn.style.display = 'none';
+					} else {
+						matchingRows.forEach(r => r.style.display = '');
+						if (adminInquiryShowMoreBtn) adminInquiryShowMoreBtn.style.display = 'none';
+						if (adminInquiryShowLessBtn) adminInquiryShowLessBtn.style.display = '';
+					}
 				}
 			}
+
+			adminInquiryShowMoreBtn?.addEventListener('click', function() {
+				adminInquiryExpanded = true;
+				filterInquiries(false);
+			});
+
+			adminInquiryShowLessBtn?.addEventListener('click', function() {
+				adminInquiryExpanded = false;
+				filterInquiries(false);
+			});
 
 			inquiryStatusFilterBtns.forEach(btn => {
 				btn.addEventListener('click', function() {
@@ -1994,30 +1904,32 @@
 						b.classList.toggle('button-quiet', !isActive);
 						b.setAttribute('aria-pressed', String(isActive));
 					});
-					filterInquiries();
+					filterInquiries(true);
 				});
 			});
 
 			if (inquiryTypeFilterSelect) {
 				inquiryTypeFilterSelect.addEventListener('change', function() {
 					activeInquiryType = this.value;
-					filterInquiries();
+					filterInquiries(true);
 				});
 			}
 
 			if (inquiryCategoryFilterSelect) {
 				inquiryCategoryFilterSelect.addEventListener('change', function() {
 					activeInquiryCategory = this.value;
-					filterInquiries();
+					filterInquiries(true);
 				});
 			}
 
 			if (inquirySearchInput) {
 				inquirySearchInput.addEventListener('input', function() {
 					activeInquirySearch = this.value.trim();
-					filterInquiries();
+					filterInquiries(true);
 				});
 			}
+
+			filterInquiries(true);
 
 			// Inquirer Info Category Tab Switcher (Category 1, 2, 3, 4 vs All)
 			const inquiryCatTabBtns = inquiryModal ? inquiryModal.querySelectorAll('[data-inquiry-info-tab]') : [];
@@ -2285,6 +2197,9 @@
 					const statusSelect = document.getElementById('modal-status-select');
 					if (statusSelect) statusSelect.value = status;
 
+					const internalNotesInput = document.getElementById('modal-internal-notes');
+					if (internalNotesInput) internalNotesInput.value = response;
+
 					inquiryModal.style.display = 'flex';
 				});
 			});
@@ -2310,6 +2225,7 @@
 					if (!currentActiveRow) return;
 
 					const newStatus = document.getElementById('modal-status-select').value;
+					const newResponse = document.getElementById('modal-internal-notes')?.value || '';
 					const certFileName = document.getElementById('modal-cert-filename');
 					const certAttachedState = document.getElementById('modal-cert-attached-state');
 
@@ -2317,7 +2233,29 @@
 					const certName = isCertAttached && certFileName ? certFileName.textContent : '';
 
 					currentActiveRow.setAttribute('data-status', newStatus);
+					currentActiveRow.setAttribute('data-response', newResponse);
 					currentActiveRow.setAttribute('data-certificate-attached', certName);
+
+					// Persist via API
+					const inqId = currentActiveRow.getAttribute('data-inquiry-id');
+					if (inqId) {
+						const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+						fetch(`/admin/api/inquiries/${inqId}/status`, {
+							method: 'PATCH',
+							headers: {
+								'Content-Type': 'application/json',
+								'X-CSRF-TOKEN': csrfToken,
+								'X-Requested-With': 'XMLHttpRequest',
+								'Accept': 'application/json'
+							},
+							body: JSON.stringify({
+								status: newStatus,
+								admin_response: newResponse,
+								certificate_attached: certName,
+								certificate_size: isCertAttached ? (currentActiveRow.getAttribute('data-certificate-size') || '245 KB • Certified Copy') : null
+							})
+						}).catch(console.error);
+					}
 
 					// Update tag in row
 					const tag = currentActiveRow.querySelector('.inquiry-status-tag');
@@ -2349,9 +2287,10 @@
 						rowCertBadge.remove();
 					}
 
-					alert(`Status updated successfully.`);
+					alert('Status updated successfully.');
 					inquiryModal.style.display = 'none';
-					filterInquiries();
+					updateInquiryCounts();
+					filterInquiries(false);
 				});
 			}
 		});

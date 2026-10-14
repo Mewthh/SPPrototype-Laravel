@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\MembershipApplicationController as AdminMembershipApplicationController;
 use App\Http\Controllers\Admin\MembershipArticleController as AdminMembershipArticleController;
 use App\Http\Controllers\Admin\MembershipFaqController as AdminMembershipFaqController;
+use App\Http\Controllers\Admin\MembershipInquiryController as AdminMembershipInquiryController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\Admin\PortalManagerController as AdminPortalManagerController;
 use App\Http\Controllers\Admin\ProceedingsTemplateController;
@@ -24,6 +25,7 @@ use App\Http\Controllers\MembershipArticleController;
 use App\Http\Controllers\MembershipFaqController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\PortalAnnouncementController;
+use App\Http\Controllers\PortalInquiryController;
 use App\Http\Controllers\SppController;
 use App\Http\Controllers\VideoController;
 use App\Models\Announcement;
@@ -54,7 +56,8 @@ Route::prefix('membership-portal')->name('membership-portal.')->group(function (
     Route::view('application', 'portal.application')->name('application');
     Route::view('membership', 'portal.membership')->name('membership');
     Route::view('information', 'portal.information')->name('information');
-    Route::view('inquiries', 'portal.inquiries')->name('inquiries');
+    Route::get('inquiries', [PortalInquiryController::class, 'index'])->name('inquiries');
+    Route::post('inquiries', [PortalInquiryController::class, 'store'])->name('inquiries.store');
     Route::get('announcements', [PortalAnnouncementController::class, 'index'])->name('announcements');
     Route::get('notifications', function () {
         $announcements = Announcement::query()->published()->latest()->get();
@@ -146,6 +149,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('{application}', [AdminMembershipApplicationController::class, 'show'])->name('show');
         Route::patch('{application}/status', [AdminMembershipApplicationController::class, 'updateStatus'])->name('status');
         Route::delete('{application}', [AdminMembershipApplicationController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('admin/api/inquiries')->name('admin.api.inquiries.')->group(function () {
+        Route::get('/', [AdminMembershipInquiryController::class, 'index'])->name('index');
+        Route::get('{inquiry}', [AdminMembershipInquiryController::class, 'show'])->name('show');
+        Route::patch('{inquiry}/status', [AdminMembershipInquiryController::class, 'updateStatus'])->name('status');
+        Route::delete('{inquiry}', [AdminMembershipInquiryController::class, 'destroy'])->name('destroy');
     });
 });
 
