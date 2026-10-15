@@ -18,6 +18,7 @@
         <div class="portal-section-heading"><h2>Recent Notifications</h2><a class="portal-text-link" href="{{ route('membership-portal.notifications') }}">View all</a></div>
         <ul class="portal-notification-list">
             @foreach ($announcements ?? [] as $item)
+                @php /** @var \App\Models\Announcement $item */ @endphp
                 <li>
                     <strong>{{ $item->title }}</strong>
                     <span>{{ $item->summary ?: \Illuminate\Support\Str::limit(strip_tags($item->content), 120) }}</span>

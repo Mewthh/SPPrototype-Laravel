@@ -8,6 +8,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
+    /** @var \Tests\TestCase&object{user: \App\Models\User} $this */
     Storage::fake('public');
     $this->user = User::factory()->create(['role' => 'admin']);
 });
