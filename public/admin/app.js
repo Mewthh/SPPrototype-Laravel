@@ -2606,8 +2606,8 @@ function updateConferenceTabsVisibility() {
       toggleBtn.setAttribute('aria-expanded', _conferenceTabsExpanded ? 'true' : 'false');
       const hiddenCount = totalTabs - limit;
       toggleText.textContent = _conferenceTabsExpanded
-        ? 'Less'
-        : 'More';
+        ? 'Show less'
+        : 'Show more';
     } else {
       toggleWrap.classList.add('is-hidden');
     }

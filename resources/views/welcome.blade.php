@@ -37,10 +37,10 @@
                 @if($news->count() > 4)
                     <div class="news-more-wrap" style="display: flex; justify-content: center; gap: 12px; margin-top: 36px;">
                         <button type="button" class="button button-secondary" id="news-show-more-btn">
-                            More
+                            Show more
                         </button>
                         <button type="button" class="button button-secondary" id="news-show-less-btn" style="display: none;">
-                            Less
+                            Show less
                         </button>
                     </div>
                 @endif
@@ -72,11 +72,11 @@
                 @if($activities->count() > 4)
                     <div class="news-more-wrap" style="display: flex; justify-content: center; gap: 12px; margin-top: 36px;">
                         <button type="button" class="button button-secondary" id="activity-show-more-btn">
-                            More
+                            Show more
                         </button>
                         <button type="button" class="button button-secondary" id="activity-show-less-btn"
                             style="display: none;">
-                            Less
+                            Show less
                         </button>
                     </div>
                 @endif

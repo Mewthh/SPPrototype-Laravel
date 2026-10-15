@@ -42,8 +42,8 @@
                     <li class="portal-extra-notification" hidden><strong>Membership Update</strong><span>Sample membership update.</span></li>
                     <li class="portal-extra-notification" hidden><strong>Inquiry Update</strong><span>Your inquiry has been updated.</span></li>
                 </ul>
-                <button type="button" class="portal-popover-toggle" data-show-more>Show More</button>
-                <button type="button" class="portal-popover-toggle" data-show-less hidden>Show Less</button>
+                <button type="button" class="portal-popover-toggle" data-show-more>Show more</button>
+                <button type="button" class="portal-popover-toggle" data-show-less hidden>Show less</button>
             </section>
 
             <details class="portal-account-menu">

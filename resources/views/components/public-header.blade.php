@@ -94,7 +94,7 @@
                 </button>
             </form>
 
-            <a class="btn-login-header" href="{{ route('login') }}" aria-label="Log in">Log In</a>
+            <a class="btn-login-header" href="{{ route('login') }}" aria-label="Log in">Login</a>
             <a class="btn-join-spp" href="{{ route('membership-faq') }}">Join SPP</a>
 
             <details class="mobile-nav">
@@ -142,7 +142,7 @@
                             </details>
                         @endif
                     </div>
-                    <a class="btn-login-header mobile" href="{{ route('login') }}">Log In</a>
+                    <a class="btn-login-header mobile" href="{{ route('login') }}">Login</a>
                     <a class="btn-join-spp mobile" href="{{ route('membership-faq') }}">Join SPP</a>
 
                 </nav>

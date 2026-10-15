@@ -33,8 +33,8 @@
 
                     @if ($videos->count() > 8)
                         <div class="video-library-actions" aria-label="Video library controls">
-                            <button class="video-library-button" id="videos-show-more" type="button">More</button>
-                            <button class="video-library-button video-library-button-secondary" id="videos-show-less" type="button" hidden>Less</button>
+                            <button class="video-library-button" id="videos-show-more" type="button">Show more</button>
+                            <button class="video-library-button video-library-button-secondary" id="videos-show-less" type="button" hidden>Show less</button>
                         </div>
                     @endif
                 @endif

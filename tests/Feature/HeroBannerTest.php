@@ -6,9 +6,10 @@ use App\Models\Page;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Tests\TestCase;
 
 beforeEach(function () {
-    /** @var \Tests\TestCase&object{user: \App\Models\User} $this */
+    /** @var TestCase&object{user: User} $this */
     Storage::fake('public');
     $this->user = User::factory()->create(['role' => 'admin']);
 });

@@ -69,7 +69,7 @@
 						<button type="submit" class="ghost-button"
 							style="padding: 6px 12px; height: 36px; min-height: 36px; font-size: 0.8rem; color: var(--danger); border-color: rgba(220, 53, 69, 0.25);"
 							aria-label="Log out">
-							<span>Log Out</span>
+							<span>Logout</span>
 						</button>
 					</form>
 				@endauth
@@ -218,7 +218,7 @@
 								<polyline points="16 17 21 12 16 7"></polyline>
 								<line x1="21" y1="12" x2="9" y2="12"></line>
 							</svg>
-							<span>Log Out</span>
+							<span>Logout</span>
 						</button>
 					</form>
 				@endauth
@@ -258,7 +258,7 @@
 							</div>
 							<div class="draft-recovery-actions">
 								<button type="button" class="button button-secondary draft-btn-restore"
-									data-draft-restore="news">Restore Draft</button>
+									data-draft-restore="news">Restore</button>
 								<button type="button" class="button button-quiet draft-btn-discard"
 									data-draft-discard="news">Discard</button>
 							</div>
@@ -397,8 +397,7 @@
 							</div>
 							<div class="image-upload-actions is-hidden" data-upload-actions="news">
 								<span class="image-upload-filename" data-upload-filename="news"></span>
-								<button type="button" class="item-action danger" data-upload-clear="news">Remove
-									image</button>
+								<button type="button" class="item-action danger" data-upload-clear="news">Remove</button>
 							</div>
 						</div>
 
@@ -459,10 +458,9 @@
 							<span class="pagination-info" data-news-pagination-info>Showing 3 of 8 posts</span>
 							<div class="queue-pagination-actions"
 								style="display: flex; gap: 10px; align-items: center;">
-								<button type="button" class="button button-secondary" data-news-load-more>Show
-									More</button>
+								<button type="button" class="button button-secondary" data-news-load-more>Show more</button>
 								<button type="button" class="button button-secondary" data-news-show-less
-									style="display: none;">Less</button>
+									style="display: none;">Show less</button>
 							</div>
 						</div>
 					</div>
@@ -625,8 +623,7 @@
 							</div>
 							<div class="image-upload-actions is-hidden" data-upload-actions="activity">
 								<span class="image-upload-filename" data-upload-filename="activity"></span>
-								<button type="button" class="item-action danger" data-upload-clear="activity">Remove
-									image</button>
+								<button type="button" class="item-action danger" data-upload-clear="activity">Remove</button>
 							</div>
 						</div>
 
@@ -688,10 +685,9 @@
 							<span class="pagination-info" data-activity-pagination-info>Showing 3 of 8 posts</span>
 							<div class="queue-pagination-actions"
 								style="display: flex; gap: 10px; align-items: center;">
-								<button type="button" class="button button-secondary" data-activity-load-more>Show
-									More</button>
+								<button type="button" class="button button-secondary" data-activity-load-more>Show more</button>
 								<button type="button" class="button button-secondary" data-activity-show-less
-									style="display: none;">Less</button>
+									style="display: none;">Show less</button>
 							</div>
 						</div>
 					</div>
@@ -884,7 +880,7 @@
 
 							<div class="conference-tabs-toggle-wrap is-hidden" data-conference-tabs-toggle-wrap>
 								<button type="button" class="conference-tabs-toggle-btn" data-conference-tabs-toggle aria-expanded="false">
-									<span class="conference-tabs-toggle-text" data-conference-tabs-toggle-text>More</span>
+									<span class="conference-tabs-toggle-text" data-conference-tabs-toggle-text>Show more</span>
 									<svg class="conference-tabs-toggle-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 										<polyline points="6 9 12 15 18 9"></polyline>
 									</svg>
@@ -908,8 +904,7 @@
 							</div>
 							<div class="image-upload-actions is-hidden" data-upload-actions="conference">
 								<span class="image-upload-filename" data-upload-filename="conference"></span>
-								<button type="button" class="item-action danger" data-upload-clear="conference">Remove
-									image</button>
+								<button type="button" class="item-action danger" data-upload-clear="conference">Remove</button>
 							</div>
 						</div>
 
@@ -949,7 +944,7 @@
 									<span data-handbook-filename-text></span>
 								</span>
 								<input type="hidden" name="removeHandbook" value="false" data-remove-handbook-flag />
-								<button type="button" class="item-action danger" data-upload-clear="conference-handbook" style="font-size: 0.75rem; padding: 2px 8px;">Remove handbook</button>
+								<button type="button" class="item-action danger" data-upload-clear="conference-handbook" style="font-size: 0.75rem; padding: 2px 8px;">Remove</button>
 							</div>
 						</div>
 
@@ -1027,8 +1022,7 @@
 							</div>
 							<div class="image-upload-actions is-hidden" data-upload-actions="hero-banner">
 								<span class="image-upload-filename" data-upload-filename="hero-banner"></span>
-								<button type="button" class="item-action danger" data-upload-clear="hero-banner">Remove
-									image</button>
+								<button type="button" class="item-action danger" data-upload-clear="hero-banner">Remove</button>
 							</div>
 						</div>
 
@@ -1079,10 +1073,8 @@
 						</div>
 
 						<div class="form-actions" style="margin-top: 24px;">
-							<button type="submit" class="button button-primary" data-hero-banner-submit>Save & Apply
-								Banner</button>
-							<button type="button" class="button button-quiet" data-hero-banner-reset>Reset
-								Banner</button>
+							<button type="submit" class="button button-primary" data-hero-banner-submit>Save</button>
+							<button type="button" class="button button-quiet" data-hero-banner-reset>Reset</button>
 						</div>
 					</form>
 				</div>
@@ -1113,7 +1105,7 @@
 								@error('image') <small class="field-error">{{ $message }}</small> @enderror
 							</label>
 							<input type="hidden" name="remove_image" value="0" data-about-remove-image-input />
-							@if ($aboutPage->image_url)<button type="button" class="item-action danger admin-about-remove-image" data-about-remove-image>Remove image</button>@endif
+							@if ($aboutPage->image_url)<button type="button" class="item-action danger admin-about-remove-image" data-about-remove-image>Remove</button>@endif
 						</section>
 
 						<section class="admin-about-section">
@@ -1132,8 +1124,8 @@
 							@endforeach
 							</div>
 							<div class="admin-about-list-actions" data-about-list-actions="officers">
-								<button type="button" class="button button-secondary" data-about-show-more>More</button>
-								<button type="button" class="button button-secondary is-hidden" data-about-show-less>Less</button>
+								<button type="button" class="button button-secondary" data-about-show-more>Show more</button>
+								<button type="button" class="button button-secondary is-hidden" data-about-show-less>Show less</button>
 							</div>
 						</section>
 
@@ -1149,8 +1141,8 @@
 							@endforeach
 							</div>
 							<div class="admin-about-list-actions" data-about-list-actions="councilors">
-								<button type="button" class="button button-secondary" data-about-show-more>More</button>
-								<button type="button" class="button button-secondary is-hidden" data-about-show-less>Less</button>
+								<button type="button" class="button button-secondary" data-about-show-more>Show more</button>
+								<button type="button" class="button button-secondary is-hidden" data-about-show-less>Show less</button>
 							</div>
 						</section>
 
@@ -1159,7 +1151,7 @@
 							<label class="field-row field-row-wide"><span>Address</span><textarea name="address" rows="3" required>{{ old('address', $aboutPage->address) }}</textarea></label>
 							<label class="field-row field-row-wide"><span>Email</span><input type="email" name="email" value="{{ old('email', $aboutPage->email) }}" required /></label>
 						</section>
-						<div class="form-actions"><button class="button button-primary" type="submit">Save About SPP</button></div>
+						<div class="form-actions"><button class="button button-primary" type="submit">Save</button></div>
 					</form>
 				</div>
 			</section>
@@ -1211,8 +1203,8 @@
 						<div class="queue-pagination" data-download-cat-pagination style="display: none;">
 							<span class="pagination-info" data-download-cat-pagination-info>Showing 3 categories</span>
 							<div class="queue-pagination-actions" style="display: flex; gap: 10px; align-items: center;">
-								<button type="button" class="button button-secondary" data-download-cat-load-more>More</button>
-								<button type="button" class="button button-secondary" data-download-cat-show-less style="display: none;">Less</button>
+								<button type="button" class="button button-secondary" data-download-cat-load-more>Show more</button>
+								<button type="button" class="button button-secondary" data-download-cat-show-less style="display: none;">Show less</button>
 							</div>
 						</div>
 					</div>
@@ -1246,10 +1238,10 @@
 							</div>
 							<div style="display: flex; gap: 8px;">
 								<button type="button" class="button button-secondary" data-download-rename-cat style="font-size: 0.84rem; padding: 6px 14px; min-height: 38px;">
-									Rename Category
+									Rename
 								</button>
 								<button type="button" class="button button-danger" data-download-delete-cat style="font-size: 0.84rem; padding: 6px 14px; min-height: 38px;">
-									Delete Category
+									Delete
 								</button>
 							</div>
 						</div>
@@ -1263,8 +1255,8 @@
 						<div class="queue-pagination" data-download-doc-pagination style="display: none; margin-top: 18px;">
 							<span class="pagination-info" data-download-doc-pagination-info>Showing 3 of 12 documents</span>
 							<div class="queue-pagination-actions" style="display: flex; gap: 10px; align-items: center;">
-								<button type="button" class="button button-secondary" data-download-doc-load-more>More</button>
-								<button type="button" class="button button-secondary" data-download-doc-show-less style="display: none;">Less</button>
+								<button type="button" class="button button-secondary" data-download-doc-load-more>Show more</button>
+								<button type="button" class="button button-secondary" data-download-doc-show-less style="display: none;">Show less</button>
 							</div>
 						</div>
 					</div>
@@ -1319,7 +1311,7 @@
 							</div>
 							<div class="image-upload-actions is-hidden" data-download-file-actions style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding: 6px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px;">
 								<span data-download-attached-filename style="font-size: 0.85rem; font-weight: 600; color: var(--text);"></span>
-								<button type="button" class="item-action danger" data-download-clear-file style="font-size: 0.75rem; padding: 2px 8px;">Remove file</button>
+								<button type="button" class="item-action danger" data-download-clear-file style="font-size: 0.75rem; padding: 2px 8px;">Remove</button>
 							</div>
 						</div>
 

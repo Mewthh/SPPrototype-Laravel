@@ -126,7 +126,7 @@
 						<button type="submit" class="ghost-button"
 							style="padding: 6px 12px; height: 36px; min-height: 36px; font-size: 0.8rem; color: var(--danger); border-color: rgba(220, 53, 69, 0.25);"
 							aria-label="Log out">
-							<span>Log Out</span>
+							<span>Logout</span>
 						</button>
 					</form>
 				@endauth
@@ -168,6 +168,7 @@
 						</svg>
 					</span>
 					<span class="nav-text">Member Roster</span>
+					<span class="nav-badge" id="nav-roster-count">{{ $approvedMembers->count() }}</span>
 				</a>
 
 				<a href="#inquiries" class="nav-item" data-portal-tab="inquiries">
@@ -222,7 +223,7 @@
 								<polyline points="16 17 21 12 16 7"></polyline>
 								<line x1="21" y1="12" x2="9" y2="12"></line>
 							</svg>
-							<span>Log Out</span>
+							<span>Logout</span>
 						</button>
 					</form>
 				@endauth
@@ -247,8 +248,8 @@
 					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
 						<h3 style="font-size: 1.1rem; font-weight: 800; color: var(--accent-strong); margin: 0;">Membership Applications</h3>
 						<div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;" data-app-filter-buttons>
-							<button type="button" class="button button-primary" data-app-filter="all" style="font-weight: 700; font-size: 0.8rem;">All Statuses (<span id="app-count-all">{{ $applicationCounts['all'] ?? 0 }}</span>)</button>
-							<button type="button" class="button button-quiet" data-app-filter="Under Evaluation" style="font-weight: 700; font-size: 0.8rem;">Under Evaluation (<span id="app-count-under-eval">{{ $applicationCounts['under_evaluation'] ?? 0 }}</span>)</button>
+							<button type="button" class="button button-primary" data-app-filter="all" style="font-weight: 700; font-size: 0.8rem;">All (<span id="app-count-all">{{ $applicationCounts['all'] ?? 0 }}</span>)</button>
+							<button type="button" class="button button-quiet" data-app-filter="Under Evaluation" style="font-weight: 700; font-size: 0.8rem;">Evaluation (<span id="app-count-under-eval">{{ $applicationCounts['under_evaluation'] ?? 0 }}</span>)</button>
 							<button type="button" class="button button-quiet" data-app-filter="Pending" style="font-weight: 700; font-size: 0.8rem;">Pending (<span id="app-count-pending">{{ $applicationCounts['pending'] ?? 0 }}</span>)</button>
 							<button type="button" class="button button-quiet" data-app-filter="Approved" style="font-weight: 700; font-size: 0.8rem;">Approved (<span id="app-count-approved">{{ $applicationCounts['approved'] ?? 0 }}</span>)</button>
 						</div>
@@ -312,7 +313,7 @@
 						<h3 style="font-size: 1.1rem; font-weight: 800; color: var(--accent-strong); margin: 0;">Member Directory &amp; Roster</h3>
 						<button type="button" class="button button-primary" style="font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px;">
 							<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-							Add Member Manually
+							Add Member
 						</button>
 					</div>
 					<div style="display: flex; gap: 8px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;" data-roster-filters>
@@ -635,8 +636,8 @@
 							<div class="queue-pagination" data-announce-pagination style="display: {{ count($announcements ?? []) > 0 ? 'flex' : 'none' }}; justify-content: space-between; align-items: center; padding-top: 8px;">
 								<span class="pagination-info" data-announce-pagination-info style="color: var(--muted); font-size: 0.85rem;">Showing {{ min(5, count($announcements ?? [])) }} of {{ count($announcements ?? []) }} posts</span>
 								<div class="queue-pagination-actions" style="display: flex; gap: 10px; align-items: center;">
-									<button type="button" class="button button-secondary" data-announce-load-more style="display: {{ count($announcements ?? []) > 5 ? 'inline-flex' : 'none' }}; font-size: 0.82rem; font-weight: 700;">Show More</button>
-									<button type="button" class="button button-secondary" data-announce-show-less style="display: none; font-size: 0.82rem; font-weight: 700;">Show Less</button>
+									<button type="button" class="button button-secondary" data-announce-load-more style="display: {{ count($announcements ?? []) > 5 ? 'inline-flex' : 'none' }}; font-size: 0.82rem; font-weight: 700;">Show more</button>
+									<button type="button" class="button button-secondary" data-announce-show-less style="display: none; font-size: 0.82rem; font-weight: 700;">Show less</button>
 								</div>
 							</div>
 
@@ -681,10 +682,10 @@
 						Personal
 					</button>
 					<button type="button" class="app-cat-tab-btn" data-app-info-tab="professional">
-						Professional &amp; Education
+						Professional
 					</button>
 					<button type="button" class="app-cat-tab-btn" data-app-info-tab="documents">
-						Documents &amp; Validation
+						Documents
 					</button>
 				</div>
 			</div>
@@ -877,8 +878,8 @@
 			<!-- Modal Footer Actions -->
 			<div style="padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; background: var(--surface-soft);">
 				<button type="button" class="button button-secondary" data-close-review-modal style="font-weight: 700; font-size: 0.85rem;">Close</button>
-				<button type="button" id="modal-reject-app-btn" class="button button-danger" style="font-weight: 700; font-size: 0.85rem; background: #dc2626; color: white; border: none; padding: 6px 14px; border-radius: 6px;">Reject Application</button>
-				<button type="button" id="modal-approve-app-btn" class="button button-primary" style="font-weight: 700; font-size: 0.85rem;">Approve Application</button>
+				<button type="button" id="modal-reject-app-btn" class="button button-danger" style="font-weight: 700; font-size: 0.85rem; background: #dc2626; color: white; border: none; padding: 6px 14px; border-radius: 6px;">Reject</button>
+				<button type="button" id="modal-approve-app-btn" class="button button-primary" style="font-weight: 700; font-size: 0.85rem;">Approve</button>
 			</div>
 		</div>
 	</div>
@@ -910,10 +911,10 @@
 				<!-- Category Tab Navigation -->
 				<div style="display: flex; gap: 8px; flex-wrap: wrap;" role="tablist" aria-label="Inquirer Information Categories">
 					<button type="button" class="inquiry-cat-tab-btn active" data-inquiry-info-tab="profile">
-						Profile &amp; Contact
+						Profile
 					</button>
 					<button type="button" class="inquiry-cat-tab-btn" data-inquiry-info-tab="standing">
-						Membership Standing
+						Standing
 					</button>
 					<button type="button" class="inquiry-cat-tab-btn" data-inquiry-info-tab="questionnaire">
 						Questionnaire
@@ -1033,7 +1034,7 @@
 						<div id="modal-cert-empty-state" style="display: flex; align-items: center; gap: 8px;">
 							<button type="button" class="button button-secondary" id="modal-cert-choose-btn" style="padding: 5px 14px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
 								<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-								Upload PDF
+								Upload
 							</button>
 						</div>
 						<div id="modal-cert-attached-state" style="display: none; background: rgba(22, 163, 74, 0.06); border: 1px solid rgba(22, 163, 74, 0.3); border-radius: var(--radius-sm); padding: 7px 12px; align-items: center; gap: 10px;">
@@ -1051,7 +1052,7 @@
 			<!-- Modal Footer -->
 			<div style="padding: 14px 28px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; background: var(--surface-soft);">
 				<button type="button" class="button button-quiet" data-close-inquiry-modal style="font-weight: 700; font-size: 0.85rem;">Close</button>
-				<button type="button" class="button button-primary" id="modal-send-response-btn" style="font-weight: 700; font-size: 0.85rem;">Update Status</button>
+				<button type="button" class="button button-primary" id="modal-send-response-btn" style="font-weight: 700; font-size: 0.85rem;">Update</button>
 			</div>
 		</div>
 	</div>

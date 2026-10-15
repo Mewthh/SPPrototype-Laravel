@@ -11,8 +11,8 @@ test('public users can visit the join spp prototype route without authentication
         ->assertSee('Validation / Certification')
         ->assertSee('Account Setup')
         ->assertSee('Review &amp; Submit', false)
-        ->assertSee('Submit Application')
-        ->assertSee('Log In to Portal Dashboard');
+        ->assertSee('Submit')
+        ->assertSee('Login');
 });
 
 test('join spp page displays all required question fields and placeholders', function () {

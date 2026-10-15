@@ -99,7 +99,7 @@
                 <div style="padding: 14px 24px; border-top: 1px solid var(--portal-border); display: flex; justify-content: space-between; align-items: center; background: var(--portal-surface-soft);">
                     <span style="font-size: 0.78rem; color: var(--portal-muted);">You can reopen this at any time using the View Guidelines & Requirements</span>
                     <button type="button" id="btn-close-info-modal-ok" class="join-btn join-btn-primary" style="padding: 7px 20px; font-size: 0.85rem;">
-                        Got It
+                        OK
                     </button>
                 </div>
             </div>
@@ -552,7 +552,7 @@
                     <!-- Submit Button Area -->
                     <div id="join-submit-area" style="margin-top: 28px; text-align: center; padding-top: 20px; border-top: 1px solid var(--portal-border);">
                         <button type="button" id="btn-submit-application" class="join-btn join-btn-primary" style="padding: 12px 32px; font-size: 1rem;">
-                            Submit Application
+                            Submit
                         </button>
                         <p style="font-size: 0.8rem; color: var(--portal-muted); margin-top: 8px;">
                             Submitting creates your portal account and forwards your application for evaluation.
@@ -576,11 +576,11 @@
                         </div>
                         <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                             <a href="{{ route('membership-portal.dashboard') }}" class="join-btn join-btn-primary" style="padding: 8px 20px; font-size: 0.88rem; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
-                                <span>Log In to Portal Dashboard</span>
+                                <span>Login</span>
                                 <span aria-hidden="true">&rarr;</span>
                             </a>
                             <a href="{{ route('home') }}" class="join-btn join-btn-secondary" style="padding: 8px 16px; font-size: 0.85rem; text-decoration: none;">
-                                Return to Home
+                                Home
                             </a>
                         </div>
                     </div>
@@ -590,11 +590,11 @@
             <!-- Bottom Navigation Bar -->
             <div class="join-action-bar">
                 <button type="button" id="btn-prev-step" class="join-btn join-btn-secondary" disabled>
-                    &larr; Previous Step
+                    &larr; Previous
                 </button>
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <button type="button" id="btn-next-step" class="join-btn join-btn-primary">
-                        Next Step &rarr;
+                        Next &rarr;
                     </button>
                 </div>
             </div>
@@ -648,7 +648,7 @@
                     nextBtn.style.display = 'none';
                 } else {
                     nextBtn.style.display = 'inline-flex';
-                    nextBtn.textContent = currentStep === totalSteps - 1 ? 'Review Application \u2192' : 'Next Step \u2192';
+                    nextBtn.textContent = currentStep === totalSteps - 1 ? 'Review \u2192' : 'Next \u2192';
                 }
             }
 

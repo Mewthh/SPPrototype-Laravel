@@ -19,5 +19,5 @@
             </a>
         @endforeach
     </nav>
-    <button class="portal-logout-button" type="button">Log Out</button>
+    <button class="portal-logout-button" type="button">Logout</button>
 </aside>

@@ -11,7 +11,7 @@
 
     <div class="portal-page-grid">
         <section class="portal-card"><div class="portal-section-heading"><h2>Application Progress</h2></div><x-portal.timeline :steps="['Account Created', 'Application Submitted', 'Under Evaluation', 'Approved']" :current="2" /></section>
-        <section class="portal-card"><div class="portal-section-heading"><h2>Quick Actions</h2></div><div class="portal-action-grid"><a class="portal-button" href="{{ route('membership-portal.application') }}">View Application</a><a class="portal-button" href="{{ route('membership-portal.membership') }}">View Membership</a><a class="portal-button" href="{{ route('membership-portal.inquiries') }}">Submit Inquiry</a><a class="portal-button" href="{{ route('membership-portal.notifications') }}">View Notifications</a></div></section>
+        <section class="portal-card"><div class="portal-section-heading"><h2>Quick Actions</h2></div><div class="portal-action-grid"><a class="portal-button" href="{{ route('membership-portal.application') }}">View Application</a><a class="portal-button" href="{{ route('membership-portal.membership') }}">View Membership</a><a class="portal-button" href="{{ route('membership-portal.inquiries') }}">Submit</a><a class="portal-button" href="{{ route('membership-portal.notifications') }}">View Notifications</a></div></section>
     </div>
 
     <section class="portal-card">

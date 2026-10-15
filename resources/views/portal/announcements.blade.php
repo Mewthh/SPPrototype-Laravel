@@ -46,11 +46,11 @@
     @if (count($announcements) > 5)
         <div class="announce-toggle-wrap" id="announce-toggle-wrap">
             <button type="button" class="announce-toggle-btn" id="announce-show-more" data-announce-toggle="more">
-                Show More
+                Show more
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
             </button>
             <button type="button" class="announce-toggle-btn" id="announce-show-less" data-announce-toggle="less" hidden>
-                Show Less
+                Show less
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg>
             </button>
         </div>
