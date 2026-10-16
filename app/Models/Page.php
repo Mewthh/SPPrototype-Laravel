@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
@@ -78,9 +79,12 @@ class Page extends Model
                 }
 
                 $disk = config('filesystems.default', 'public');
-                $diskName = is_string($disk) && $disk !== 'local' ? $disk : 'public';
+                $diskName = (is_string($disk) && $disk !== 'local') ? $disk : 'public';
 
-                return Storage::disk($diskName)->url($this->image);
+                /** @var FilesystemAdapter $storage */
+                $storage = Storage::disk((string) $diskName);
+
+                return $storage->url((string) $this->image);
             }
         );
     }

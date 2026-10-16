@@ -262,6 +262,7 @@
 									<th style="padding: 12px 16px;">Applicant</th>
 									<th style="padding: 12px 16px;">Institution</th>
 									<th style="padding: 12px 16px;">Submitted</th>
+									<th style="padding: 12px 16px;">Documents</th>
 									<th style="padding: 12px 16px;">Status</th>
 									<th style="padding: 12px 16px; text-align: right;">Actions</th>
 								</tr>
@@ -276,6 +277,27 @@
 										</td>
 										<td style="padding: 14px 16px; color: var(--text);">{{ $app->current_affiliation ?: '—' }}</td>
 										<td style="padding: 14px 16px; color: var(--muted);">{{ $app->created_at?->format('m/d/Y') ?? $app->application_date }}</td>
+										<td style="padding: 14px 16px;">
+											<div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+												@if ($app->cv_path)
+													@php $rowCvUrl = route('admin.api.membership-applications.document', ['application' => $app->id, 'type' => 'cv']); @endphp
+													<a href="{{ $rowCvUrl }}" target="_blank" rel="noopener noreferrer" class="button button-secondary" style="padding: 4px 10px; font-size: 0.75rem; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;" title="View CV in new tab">
+														<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+														CV
+													</a>
+												@endif
+												@if ($app->proof_path)
+													@php $rowProofUrl = route('admin.api.membership-applications.document', ['application' => $app->id, 'type' => 'proof']); @endphp
+													<a href="{{ $rowProofUrl }}" target="_blank" rel="noopener noreferrer" class="button button-secondary" style="padding: 4px 10px; font-size: 0.75rem; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;" title="View Proof in new tab">
+														<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+														Proof
+													</a>
+												@endif
+												@if (! $app->cv_path && ! $app->proof_path)
+													<span style="font-size: 0.75rem; color: var(--muted);">None</span>
+												@endif
+											</div>
+										</td>
 										<td style="padding: 14px 16px;">
 											@if ($app->status === 'Approved')
 												<span class="app-status-badge" style="background: rgba(22, 163, 74, 0.12); color: #16a34a; border: 1px solid rgba(22, 163, 74, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">Approved</span>
@@ -296,7 +318,7 @@
 									</tr>
 								@empty
 									<tr id="no-applications-row">
-										<td colspan="5" style="padding: 32px 16px; text-align: center; color: var(--muted); font-size: 0.9rem;">
+										<td colspan="6" style="padding: 32px 16px; text-align: center; color: var(--muted); font-size: 0.9rem;">
 											No membership applications found.
 										</td>
 									</tr>
@@ -668,6 +690,7 @@
 				<div>
 					<span style="font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;">Membership Application Review</span>
 					<h2 style="font-size: 1.3rem; font-weight: 900; color: var(--accent-strong); margin: 2px 0 0 0;" id="modal-applicant-name">—</h2>
+					<div id="modal-header-doc-badges" style="display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap;"></div>
 				</div>
 				<button type="button" data-close-review-modal style="background: none; border: none; font-size: 1.5rem; color: var(--muted); cursor: pointer; padding: 4px 8px; line-height: 1;" aria-label="Close modal">&times;</button>
 			</div>
@@ -836,16 +859,38 @@
 					<div data-app-cat-section="documents" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px; display: none;">
 						<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 14px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;">
 							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: var(--accent); flex-shrink: 0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-							Documents
+							Attached Application Documents
 						</h4>
 						<div style="display: flex; flex-direction: column; gap: 14px;">
-							<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border); padding-bottom: 10px;">
-								<span style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong);">Updated CV</span>
-								<span id="modal-cv-status" style="background: rgba(27, 122, 76, 0.12); color: var(--success); border: 1px solid rgba(27, 122, 76, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">None</span>
+							<!-- Updated CV Item -->
+							<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border); padding-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+								<div style="display: flex; align-items: center; gap: 10px;">
+									<div style="width: 34px; height: 34px; border-radius: 6px; background: var(--surface); border: 1px solid var(--border); color: var(--accent); display: grid; place-items: center; flex-shrink: 0;">
+										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+									</div>
+									<div>
+										<span style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); display: block;">Updated CV (Curriculum Vitae)</span>
+										<span id="modal-cv-filename" style="font-size: 0.75rem; color: var(--muted);">Checking document...</span>
+									</div>
+								</div>
+								<div id="modal-cv-actions" style="display: flex; gap: 8px; align-items: center;">
+									<span id="modal-cv-status" style="background: var(--surface-soft); color: var(--muted); border: 1px solid var(--border); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">None</span>
+								</div>
 							</div>
-							<div style="display: flex; justify-content: space-between; align-items: center;">
-								<span style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong);">Proof of Employment / Enrollment</span>
-								<span id="modal-proof-status" style="background: rgba(27, 122, 76, 0.12); color: var(--success); border: 1px solid rgba(27, 122, 76, 0.3); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">None</span>
+							<!-- Proof Item -->
+							<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 6px; flex-wrap: wrap; gap: 10px;">
+								<div style="display: flex; align-items: center; gap: 10px;">
+									<div style="width: 34px; height: 34px; border-radius: 6px; background: var(--surface); border: 1px solid var(--border); color: var(--accent); display: grid; place-items: center; flex-shrink: 0;">
+										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+									</div>
+									<div>
+										<span style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); display: block;">Proof of Employment / Enrollment</span>
+										<span id="modal-proof-filename" style="font-size: 0.75rem; color: var(--muted);">Checking document...</span>
+									</div>
+								</div>
+								<div id="modal-proof-actions" style="display: flex; gap: 8px; align-items: center;">
+									<span id="modal-proof-status" style="background: var(--surface-soft); color: var(--muted); border: 1px solid var(--border); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;">None</span>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -886,7 +931,7 @@
 
 	<!-- Inquiry Details Modal -->
 	<div id="inquiry-detail-modal" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(5px); align-items: center; justify-content: center; padding: 24px; overflow-y: auto;">
-		<div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 860px; width: 100%; max-height: 92vh; display: flex; flex-direction: column; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35); overflow: hidden; margin: auto;">
+		<div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 900px; width: 100%; max-height: 92vh; display: flex; flex-direction: column; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35); overflow: hidden; margin: auto;">
 			<!-- Modal Header -->
 			<div style="padding: 20px 28px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--surface-soft); flex-wrap: wrap; gap: 14px;">
 				<div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
@@ -905,199 +950,322 @@
 				</div>
 			</div>
 
-			<!-- Modal Body: Single-Column Layout -->
-			<div style="padding: 20px 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;">
-
-				<!-- Category Tab Navigation -->
-				<div style="display: flex; gap: 8px; flex-wrap: wrap;" role="tablist" aria-label="Inquirer Information Categories">
+			<!-- Category Tab Navigation Bar -->
+			<div style="padding: 12px 28px; border-bottom: 1px solid var(--border); background: var(--surface-soft);">
+				<div style="display: flex; gap: 8px; flex-wrap: wrap;" role="tablist" aria-label="Inquiry Categories">
 					<button type="button" class="inquiry-cat-tab-btn active" data-inquiry-info-tab="profile">
-						Profile
+						<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 6px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+						1. Inquirer Information
 					</button>
-					<button type="button" class="inquiry-cat-tab-btn" data-inquiry-info-tab="standing">
-						Standing
-					</button>
-					<button type="button" class="inquiry-cat-tab-btn" data-inquiry-info-tab="questionnaire">
-						Questionnaire
+					<button type="button" class="inquiry-cat-tab-btn" data-inquiry-info-tab="inquiry-details">
+						<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 6px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+						2. Inquiry Details
 					</button>
 					<button type="button" class="inquiry-cat-tab-btn" data-inquiry-info-tab="remarks">
-						Remarks
+						<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 6px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+						3. Inquirer Remarks
+					</button>
+					<button type="button" class="inquiry-cat-tab-btn" data-inquiry-info-tab="resolution">
+						<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 6px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+						4. Resolution &amp; Actions
 					</button>
 				</div>
+			</div>
 
-					<!-- CATEGORY 1: Inquirer Profile & Account Context -->
-					<div data-inquiry-cat-section="profile" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px; transition: all 0.2s ease;">
-						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
-							<div style="display: flex; align-items: center; gap: 8px;">
+			<!-- Modal Body: Categorized Views -->
+			<div style="padding: 24px 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;">
+
+				<!-- CATEGORY 1: Inquirer Information (Who made the inquiry) -->
+				<div data-inquiry-cat-section="profile" style="display: flex; flex-direction: column; gap: 16px;">
+					<div style="display: flex; justify-content: space-between; align-items: center;">
+						<div>
+							<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 2px 0;">Information of the Inquirer</h4>
+							<p style="font-size: 0.78rem; color: var(--muted); margin: 0;">Details and membership context of the individual who submitted this inquiry.</p>
+						</div>
+						<span style="font-size: 0.72rem; font-weight: 700; background: var(--surface-soft); color: var(--muted); border: 1px solid var(--border); padding: 3px 8px; border-radius: 4px;">Category 1</span>
+					</div>
+
+					<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 14px;">
+						<!-- Card 1: Identity & Contact -->
+						<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
+							<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
 								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: var(--accent);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-								<span style="font-size: 0.76rem; font-weight: 800; text-transform: uppercase; color: var(--accent-strong); letter-spacing: 0.04em;">Category 1: Personal &amp; Contact Profile</span>
+								<span style="font-size: 0.76rem; font-weight: 800; text-transform: uppercase; color: var(--accent-strong); letter-spacing: 0.04em;">Personal &amp; Contact Details</span>
 							</div>
-							<span style="font-size: 0.7rem; font-weight: 800; background: var(--surface); color: var(--muted); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px;">Identity</span>
-						</div>
-						<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-							<div>
-								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Inquirer Full Name</span>
-								<div style="font-size: 0.92rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-card-inquirer-name">—</div>
-							</div>
-							<div>
-								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Classification</span>
-								<div style="margin-top: 2px;" id="modal-inquirer-class-wrap">
-									<span id="modal-inquirer-class-type" style="background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 0.76rem;">—</span>
+							<div style="display: flex; flex-direction: column; gap: 12px;">
+								<div>
+									<span style="font-size: 0.72rem; font-weight: 700; color: var(--muted); display: block;">Full Name</span>
+									<div style="font-size: 0.94rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-card-inquirer-name">—</div>
+								</div>
+								<div>
+									<span style="font-size: 0.72rem; font-weight: 700; color: var(--muted); display: block;">Registered Email</span>
+									<div style="font-size: 0.88rem; font-weight: 800; color: var(--text); margin-top: 2px; word-break: break-all;" id="modal-inquirer-email">—</div>
+								</div>
+								<div>
+									<span style="font-size: 0.72rem; font-weight: 700; color: var(--muted); display: block;">Current Affiliation / Institution</span>
+									<div style="font-size: 0.88rem; font-weight: 700; color: var(--text); margin-top: 2px;" id="modal-inquirer-institution">—</div>
 								</div>
 							</div>
-							<div>
-								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Registered Email</span>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px; word-break: break-all;" id="modal-inquirer-email">—</div>
-							</div>
-							<div>
-								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Current Affiliation / Institution</span>
-								<div style="font-size: 0.84rem; font-weight: 700; color: var(--text); margin-top: 2px;" id="modal-inquirer-institution">—</div>
-							</div>
 						</div>
-					</div>
 
-					<!-- CATEGORY 2: Membership Standing & Application Context -->
-					<div data-inquiry-cat-section="standing" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px; transition: all 0.2s ease; display: none;">
-						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
-							<div style="display: flex; align-items: center; gap: 8px;">
+						<!-- Card 2: Standing & Classification -->
+						<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
+							<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
 								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: #9333ea;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-								<span style="font-size: 0.76rem; font-weight: 800; text-transform: uppercase; color: var(--accent-strong); letter-spacing: 0.04em;">Category 2: Membership &amp; Application Standing</span>
+								<span style="font-size: 0.76rem; font-weight: 800; text-transform: uppercase; color: var(--accent-strong); letter-spacing: 0.04em;">Membership &amp; Account Standing</span>
 							</div>
-							<span style="font-size: 0.7rem; font-weight: 800; background: var(--surface); color: var(--muted); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px;">Standing</span>
-						</div>
-						<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-							<div>
-								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Membership Standing</span>
-								<div style="margin-top: 3px;">
-									<span style="background: var(--accent-soft); color: var(--accent-strong); border: 1px solid rgba(27, 122, 76, 0.25); padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 0.76rem;" id="modal-inquirer-tier">—</span>
+							<div style="display: flex; flex-direction: column; gap: 12px;">
+								<div>
+									<span style="font-size: 0.72rem; font-weight: 700; color: var(--muted); display: block;">Account Classification</span>
+									<div style="margin-top: 3px;" id="modal-inquirer-class-wrap">
+										<span id="modal-inquirer-class-type" style="background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 0.76rem;">—</span>
+									</div>
 								</div>
-							</div>
-							<div>
-								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Application / Track Type</span>
-								<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 3px;" id="modal-application-type">—</div>
-							</div>
-							<div>
-								<span style="font-size: 0.72rem; color: var(--muted); display: block;">Submission Date</span>
-								<div style="font-size: 0.84rem; font-weight: 700; color: var(--text); margin-top: 2px;" id="modal-submitted-date">—</div>
+								<div>
+									<span style="font-size: 0.72rem; font-weight: 700; color: var(--muted); display: block;">Membership Standing / Tier</span>
+									<div style="margin-top: 3px;">
+										<span style="background: var(--accent-soft); color: var(--accent-strong); border: 1px solid rgba(27, 122, 76, 0.25); padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 0.76rem;" id="modal-inquirer-tier">—</span>
+									</div>
+								</div>
+								<div>
+									<span style="font-size: 0.72rem; font-weight: 700; color: var(--muted); display: block;">Application / Track Type</span>
+									<div style="font-size: 0.88rem; font-weight: 800; color: var(--accent-strong); margin-top: 2px;" id="modal-inquiry-application-type">—</div>
+								</div>
+								<div>
+									<span style="font-size: 0.72rem; font-weight: 700; color: var(--muted); display: block;">Date Submitted</span>
+									<div style="font-size: 0.84rem; font-weight: 700; color: var(--text); margin-top: 2px;" id="modal-submitted-date">—</div>
+								</div>
 							</div>
 						</div>
 					</div>
 
-					<!-- CATEGORY 3: Submitted Questionnaire Answers & Historical Records -->
-					<div data-inquiry-cat-section="questionnaire" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px; transition: all 0.2s ease; display: none;">
-						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+					<!-- Progressive Action Button: More Info About Inquiry -->
+					<div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 4px; padding-top: 14px; border-top: 1px solid var(--border);">
+						<button type="button" class="button button-primary" data-inquiry-switch-cat="inquiry-details" style="font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 8px;">
+							More Info About Inquiry
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+						</button>
+					</div>
+				</div>
+
+				<!-- CATEGORY 2: Inquiry Details (Specifics & Questionnaire Answers) -->
+				<div data-inquiry-cat-section="inquiry-details" style="display: none; flex-direction: column; gap: 16px;">
+					<div style="display: flex; justify-content: space-between; align-items: center;">
+						<div>
+							<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 2px 0;">Inquiry Details &amp; Questionnaire</h4>
+							<p style="font-size: 0.78rem; color: var(--muted); margin: 0;">Specific questions, historical records, and requirements submitted with this inquiry.</p>
+						</div>
+						<span style="font-size: 0.72rem; font-weight: 700; background: var(--surface-soft); color: var(--muted); border: 1px solid var(--border); padding: 3px 8px; border-radius: 4px;">Category 2</span>
+					</div>
+
+					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
+						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 8px; flex-wrap: wrap; gap: 8px;">
 							<div style="display: flex; align-items: center; gap: 8px;">
-								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: #2563eb;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-								<span style="font-size: 0.76rem; font-weight: 800; text-transform: uppercase; color: var(--accent-strong); letter-spacing: 0.04em;">Category 3: Questionnaire &amp; Historical Records</span>
+								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: #2563eb;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+								<span style="font-size: 0.76rem; font-weight: 800; text-transform: uppercase; color: var(--accent-strong); letter-spacing: 0.04em;">Questionnaire Responses</span>
 							</div>
 							<span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-strong);" id="modal-query-type-label">—</span>
 						</div>
 
 						<!-- Dynamic questionnaire items injected via JS -->
-						<div id="modal-inquiry-fields-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+						<div id="modal-inquiry-fields-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
 							<!-- Injected by JavaScript -->
 						</div>
 					</div>
 
-					<!-- CATEGORY 4: Inquirer Remarks / Context Message -->
-					<div data-inquiry-cat-section="remarks" style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px; transition: all 0.2s ease; display: none;">
-						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-							<div style="display: flex; align-items: center; gap: 8px;">
-								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: #ea580c;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-								<span style="font-size: 0.76rem; font-weight: 800; text-transform: uppercase; color: var(--accent-strong); letter-spacing: 0.04em;" id="modal-inquiry-remarks-title">Category 4: Inquirer Statement &amp; Remarks</span>
-							</div>
-							<span style="font-size: 0.7rem; font-weight: 800; background: var(--surface); color: var(--muted); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px;">Statement</span>
+					<!-- Navigation Buttons -->
+					<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 4px; padding-top: 14px; border-top: 1px solid var(--border);">
+						<button type="button" class="button button-secondary" data-inquiry-switch-cat="profile" style="font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px;">
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+							Inquirer Information
+						</button>
+						<button type="button" class="button button-primary" data-inquiry-switch-cat="remarks" style="font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px;">
+							View Remarks &amp; Statement
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+						</button>
+					</div>
+				</div>
+
+				<!-- CATEGORY 3: Inquirer Remarks / Context Statement -->
+				<div data-inquiry-cat-section="remarks" style="display: none; flex-direction: column; gap: 16px;">
+					<div style="display: flex; justify-content: space-between; align-items: center;">
+						<div>
+							<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 2px 0;">Inquirer Statement &amp; Remarks</h4>
+							<p style="font-size: 0.78rem; color: var(--muted); margin: 0;">Context, background notes, or additional messages provided by the inquirer.</p>
 						</div>
-						<div style="background: var(--surface); border-left: 3px solid var(--accent); padding: 14px 16px; border-radius: var(--radius-sm); font-size: 0.9rem; color: var(--text); line-height: 1.6;" id="modal-inquiry-remarks">
+						<span style="font-size: 0.72rem; font-weight: 700; background: var(--surface-soft); color: var(--muted); border: 1px solid var(--border); padding: 3px 8px; border-radius: 4px;">Category 3</span>
+					</div>
+
+					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px;">
+						<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+							<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: #ea580c;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+							<span style="font-size: 0.76rem; font-weight: 800; text-transform: uppercase; color: var(--accent-strong); letter-spacing: 0.04em;" id="modal-inquiry-remarks-title">Submitted Statement</span>
+						</div>
+						<div style="background: var(--surface); border-left: 3px solid var(--accent); padding: 16px 20px; border-radius: var(--radius-sm); font-size: 0.92rem; color: var(--text); line-height: 1.65; white-space: pre-wrap;" id="modal-inquiry-remarks">
 							—
 						</div>
 					</div>
 
-				<!-- Admin Controls: Status & Certificate -->
-				<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 20px; display: flex; flex-direction: column; gap: 14px;">
-					<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-						<label style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--muted); white-space: nowrap;">Ticket Status</label>
-						<select id="modal-status-select" style="flex: 1; min-width: 180px; padding: 7px 12px; font-size: 0.84rem; font-weight: 700; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);">
-							<option value="Submitted">Submitted (Awaiting Action)</option>
-							<option value="Under Review">Under Review</option>
-							<option value="Responded">Responded (via Email)</option>
-							<option value="Closed">Closed (Resolved)</option>
-						</select>
-						<label style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--muted); white-space: nowrap;">Internal Notes</label>
-						<input type="text" id="modal-internal-notes" placeholder="Private notes for audit trail…" style="flex: 2; min-width: 200px; padding: 7px 12px; font-size: 0.82rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);" />
-					</div>
-
-					<!-- Certificate Attachment -->
-					<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-						<span style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--muted); white-space: nowrap;">Attach Certificate</span>
-						<span id="modal-cert-status-badge" style="font-size: 0.7rem; font-weight: 800; padding: 2px 7px; border-radius: 4px; background: rgba(22, 163, 74, 0.1); color: #16a34a;">Recommended</span>
-						<input type="file" id="modal-cert-file-input" accept=".pdf,.doc,.docx" style="display: none;" />
-						<div id="modal-cert-empty-state" style="display: flex; align-items: center; gap: 8px;">
-							<button type="button" class="button button-secondary" id="modal-cert-choose-btn" style="padding: 5px 14px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-								<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-								Upload
-							</button>
-						</div>
-						<div id="modal-cert-attached-state" style="display: none; background: rgba(22, 163, 74, 0.06); border: 1px solid rgba(22, 163, 74, 0.3); border-radius: var(--radius-sm); padding: 7px 12px; align-items: center; gap: 10px;">
-							<div style="min-width: 0;">
-								<div id="modal-cert-filename" style="font-size: 0.82rem; font-weight: 800; color: var(--accent-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;"></div>
-								<div id="modal-cert-filesize" style="font-size: 0.72rem; color: var(--muted);"></div>
-							</div>
-							<button type="button" id="modal-cert-preview-btn" style="padding: 4px 9px; font-size: 0.74rem; font-weight: 700; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; color: var(--text); white-space: nowrap;">Preview</button>
-							<button type="button" id="modal-cert-remove-btn" style="padding: 4px 9px; font-size: 0.74rem; font-weight: 700; background: none; border: none; cursor: pointer; color: #dc2626;">Remove</button>
-						</div>
+					<!-- Navigation Buttons -->
+					<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 4px; padding-top: 14px; border-top: 1px solid var(--border);">
+						<button type="button" class="button button-secondary" data-inquiry-switch-cat="inquiry-details" style="font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px;">
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+							Inquiry Details
+						</button>
+						<button type="button" class="button button-primary" data-inquiry-switch-cat="resolution" style="font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px;">
+							Manage Resolution &amp; Actions
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+						</button>
 					</div>
 				</div>
+
+				<!-- CATEGORY 4: Resolution & Actions -->
+				<div data-inquiry-cat-section="resolution" style="display: none; flex-direction: column; gap: 16px;">
+					<div style="display: flex; justify-content: space-between; align-items: center;">
+						<div>
+							<h4 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-strong); margin: 0 0 2px 0;">Resolution, Status &amp; Secretariat Action</h4>
+							<p style="font-size: 0.78rem; color: var(--muted); margin: 0;">Update ticket status, add internal notes, and attach certified documents.</p>
+						</div>
+						<span style="font-size: 0.72rem; font-weight: 700; background: var(--surface-soft); color: var(--muted); border: 1px solid var(--border); padding: 3px 8px; border-radius: 4px;">Category 4</span>
+					</div>
+
+					<div style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px; display: flex; flex-direction: column; gap: 16px;">
+						<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 16px; align-items: start;">
+							<div>
+								<label for="modal-status-select" style="font-size: 0.76rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px;">Ticket Status</label>
+								<select id="modal-status-select" style="width: 100%; padding: 8px 12px; font-size: 0.84rem; font-weight: 700; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);">
+									<option value="Submitted">Submitted (Awaiting Action)</option>
+									<option value="Under Review">Under Review</option>
+									<option value="Responded">Responded (via Email)</option>
+									<option value="Closed">Closed (Resolved)</option>
+								</select>
+							</div>
+
+							<div>
+								<label for="modal-internal-notes" style="font-size: 0.76rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px;">Internal Notes / Secretariat Response</label>
+								<textarea id="modal-internal-notes" rows="3" placeholder="Notes for audit trail or response to member…" style="width: 100%; padding: 8px 12px; font-size: 0.84rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); resize: vertical; box-sizing: border-box;"></textarea>
+							</div>
+						</div>
+
+						<!-- Certificate Attachment Section -->
+						<div style="border-top: 1px solid var(--border); padding-top: 14px;">
+							<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+								<div style="display: flex; align-items: center; gap: 8px;">
+									<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: var(--accent);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+									<span style="font-size: 0.76rem; font-weight: 800; text-transform: uppercase; color: var(--accent-strong); letter-spacing: 0.04em;">Membership Certificate Document</span>
+								</div>
+								<span id="modal-cert-status-badge" style="font-size: 0.7rem; font-weight: 800; padding: 2px 7px; border-radius: 4px; background: rgba(22, 163, 74, 0.1); color: #16a34a;">Recommended</span>
+							</div>
+
+							<input type="file" id="modal-cert-file-input" accept=".pdf,.doc,.docx" style="display: none;" />
+							<div id="modal-cert-empty-state" style="display: flex; align-items: center; gap: 10px;">
+								<button type="button" class="button button-secondary" id="modal-cert-choose-btn" style="padding: 6px 16px; font-size: 0.82rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+									<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+									Upload Certificate
+								</button>
+								<span style="font-size: 0.75rem; color: var(--muted);">Attach official signed certificate PDF (Max 10MB)</span>
+							</div>
+							<div id="modal-cert-attached-state" style="display: none; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+								<div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+									<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent); flex-shrink: 0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+									<div style="min-width: 0;">
+										<div id="modal-cert-filename" style="font-size: 0.84rem; font-weight: 800; color: var(--accent-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px;"></div>
+										<div id="modal-cert-filesize" style="font-size: 0.72rem; color: var(--muted);"></div>
+									</div>
+								</div>
+								<div style="display: flex; align-items: center; gap: 8px;">
+									<button type="button" class="button button-secondary" id="modal-cert-preview-btn" style="padding: 5px 12px; font-size: 0.78rem; font-weight: 700;">Preview</button>
+									<button type="button" id="modal-cert-remove-btn" style="padding: 5px 10px; font-size: 0.78rem; font-weight: 700; background: none; border: none; cursor: pointer; color: #dc2626;">Remove</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Navigation & Save Button -->
+					<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 4px; padding-top: 14px; border-top: 1px solid var(--border);">
+						<button type="button" class="button button-secondary" data-inquiry-switch-cat="remarks" style="font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px;">
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+							Inquirer Remarks
+						</button>
+						<button type="button" class="button button-primary" id="modal-send-response-btn" style="font-weight: 700; font-size: 0.85rem; padding: 8px 20px;">
+							Save &amp; Update Ticket
+						</button>
+					</div>
+				</div>
+
 			</div>
 
 			<!-- Modal Footer -->
-			<div style="padding: 14px 28px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; background: var(--surface-soft);">
-				<button type="button" class="button button-quiet" data-close-inquiry-modal style="font-weight: 700; font-size: 0.85rem;">Close</button>
-				<button type="button" class="button button-primary" id="modal-send-response-btn" style="font-weight: 700; font-size: 0.85rem;">Update</button>
+			<div style="padding: 14px 28px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--surface-soft);">
+				<span style="font-size: 0.75rem; color: var(--muted);">SPP Secretariat Management System</span>
+				<div style="display: flex; gap: 10px;">
+					<button type="button" class="button button-quiet" data-close-inquiry-modal style="font-weight: 700; font-size: 0.85rem;">Close</button>
+				</div>
 			</div>
 		</div>
 	</div>
 
 	<!-- Script for Sidebar Tab Switching, Mobile Menu & Review Modal -->
 	<script>
-		document.addEventListener('DOMContentLoaded', function() {
+		function switchPortalTab(targetTab) {
 			const navLinks = document.querySelectorAll('[data-portal-tab]');
 			const panels = document.querySelectorAll('[data-portal-panel]');
 			const sidebar = document.querySelector('[data-sidebar]');
-			const menuToggle = document.querySelector('[data-menu-toggle]');
-			const menuClose = document.querySelector('[data-menu-close]');
 
 			navLinks.forEach(link => {
-				link.addEventListener('click', function(e) {
-					e.preventDefault();
-					const targetTab = this.getAttribute('data-portal-tab');
-
-					// Update active class on nav links
-					navLinks.forEach(l => l.classList.toggle('active', l === link));
-
-					// Show target panel
-					panels.forEach(panel => {
-						const isMatch = panel.getAttribute('data-portal-panel') === targetTab;
-						panel.style.display = isMatch ? 'block' : 'none';
-					});
-
-					// Close sidebar on mobile
-					if (sidebar && sidebar.classList.contains('is-open')) {
-						sidebar.classList.remove('is-open');
-					}
-				});
+				const isMatch = link.getAttribute('data-portal-tab') === targetTab;
+				link.classList.toggle('active', isMatch);
 			});
 
-			if (menuToggle && sidebar) {
-				menuToggle.addEventListener('click', function() {
-					sidebar.classList.add('is-open');
-				});
+			panels.forEach(panel => {
+				const isMatch = panel.getAttribute('data-portal-panel') === targetTab;
+				panel.style.display = isMatch ? 'block' : 'none';
+			});
+
+			if (sidebar && sidebar.classList.contains('is-open')) {
+				sidebar.classList.remove('is-open');
+			}
+		}
+
+		// Global delegation for portal tab clicks
+		document.addEventListener('click', function(e) {
+			const tabBtn = e.target.closest('[data-portal-tab]');
+			if (tabBtn) {
+				e.preventDefault();
+				const targetTab = tabBtn.getAttribute('data-portal-tab');
+				if (targetTab) {
+					switchPortalTab(targetTab);
+					if (history.replaceState) {
+						history.replaceState(null, '', '#' + targetTab);
+					}
+				}
+				return;
 			}
 
-			if (menuClose && sidebar) {
-				menuClose.addEventListener('click', function() {
-					sidebar.classList.remove('is-open');
-				});
+			const menuToggle = e.target.closest('[data-menu-toggle]');
+			if (menuToggle) {
+				const sidebar = document.querySelector('[data-sidebar]');
+				if (sidebar) sidebar.classList.add('is-open');
+				return;
 			}
+
+			const menuClose = e.target.closest('[data-menu-close]');
+			if (menuClose) {
+				const sidebar = document.querySelector('[data-sidebar]');
+				if (sidebar) sidebar.classList.remove('is-open');
+				return;
+			}
+		});
+
+		// Check initial hash on load
+		if (typeof window !== 'undefined' && window.location && window.location.hash) {
+			const initialTab = window.location.hash.replace('#', '');
+			if (['applications', 'roster', 'inquiries', 'broadcasts'].includes(initialTab)) {
+				switchPortalTab(initialTab);
+			}
+		}
+
+		function initPortalManager() {
 
 			// Review Modal Handlers
 			const reviewModal = document.getElementById('review-application-modal');
@@ -1154,22 +1322,53 @@
 					document.getElementById('modal-institution').textContent = app.institution_name || app.current_affiliation || '—';
 					document.getElementById('modal-institution-address').textContent = app.institution_address || '—';
 
-					const cvBadge = document.getElementById('modal-cv-status');
-					if (cvBadge) {
+					// Documents Population
+					const docBadgesEl = document.getElementById('modal-header-doc-badges');
+					if (docBadgesEl) {
+						docBadgesEl.innerHTML = '';
 						if (app.cv_path) {
-							cvBadge.innerHTML = `<a href="/storage/${app.cv_path}" target="_blank" style="color: var(--success); text-decoration: underline;">View Uploaded CV</a>`;
-						} else {
-							cvBadge.textContent = 'None';
-							cvBadge.style.color = 'var(--muted)';
+							docBadgesEl.innerHTML += `<span style="background: var(--surface); color: var(--text); border: 1px solid var(--border); padding: 2px 8px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 700;">CV Attached</span>`;
+						}
+						if (app.proof_path) {
+							docBadgesEl.innerHTML += `<span style="background: var(--surface); color: var(--text); border: 1px solid var(--border); padding: 2px 8px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 700;">Proof Attached</span>`;
 						}
 					}
-					const proofBadge = document.getElementById('modal-proof-status');
-					if (proofBadge) {
-						if (app.proof_path) {
-							proofBadge.innerHTML = `<a href="/storage/${app.proof_path}" target="_blank" style="color: var(--success); text-decoration: underline;">View Uploaded Proof</a>`;
+
+					const cvActions = document.getElementById('modal-cv-actions');
+					const cvFilename = document.getElementById('modal-cv-filename');
+					const cvDocUrl = app.cv_path ? `/admin/api/membership-applications/${app.id}/document/cv` : null;
+
+					if (cvActions) {
+						if (cvDocUrl) {
+							if (cvFilename) cvFilename.textContent = app.cv_path.split('/').pop() || 'PDF Document Attached';
+							cvActions.innerHTML = `
+								<a href="${cvDocUrl}" target="_blank" rel="noopener noreferrer" class="button button-secondary" style="font-size: 0.78rem; padding: 6px 14px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+									View CV
+									<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+								</a>
+							`;
 						} else {
-							proofBadge.textContent = 'None';
-							proofBadge.style.color = 'var(--muted)';
+							if (cvFilename) cvFilename.textContent = 'No CV file attached';
+							cvActions.innerHTML = `<span style="background: var(--surface-soft); color: var(--muted); border: 1px solid var(--border); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 700;">Not Attached</span>`;
+						}
+					}
+
+					const proofActions = document.getElementById('modal-proof-actions');
+					const proofFilename = document.getElementById('modal-proof-filename');
+					const proofDocUrl = app.proof_path ? `/admin/api/membership-applications/${app.id}/document/proof` : null;
+
+					if (proofActions) {
+						if (proofDocUrl) {
+							if (proofFilename) proofFilename.textContent = app.proof_path.split('/').pop() || 'Proof Document Attached';
+							proofActions.innerHTML = `
+								<a href="${proofDocUrl}" target="_blank" rel="noopener noreferrer" class="button button-secondary" style="font-size: 0.78rem; padding: 6px 14px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+									View Proof
+									<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+								</a>
+							`;
+						} else {
+							if (proofFilename) proofFilename.textContent = 'No proof file attached';
+							proofActions.innerHTML = `<span style="background: var(--surface-soft); color: var(--muted); border: 1px solid var(--border); padding: 3px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 700;">Not Attached</span>`;
 						}
 					}
 
@@ -1329,13 +1528,6 @@
 			appCatTabBtns.forEach(btn => {
 				btn.addEventListener('click', function() {
 					setAppInfoCategory(this.getAttribute('data-app-info-tab'));
-				});
-			});
-
-			// Reset to first tab whenever the review modal is opened
-			openModalBtns.forEach(btn => {
-				btn.addEventListener('click', function() {
-					setAppInfoCategory('membership');
 				});
 			});
 
@@ -1932,7 +2124,7 @@
 
 			filterInquiries(true);
 
-			// Inquirer Info Category Tab Switcher (Category 1, 2, 3, 4 vs All)
+			// Inquirer Info Category Tab Switcher (Category 1, 2, 3, 4)
 			const inquiryCatTabBtns = inquiryModal ? inquiryModal.querySelectorAll('[data-inquiry-info-tab]') : [];
 			const inquiryCatSections = inquiryModal ? inquiryModal.querySelectorAll('[data-inquiry-cat-section]') : [];
 
@@ -1945,7 +2137,7 @@
 
 				inquiryCatSections.forEach(section => {
 					const cat = section.getAttribute('data-inquiry-cat-section');
-					section.style.display = (cat === activeCat) ? 'block' : 'none';
+					section.style.display = (cat === activeCat) ? 'flex' : 'none';
 				});
 			}
 
@@ -1954,6 +2146,15 @@
 					setInquiryInfoCategory(this.getAttribute('data-inquiry-info-tab'));
 				});
 			});
+
+			if (inquiryModal) {
+				inquiryModal.querySelectorAll('[data-inquiry-switch-cat]').forEach(btn => {
+					btn.addEventListener('click', function() {
+						const target = this.getAttribute('data-inquiry-switch-cat');
+						if (target) setInquiryInfoCategory(target);
+					});
+				});
+			}
 
 			// Modal Open / Populate
 			document.querySelectorAll('[data-open-inquiry-modal]').forEach(btn => {
@@ -1988,6 +2189,7 @@
 					// Certificate Attachment State
 					let currentAttachedCert = row.getAttribute('data-certificate-attached') || '';
 					let currentAttachedCertSize = row.getAttribute('data-certificate-size') || '';
+					let currentUploadedFile = null;
 
 					// Populate header & contact
 					document.getElementById('modal-ticket-id').textContent = `Ticket #${ticketId}`;
@@ -1999,7 +2201,7 @@
 					document.getElementById('modal-inquirer-institution').textContent = inst;
 					document.getElementById('modal-inquirer-tier').textContent = tier;
 					document.getElementById('modal-submitted-date').textContent = date;
-					document.getElementById('modal-inquiry-remarks').textContent = remarks;
+					document.getElementById('modal-inquiry-remarks').textContent = remarks || 'No additional remarks provided.';
 
 					// Inquirer Category Badges (Member vs Applicant)
 					const isApplicant = appType === 'New Application';
@@ -2015,16 +2217,16 @@
 
 					const classTypeEl = document.getElementById('modal-inquirer-class-type');
 					if (classTypeEl) {
-						classTypeEl.textContent = isApplicant ? 'New Applicant' : 'Existing Member';
+						classTypeEl.textContent = isApplicant ? 'New Membership Applicant' : 'Registered SPP Member';
 						classTypeEl.style.cssText = isApplicant
 							? 'background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.76rem;'
 							: 'background: rgba(22, 163, 74, 0.07); color: #15803d; border: 1px solid rgba(22, 163, 74, 0.2); padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.76rem;';
 					}
 
-					const appTypeEl = document.getElementById('modal-application-type');
+					const appTypeEl = document.getElementById('modal-inquiry-application-type') || document.getElementById('modal-application-type');
 					if (appTypeEl) appTypeEl.textContent = appType;
 
-					// Reset category tab to first tab when modal opens
+					// Reset category tab to first tab (Inquirer Information) when modal opens
 					setInquiryInfoCategory('profile');
 
 					const targetEmailEl = document.getElementById('modal-response-target-email');
@@ -2036,13 +2238,7 @@
 					const queryBadge = document.getElementById('modal-query-badge');
 					if (queryBadge) {
 						queryBadge.textContent = queryType;
-						if (queryType === 'Membership Status') {
-							queryBadge.style.cssText = 'background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 2px 9px; border-radius: 4px; font-size: 0.73rem; font-weight: 600;';
-						} else if (queryType === 'Request for Certificate of Membership') {
-							queryBadge.style.cssText = 'background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 2px 9px; border-radius: 4px; font-size: 0.73rem; font-weight: 600;';
-						} else {
-							queryBadge.style.cssText = 'background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 2px 9px; border-radius: 4px; font-size: 0.73rem; font-weight: 600;';
-						}
+						queryBadge.style.cssText = 'background: var(--surface-strong); color: var(--muted); border: 1px solid var(--border); padding: 2px 9px; border-radius: 4px; font-size: 0.73rem; font-weight: 600;';
 					}
 
 					// Dynamic Questions Display (Clean, Spacious Mini-Cards)
@@ -2054,49 +2250,49 @@
 						if (queryType === 'Membership Status') {
 							if (remarksTitle) remarksTitle.textContent = 'Background Context & Purpose of Inquiry';
 							html = `
-								<div style="background: var(--surface-soft); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+								<div style="background: var(--surface); padding: 14px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
 									<span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; letter-spacing: 0.03em;">Last Known Membership</span>
-									<span style="font-size: 0.92rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${lastKnownMem || 'Not specified'}</span>
+									<span style="font-size: 0.94rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${lastKnownMem || 'Not specified'}</span>
 								</div>
-								<div style="background: var(--surface-soft); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+								<div style="background: var(--surface); padding: 14px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
 									<span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; letter-spacing: 0.03em;">Year of Last SPP Attendance</span>
-									<span style="font-size: 0.92rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${lastAttYear || 'N/A'}</span>
+									<span style="font-size: 0.94rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${lastAttYear || 'N/A'}</span>
 								</div>
-								<div style="background: var(--surface-soft); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); grid-column: 1 / -1;">
+								<div style="background: var(--surface); padding: 14px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); grid-column: 1 / -1;">
 									<span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; letter-spacing: 0.03em;">Last SPP Attendance (Place)</span>
-									<span style="font-size: 0.92rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${lastAttPlace || 'N/A'}</span>
+									<span style="font-size: 0.94rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${lastAttPlace || 'N/A'}</span>
 								</div>
 							`;
 						} else if (queryType === 'Request for Certificate of Membership') {
 							if (remarksTitle) remarksTitle.textContent = 'Additional Inquirer Notes';
 							html = `
-								<div style="background: var(--surface-soft); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+								<div style="background: var(--surface); padding: 14px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
 									<span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; letter-spacing: 0.03em;">Year of Oath Taking</span>
-									<span style="font-size: 0.92rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${oathYear || 'N/A'}</span>
+									<span style="font-size: 0.94rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${oathYear || 'N/A'}</span>
 								</div>
-								<div style="background: var(--surface-soft); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+								<div style="background: var(--surface); padding: 14px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
 									<span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; letter-spacing: 0.03em;">Venue of Oath Taking</span>
-									<span style="font-size: 0.92rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${oathVenue || 'Online'}</span>
+									<span style="font-size: 0.94rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${oathVenue || 'Online'}</span>
 								</div>
-								<div style="background: var(--surface-soft); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+								<div style="background: var(--surface); padding: 14px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
 									<span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; letter-spacing: 0.03em;">Known Membership Type</span>
-									<span style="font-size: 0.92rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${knownMemType || tier}</span>
+									<span style="font-size: 0.94rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${knownMemType || tier}</span>
 								</div>
-								<div style="background: var(--surface-soft); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+								<div style="background: var(--surface); padding: 14px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
 									<span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; letter-spacing: 0.03em;">Last Attendance</span>
-									<span style="font-size: 0.92rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${lastAttYear ? `${lastAttYear} (${lastAttPlace || 'N/A'})` : 'N/A'}</span>
+									<span style="font-size: 0.94rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${lastAttYear ? `${lastAttYear} (${lastAttPlace || 'N/A'})` : 'N/A'}</span>
 								</div>
-								<div style="background: var(--surface-soft); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); grid-column: 1 / -1;">
+								<div style="background: var(--surface); padding: 14px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); grid-column: 1 / -1;">
 									<span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; letter-spacing: 0.03em;">Intended Certificate Purpose</span>
-									<span style="font-size: 0.92rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${purpose || 'Faculty Evaluation and Professional Dossier'}</span>
+									<span style="font-size: 0.94rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${purpose || 'Faculty Evaluation and Professional Dossier'}</span>
 								</div>
 							`;
 						} else {
 							if (remarksTitle) remarksTitle.textContent = 'Member Concern / Detailed Inquiry';
 							html = `
-								<div style="background: var(--surface-soft); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); grid-column: 1 / -1;">
+								<div style="background: var(--surface); padding: 14px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); grid-column: 1 / -1;">
 									<span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); display: block; letter-spacing: 0.03em;">Inquiry Keyword(s)</span>
-									<span style="font-size: 0.92rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${keywords || 'fee, inquiry'}</span>
+									<span style="font-size: 0.94rem; font-weight: 700; color: var(--accent-strong); margin-top: 3px; display: block;">${keywords || 'fee, inquiry'}</span>
 								</div>
 							`;
 						}
@@ -2114,7 +2310,7 @@
 					function updateCertAttachmentUI() {
 						if (certStatusBadge) {
 							if (queryType === 'Request for Certificate of Membership') {
-								certStatusBadge.textContent = currentAttachedCert ? 'Attached & Ready' : 'Required / Recommended';
+								certStatusBadge.textContent = currentAttachedCert ? 'Attached & Ready' : 'Recommended';
 								certStatusBadge.style.cssText = 'font-size: 0.7rem; font-weight: 800; padding: 2px 7px; border-radius: 4px; background: rgba(22, 163, 74, 0.1); color: #16a34a;';
 							} else {
 								certStatusBadge.textContent = currentAttachedCert ? 'Attached' : 'Optional';
@@ -2151,6 +2347,7 @@
 						certFileInput.onchange = function(e) {
 							const file = e.target.files[0];
 							if (file) {
+								currentUploadedFile = file;
 								currentAttachedCert = file.name;
 								currentAttachedCertSize = `${(file.size / 1024).toFixed(1)} KB &bull; Uploaded PDF`;
 								updateCertAttachmentUI();
@@ -2163,11 +2360,23 @@
 						};
 					}
 
-					// Cert Preview Button
+					// Cert Preview Button (Opens directly in a new tab)
 					const certPreviewBtn = document.getElementById('modal-cert-preview-btn');
 					if (certPreviewBtn) {
 						certPreviewBtn.onclick = function() {
-							alert(`[DOCUMENT PREVIEW]\n\nSamahang Pisika ng Pilipinas (SPP)\nOfficial Certificate of Membership & Good Standing\n\nRecipient: ${name}\nFile: ${currentAttachedCert}\nStatus: Digitally Signed by SPP Secretariat & President\nSecurity: Validated QR Signature`);
+							if (currentUploadedFile) {
+								const fileUrl = URL.createObjectURL(currentUploadedFile);
+								window.open(fileUrl, '_blank');
+								return;
+							}
+							if (currentAttachedCert) {
+								const certUrl = currentAttachedCert.startsWith('http') || currentAttachedCert.startsWith('/')
+									? currentAttachedCert
+									: `/storage/${currentAttachedCert}`;
+								window.open(certUrl, '_blank');
+								return;
+							}
+							alert('No certificate file attached to preview.');
 						};
 					}
 
@@ -2177,6 +2386,7 @@
 						certRemoveBtn.onclick = function() {
 							currentAttachedCert = '';
 							currentAttachedCertSize = '';
+							currentUploadedFile = null;
 							updateCertAttachmentUI();
 						};
 					}
@@ -2294,8 +2504,15 @@
 					filterInquiries(false);
 				});
 			}
-		});
+		}
+
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', initPortalManager);
+		} else {
+			initPortalManager();
+		}
 	</script>
+
 </body>
 
 </html>

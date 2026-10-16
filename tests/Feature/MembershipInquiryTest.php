@@ -63,8 +63,29 @@ test('admin can view inquiries in portal manager with counts and show more / sho
     $response->assertOk()
         ->assertSee('Dr. Marie Curie')
         ->assertSee('Member Support &amp; Inquiries', false)
+        ->assertSee('1. Inquirer Information')
+        ->assertSee('2. Inquiry Details')
+        ->assertSee('3. Inquirer Remarks')
+        ->assertSee('4. Resolution &amp; Actions', false)
+        ->assertSee('More Info About Inquiry')
         ->assertSee('Show more')
         ->assertSee('Show less');
+});
+
+test('admin can fetch specific inquiry details via api', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+
+    $inquiry = MembershipInquiry::factory()->create([
+        'inquirer_name' => 'Prof. Richard Feynman',
+        'query_type' => 'Request for Certificate of Membership',
+        'status' => 'Submitted',
+    ]);
+
+    $response = $this->actingAs($admin)->getJson(route('admin.api.inquiries.show', $inquiry));
+
+    $response->assertOk()
+        ->assertJsonPath('data.inquirer_name', 'Prof. Richard Feynman')
+        ->assertJsonPath('data.query_type', 'Request for Certificate of Membership');
 });
 
 test('admin can update inquiry status and response via api', function () {

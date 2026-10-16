@@ -7,9 +7,12 @@ use Database\Factories\MembershipApplicationFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @property int $id
@@ -45,7 +48,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $institution_name
  * @property string|null $institution_address
  * @property string|null $cv_path
+ * @property-read string|null $cv_url
  * @property string|null $proof_path
+ * @property-read string|null $proof_url
  * @property bool $declaration_agree
  * @property bool $certification_confirm
  * @property string|null $certification_email
@@ -104,6 +109,16 @@ class MembershipApplication extends Model
     use HasFactory;
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var list<string>
+     */
+    protected $appends = [
+        'cv_url',
+        'proof_url',
+    ];
+
+    /**
      * @return array<string, string>
      */
     protected function casts(): array
@@ -128,6 +143,86 @@ class MembershipApplication extends Model
     public function getFullNameAttribute(): string
     {
         return trim("{$this->first_name} {$this->surname}");
+    }
+
+    /**
+     * Get the resolved public URL for the CV.
+     *
+     * @return Attribute<string|null, void>
+     */
+    protected function cvUrl(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                if ($this->cv_path === null || $this->cv_path === '') {
+                    return null;
+                }
+
+                if (
+                    str_starts_with($this->cv_path, 'http://') ||
+                    str_starts_with($this->cv_path, 'https://')
+                ) {
+                    return $this->cv_path;
+                }
+
+                $disk = config('filesystems.default', 'public');
+                $diskName = (is_string($disk) && $disk !== 'local') ? $disk : 'public';
+
+                /** @var FilesystemAdapter $storage */
+                $storage = Storage::disk((string) $diskName);
+
+                // If file doesn't exist on default disk, check public disk fallback
+                if (! $storage->exists($this->cv_path) && $diskName !== 'public') {
+                    /** @var FilesystemAdapter $publicStorage */
+                    $publicStorage = Storage::disk('public');
+                    if ($publicStorage->exists($this->cv_path)) {
+                        return $publicStorage->url($this->cv_path);
+                    }
+                }
+
+                return $storage->url((string) $this->cv_path);
+            }
+        );
+    }
+
+    /**
+     * Get the resolved public URL for the proof.
+     *
+     * @return Attribute<string|null, void>
+     */
+    protected function proofUrl(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                if ($this->proof_path === null || $this->proof_path === '') {
+                    return null;
+                }
+
+                if (
+                    str_starts_with($this->proof_path, 'http://') ||
+                    str_starts_with($this->proof_path, 'https://')
+                ) {
+                    return $this->proof_path;
+                }
+
+                $disk = config('filesystems.default', 'public');
+                $diskName = (is_string($disk) && $disk !== 'local') ? $disk : 'public';
+
+                /** @var FilesystemAdapter $storage */
+                $storage = Storage::disk((string) $diskName);
+
+                // If file doesn't exist on default disk, check public disk fallback
+                if (! $storage->exists($this->proof_path) && $diskName !== 'public') {
+                    /** @var FilesystemAdapter $publicStorage */
+                    $publicStorage = Storage::disk('public');
+                    if ($publicStorage->exists($this->proof_path)) {
+                        return $publicStorage->url($this->proof_path);
+                    }
+                }
+
+                return $storage->url((string) $this->proof_path);
+            }
+        );
     }
 
     /**

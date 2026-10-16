@@ -159,3 +159,63 @@ test('guests and regular members cannot manage applications via admin api', func
         ['status' => 'Approved']
     )->assertForbidden();
 });
+
+test('admin and owner can view attached cv and proof documents', function () {
+    Storage::fake('public');
+
+    $cvPath = 'applications/cv/sample_cv.pdf';
+    $proofPath = 'applications/proofs/sample_proof.pdf';
+    Storage::disk('public')->put($cvPath, '%PDF-1.4 sample cv content');
+    Storage::disk('public')->put($proofPath, '%PDF-1.4 sample proof content');
+
+    $applicantUser = User::factory()->create(['role' => 'member']);
+    $application = MembershipApplication::factory()->create([
+        'user_id' => $applicantUser->id,
+        'cv_path' => $cvPath,
+        'proof_path' => $proofPath,
+    ]);
+
+    $admin = User::factory()->create(['role' => 'admin']);
+
+    // Admin can view CV
+    $this->actingAs($admin)
+        ->get(route('admin.api.membership-applications.document', ['application' => $application, 'type' => 'cv']))
+        ->assertOk();
+
+    // Admin can view Proof
+    $this->actingAs($admin)
+        ->get(route('admin.api.membership-applications.document', ['application' => $application, 'type' => 'proof']))
+        ->assertOk();
+
+    // Owner can view their own documents via membership-portal route
+    $this->actingAs($applicantUser)
+        ->get(route('membership-portal.applications.document', ['application' => $application, 'type' => 'cv']))
+        ->assertOk();
+
+    // Another regular member cannot view this application's document
+    $otherMember = User::factory()->create(['role' => 'member']);
+    $this->actingAs($otherMember)
+        ->get(route('membership-portal.applications.document', ['application' => $application, 'type' => 'cv']))
+        ->assertForbidden();
+});
+
+test('admin can view attached cv and proof in portal application review page', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+
+    $application = MembershipApplication::factory()->create([
+        'first_name' => 'Richard',
+        'surname' => 'Feynman',
+        'cv_path' => 'applications/cv/feynman_cv.pdf',
+        'proof_path' => 'applications/proofs/feynman_id.pdf',
+        'status' => 'Under Evaluation',
+    ]);
+
+    $response = $this->actingAs($admin)->get(route('membership-portal.application', ['id' => $application->id]));
+
+    $response->assertOk()
+        ->assertSee('ADMIN MODE')
+        ->assertSee('Richard Feynman')
+        ->assertSee('View CV')
+        ->assertSee('View Proof')
+        ->assertDontSee('Not Uploaded');
+});

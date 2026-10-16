@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\MembershipApplication;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Response;
 
 class MembershipApplicationController extends Controller
 {
@@ -43,6 +46,47 @@ class MembershipApplicationController extends Controller
         return response()->json([
             'data' => $application,
         ]);
+    }
+
+    /**
+     * Display or download the attached document (cv or proof).
+     */
+    public function viewDocument(Request $request, MembershipApplication $application, string $type): Response
+    {
+        $user = $request->user();
+        if (! $user || (! $user->isAdmin() && $user->id !== $application->user_id)) {
+            abort(403, 'Unauthorized access to application documents.');
+        }
+
+        $path = $type === 'cv' ? $application->cv_path : ($type === 'proof' ? $application->proof_path : null);
+
+        if (! $path) {
+            abort(404, 'Document not attached to this application.');
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return redirect()->away($path);
+        }
+
+        $disk = config('filesystems.default', 'public');
+        $diskName = (is_string($disk) && $disk !== 'local') ? $disk : 'public';
+
+        /** @var FilesystemAdapter $storage */
+        $storage = Storage::disk((string) $diskName);
+
+        if (! $storage->exists($path) && $diskName !== 'public') {
+            /** @var FilesystemAdapter $publicStorage */
+            $publicStorage = Storage::disk('public');
+            if ($publicStorage->exists($path)) {
+                $storage = $publicStorage;
+            }
+        }
+
+        if (! $storage->exists($path)) {
+            abort(404, 'Document file not found in storage.');
+        }
+
+        return $storage->response($path);
     }
 
     /**

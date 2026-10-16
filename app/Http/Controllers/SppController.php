@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SppEvent;
 use Illuminate\Contracts\View\View;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -25,22 +26,27 @@ class SppController extends Controller
             abort(404, 'Handbook not found for this conference.');
         }
 
-        if (str_starts_with($conference->handbook_file, 'http://') || str_starts_with($conference->handbook_file, 'https://')) {
-            return redirect()->away($conference->handbook_file);
+        $handbookFile = (string) $conference->handbook_file;
+
+        if (str_starts_with($handbookFile, 'http://') || str_starts_with($handbookFile, 'https://')) {
+            return redirect()->away($handbookFile);
         }
 
         $disk = config('filesystems.default', 'public');
-        $diskName = is_string($disk) && $disk !== 'local' ? $disk : 'public';
+        $diskName = (string) ((is_string($disk) && $disk !== 'local') ? $disk : 'public');
 
-        if (! Storage::disk($diskName)->exists($conference->handbook_file)) {
+        /** @var FilesystemAdapter $storage */
+        $storage = Storage::disk($diskName);
+
+        if (! $storage->exists($handbookFile)) {
             abort(404, 'Handbook file not found in storage.');
         }
 
-        $extension = pathinfo($conference->handbook_file, PATHINFO_EXTENSION);
+        $extension = pathinfo($handbookFile, PATHINFO_EXTENSION);
         $cleanTitle = $conference->handbook_name ?: ($conference->title.' Handbook');
         $fileName = Str::slug($cleanTitle).($extension ? '.'.$extension : '');
 
-        return Storage::disk($diskName)->download($conference->handbook_file, $fileName);
+        return $storage->download($handbookFile, $fileName);
     }
 
     /**

@@ -64,6 +64,9 @@ Route::prefix('membership-portal')->name('membership-portal.')->group(function (
 
         return view('portal.notifications', compact('announcements'));
     })->name('notifications');
+    Route::get('applications/{application}/document/{type}', [AdminMembershipApplicationController::class, 'viewDocument'])
+        ->name('applications.document')
+        ->middleware('auth');
     Route::view('settings', 'portal.settings')->name('settings');
 });
 
@@ -147,6 +150,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::prefix('admin/api/membership-applications')->name('admin.api.membership-applications.')->group(function () {
         Route::get('/', [AdminMembershipApplicationController::class, 'index'])->name('index');
         Route::get('{application}', [AdminMembershipApplicationController::class, 'show'])->name('show');
+        Route::get('{application}/document/{type}', [AdminMembershipApplicationController::class, 'viewDocument'])->name('document');
         Route::patch('{application}/status', [AdminMembershipApplicationController::class, 'updateStatus'])->name('status');
         Route::delete('{application}', [AdminMembershipApplicationController::class, 'destroy'])->name('destroy');
     });
